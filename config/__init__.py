@@ -1,0 +1,1 @@
+# Global project configuration package
