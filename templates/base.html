@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=1">
     {% block extra_head %}{% endblock %}
 </head>
 <body>
@@ -19,19 +19,30 @@
                 <span class="logo-icon">💡</span>
                 <span class="logo-text">WebApp Title</span>
             </a>
-            <div class="header-badge">
+            <button class="header-badge" id="nameEditBtn">
                 {% if request.COOKIES.user_name %}
-                  {{request.COOKIES.user_name }}
+                  こんにちは、{{request.COOKIES.user_name }}さん
                 {% else %}
                   Guest--名前が未登録です--
                 {% endif %}
-            </div>
+            </button>
         </div>
     </header>
 
     <main class="main-content">
         {% block content %}{% endblock %}
     </main>
+
+    <div id="nameModalOverlay" class="modal-overlay hidden">
+        <div class="name-edit-modal card">
+            <h3 style="margin-bottom: 16px; font-size: 16px; color: #111827;">ユーザー名の変更</h3>
+            <input type="text" id="nameInput" placeholder="新しい名前を入力" class="name-input-field">
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelNameBtn" style="padding: 6px 16px; font-size: 12px;">キャンセル</button>
+                <button class="btn-primary" id="saveNameBtn" style="padding: 6px 16px; font-size: 12px;">保存</button>
+            </div>
+        </div>
+    </div>
 
     <footer class="app-footer">
         <div class="footer-container">
@@ -40,7 +51,7 @@
         </div>
     </footer>
 
-    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/main.js' %}?v=1"></script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
