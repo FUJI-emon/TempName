@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}AIとともに学習するクイズアプリ{% endblock %}</title>
+    <title>{% block title %}WebApp Title{% endblock %}</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,11 +15,17 @@
 <body>
     <header class="app-header">
         <div class="header-container">
-            <a href="{% url 'learning:index' %}" class="logo">
+            <a href="{% url 'learning:index' %}" class="logo"> <!--ここでヘッダを押したときの行先のURLを書き換える-->
                 <span class="logo-icon">💡</span>
-                <span class="logo-text">AI Adaptive Learn</span>
+                <span class="logo-text">WebApp Title</span>
             </a>
-            <div class="header-badge">Phase 1: Project Foundation</div>
+            <div class="header-badge">
+                {% if request.COOKIES.user_name %}
+                  {{request.COOKIES.user_name }}
+                {% else %}
+                  Guest--名前が未登録です--
+                {% endif %}
+            </div>
         </div>
     </header>
 
@@ -29,8 +35,8 @@
 
     <footer class="app-footer">
         <div class="footer-container">
-            <p>&copy; 2026 AIとともに学習するクイズアプリ — Progressive Educational Platform</p>
-            <p class="footer-subtext">「生徒が、先生が望む成果を出せるようになること」を目指す適応型学習システム</p>
+            <p>&copy; WebApp Title name ー FUJI-emon</p>
+            <p class="footer-subtext">学習状況・習熟度を管理して、AI先生がサポートしてくれる学習アプリ</p>
         </div>
     </footer>
 
