@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/f2.css' %}">
+{% endblock %}
+
+{% block content %}
+<a href="/subjects/" class="back-btn">←</a>
+
+<h1 class="page-title">{{ subject_name }}</h1>
+
+<div class="topic-grid">
+    <!-- 1. ファイルを追加ボタン -->
+    <a href="/topics/{{ subject }}/add/" class="grid-card card-add">
+        <span class="add-text">ファイルを追加</span>
+        <span class="add-icon">+</span>
+    </a>
+
+    <!-- 2. 追加済みトピック -->
+    {% for topic in topics %}
+   <a href="/topic/{{ topic.id }}/" class="grid-card card-active">
+        <div class="topic-title">
+            {{ topic.title }}
+        </div>
+        
+        <div class="topic-stats">
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" style="--p: {{ topic.progress }}%;"></div>
+            </div>
+            <div class="stats-text">
+                <span>{{ topic.progress }}%</span>
+                <span>{{ topic.days_ago }}日前</span>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+
+    <!-- 3. 未追加の枠 -->
+    {% for i in empty_slots %}
+    <div class="grid-card card-empty"></div>
+    {% endfor %}
+</div>
+{% endblock %}
