@@ -27,6 +27,8 @@ ALLOWED_HOSTS = [
 
 # Application definition
 
+# settings.py の一番下
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -34,9 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # Phase 1 Domain Applications
-    'apps.learning.apps.LearningConfig',
+    'apps.learning',  # 👈 'blog' ではなく 'apps.learning' に変更！
 ]
 
 MIDDLEWARE = [
@@ -97,6 +97,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
 
 # Internationalization
 LANGUAGE_CODE = 'ja'

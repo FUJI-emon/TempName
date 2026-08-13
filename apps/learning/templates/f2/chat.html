@@ -33,7 +33,12 @@
 
     <!-- 入力フォームエリア -->
     <div class="chat-input-area">
-        <form class="input-box-wrapper" onsubmit="return false;">
+        <!-- 🌟 method="POST"、{% csrf_token %}、onsubmit を設定 -->
+        <form method="POST" 
+              class="input-box-wrapper" 
+              onsubmit="showAiLoading('AIが回答を考え中...', '質問内容を理解して分かりやすい解説を作成しています。');">
+            {% csrf_token %}
+            
             <a href="/topic/{{ topic.id }}/upload/" class="upload-plus-btn" title="ドキュメントを追加">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -41,7 +46,8 @@
                 </svg>
             </a>
             
-            <input type="text" class="chat-input" placeholder="Course Introduction..." />
+            <input type="text" name="message" class="chat-input" placeholder="質問を入力してください..." required />
+            
             <button type="submit" class="send-btn">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="22" y1="2" x2="11" y2="13"></line>

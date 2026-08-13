@@ -1,0 +1,1084 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+body {
+    background-color: #f8fafc !important;
+    color: #1e293b;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* PC用ダッシュボードコンテナ */
+.dashboard-container {
+    max-width: 860px;
+    margin: 40px auto;
+    padding: 0 20px 80px 20px;
+}
+
+/* 1. ユーザーヘッダー */
+.user-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.profile-area {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #fed7aa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, filter 0.2s;
+}
+
+.avatar:hover {
+    transform: scale(1.05);
+    filter: brightness(0.95);
+}
+
+.avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: none;
+}
+
+.user-greeting {
+    font-size: 0.9rem;
+    color: #64748b;
+    margin: 0 0 2px 0;
+}
+
+.user-name {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.notification-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+/* 2. 学習ストリーク */
+.streak-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    margin-bottom: 24px;
+    border: 1px solid #f1f5f9;
+}
+
+.streak-info {
+    flex: 1;
+}
+
+.streak-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 10px;
+}
+
+.xp-bar-container {
+    width: 80%;
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+.xp-bar-fill {
+    width: 0%;
+    height: 100%;
+    background: #6366f1;
+    border-radius: 10px;
+    transition: width 0.4s ease-out;
+}
+
+.streak-stats {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    font-size: 0.85rem;
+    color: #64748b;
+    margin-top: 6px;
+    font-weight: 600;
+}
+
+.goal-circle {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: conic-gradient(#4f46e5 0deg, #e0e7ff 0deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.goal-circle:hover {
+    transform: scale(1.04);
+}
+
+.goal-circle-inner {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: #0f172a;
+    line-height: 1.1;
+}
+
+.goal-sub {
+    font-size: 0.62rem;
+    color: #64748b;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+/* 3. 直近の学習履歴 */
+.history-section-card {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    margin-bottom: 32px;
+    border: 1px solid #f1f5f9;
+}
+
+.history-header-center {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.history-main-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    letter-spacing: -0.2px;
+}
+
+.history-grid-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    min-height: 40px;
+}
+
+.empty-history-text {
+    width: 100%;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.88rem;
+    font-weight: 600;
+    margin: 12px 0;
+}
+
+.history-card-item {
+    flex: 1;
+    min-width: 145px;
+    max-width: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.history-thumb {
+    width: 100%;
+    height: 100px;
+    border-radius: 16px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(0,0,0,0.06);
+}
+
+.history-thumb:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+}
+
+.history-thumb.blue { background: linear-gradient(135deg, #a5f3fc 0%, #93c5fd 100%); color: #1e3a8a; }
+
+.history-dates {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.65rem;
+    font-weight: 800;
+    opacity: 0.85;
+}
+
+.history-item-label {
+    margin-top: 10px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    text-align: center;
+    word-break: break-all;
+}
+
+/* 4. セクションタイトル共通 */
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+}
+
+.view-all-link {
+    color: #6366f1;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* 5. MY COURSES グリッド */
+.courses-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.course-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 20px;
+    border: 1.5px solid #f1f5f9;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    position: relative;
+}
+
+.course-card:hover {
+    border-color: #818cf8;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.12);
+}
+
+.delete-subject-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    color: #94a3b8;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    opacity: 0;
+    z-index: 10;
+}
+
+.course-card:hover .delete-subject-btn {
+    opacity: 1;
+}
+
+.delete-subject-btn:hover {
+    background: #ffe4e6;
+    color: #e11d48;
+    transform: scale(1.1);
+}
+
+.course-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    margin-bottom: 14px;
+}
+
+.course-icon.math { background: #e0f2fe; color: #0284c7; }
+.course-icon.english { background: #fce7f3; color: #db2777; }
+.course-icon.history { background: #fef3c7; color: #d97706; }
+.course-icon.science { background: #dcfce7; color: #16a34a; }
+.course-icon.default { background: #e2e8f0; color: #475569; }
+
+/* 教科追加カード */
+.course-card.add-card {
+    border: 2px dashed #cbd5e1;
+    background: #f8fafc;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.course-card.add-card:hover {
+    border-color: #6366f1;
+    background: #f1f5f9;
+    color: #6366f1;
+}
+
+.course-card.add-card .course-icon {
+    background: transparent;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.course-card.add-card.input-mode {
+    border: 2px solid #6366f1;
+    background: #ffffff;
+    cursor: default;
+    padding: 16px;
+}
+
+.new-subject-input {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 8px;
+    outline: none;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+    color: #0f172a;
+}
+
+.new-subject-input:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.add-card-btns {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+}
+
+.add-sub-btn {
+    flex: 1;
+    padding: 6px 0;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.8rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.add-sub-btn.confirm {
+    background: #6366f1;
+    color: #ffffff;
+}
+
+.add-sub-btn.confirm:hover {
+    background: #4f46e5;
+}
+
+.add-sub-btn.cancel {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.add-sub-btn.cancel:hover {
+    background: #e2e8f0;
+}
+
+.course-name {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+}
+
+/* 6. ANNOUNCEMENTS & TIPS */
+.info-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.info-card {
+    background: #f8fafc;
+    border-radius: 18px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    border: 1px solid #e2e8f0;
+}
+
+.info-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.info-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+}
+
+.info-desc {
+    font-size: 0.85rem;
+    color: #64748b;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* 7. UPCOMING DEADLINES */
+.deadline-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    margin-bottom: 32px;
+}
+
+.deadline-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.deadline-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
+    background: #ffe4e6;
+    color: #e11d48;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.deadline-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 4px 0;
+}
+
+.deadline-sub {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin: 0;
+}
+
+.deadline-badge {
+    background: #ffe4e6;
+    color: #e11d48;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 6px 12px;
+    border-radius: 12px;
+}
+
+/* 8. TANUKI AI ASSISTANT BANNER */
+.ai-assistant-banner {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    border-radius: 24px;
+    padding: 20px 24px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+}
+
+.ai-profile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.ai-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.ai-name {
+    font-weight: 800;
+    font-size: 1.05rem;
+    margin: 0 0 2px 0;
+}
+
+.ai-msg {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+.chat-bubble-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+</style>
+
+<div class="dashboard-container">
+    <!-- 1. ユーザーヘッダー -->
+    <div class="user-header">
+        <div class="profile-area">
+            <div class="avatar" id="avatarContainer" onclick="document.getElementById('avatarInput').click();" title="クリックして画像を変更">
+                <span id="avatarEmoji">👧</span>
+                <img id="avatarImage" class="avatar-img" src="" alt="Avatar" />
+            </div>
+            <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="handleAvatarChange(event)">
+
+            <div>
+                <p class="user-greeting">Konnichiwa! 👋</p>
+                <h2 class="user-name">ゲストユーザー</h2>
+            </div>
+        </div>
+        <div class="notification-btn">🔔</div>
+    </div>
+
+    <!-- 2. 学習ストリーク -->
+    <div class="streak-card">
+        <div class="streak-info">
+            <div class="streak-title">
+                <span>🔥</span> <span id="streakCountText">1-day streak!</span>
+            </div>
+            <div class="xp-bar-container">
+                <div class="xp-bar-fill" id="xpBarFill"></div>
+            </div>
+            <div class="streak-stats">
+                <span id="xpText">0 XP</span>
+                <span id="levelText">Lvl 1</span>
+            </div>
+        </div>
+
+        <div class="goal-circle" id="goalCircle" onclick="editGoal()" title="クリックして目標時間を変更">
+            <div class="goal-circle-inner">
+                <span id="usageTimeText">0m</span>
+                <span class="goal-sub" id="goalText">Goal: 15h</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. 直近の学習履歴 -->
+    <div class="history-section-card">
+        <div class="history-header-center">
+            <h2 class="history-main-title">直近の学習履歴</h2>
+        </div>
+
+        <div class="history-grid-container" id="historyGridContainer">
+            {% if recent_materials %}
+                {% for item in recent_materials %}
+                <a href="{% url 'topic_detail' item.id %}" class="history-card-item">
+                    <div class="history-thumb blue">
+                        <div class="history-dates">
+                            <span>Made: {{ item.created_at|date:"d/m"|default:"--" }}</span>
+                            <span>Recent: {{ item.last_used_at|date:"d/m"|default:"--" }}</span>
+                        </div>
+                    </div>
+                    <div class="history-item-label">{{ item.title|default:"no title" }}✏️</div>
+                </a>
+                {% endfor %}
+            {% else %}
+                <div class="empty-history-text">まだ作成されたファイル履歴はありません</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 4. MY COURSES（教科選択エリア） -->
+    <div class="section-header">
+        <h2 class="section-title">My Courses</h2>
+        <a href="#" class="view-all-link">View All</a>
+    </div>
+
+    <div class="courses-grid">
+        <!-- 1. Mathematics -->
+        <a href="{% url 'topic_list' 'math' %}" class="course-card" data-subject-slug="math">
+            <button class="delete-subject-btn" onclick="deleteSubject(event, 'math', 'Mathematics')">✕</button>
+            <div class="course-icon math">🧮</div>
+            <h3 class="course-name">Mathematics</h3>
+        </a>
+
+        <!-- 2. English -->
+        <a href="{% url 'topic_list' 'english' %}" class="course-card" data-subject-slug="english">
+            <button class="delete-subject-btn" onclick="deleteSubject(event, 'english', 'English')">✕</button>
+            <div class="course-icon english">📕</div>
+            <h3 class="course-name">English</h3>
+        </a>
+
+        <!-- 3. History -->
+        <a href="{% url 'topic_list' 'history' %}" class="course-card" data-subject-slug="history">
+            <button class="delete-subject-btn" onclick="deleteSubject(event, 'history', 'History')">✕</button>
+            <div class="course-icon history">🧭</div>
+            <h3 class="course-name">History</h3>
+        </a>
+
+        <!-- 4. Science -->
+        <a href="{% url 'topic_list' 'science' %}" class="course-card" data-subject-slug="science">
+            <button class="delete-subject-btn" onclick="deleteSubject(event, 'science', 'Science')">✕</button>
+            <div class="course-icon science">🧪</div>
+            <h3 class="course-name">Science</h3>
+        </a>
+
+        <!-- 5. ユーザー追加教科（DB連動時） -->
+        {% if custom_subjects %}
+            {% for subject in custom_subjects %}
+            <a href="{% url 'topic_list' subject.slug %}" class="course-card custom-subject-card" data-subject-slug="{{ subject.slug }}">
+                <button class="delete-subject-btn" onclick="deleteSubject(event, '{{ subject.slug }}', '{{ subject.name }}')">✕</button>
+                <div class="course-icon default">📚</div>
+                <h3 class="course-name">{{ subject.name }}</h3>
+            </a>
+            {% endfor %}
+        {% endif %}
+
+        <!-- 6. ➕ 教科を追加ボタン -->
+        <div class="course-card add-card" id="addSubjectCard" onclick="showSubjectInput()">
+            <div id="addSubjectDefaultContent">
+                <div class="course-icon">+</div>
+                <h3 class="course-name">教科を追加</h3>
+            </div>
+            
+            <div id="addSubjectInputForm" style="display: none; width: 100%;">
+                <input type="text" 
+                       id="newSubjectInput" 
+                       class="new-subject-input" 
+                       placeholder="例: Physics" 
+                       maxlength="15"
+                       onclick="event.stopPropagation();"
+                       onkeydown="handleNewSubjectKeydown(event)">
+                <div class="add-card-btns" onclick="event.stopPropagation();">
+                    <button type="button" class="add-sub-btn confirm" onclick="submitNewSubject()">追加</button>
+                    <button type="button" class="add-sub-btn cancel" onclick="resetAddSubjectCard(event)">キャンセル</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. ANNOUNCEMENTS & TIPS -->
+    <div class="section-header">
+        <h2 class="section-title">Announcements & Tips</h2>
+    </div>
+
+    <div class="info-card-list">
+        <div class="info-card">
+            <div class="info-icon">💡</div>
+            <div>
+                <h4 class="info-title">AI Tip: Space Out Your Kanji Review</h4>
+                <p class="info-desc">Review N3 kanji cards 30 mins before sleeping to build stronger memory paths.</p>
+            </div>
+        </div>
+        <div class="info-card">
+            <div class="info-icon">📅</div>
+            <div>
+                <h4 class="info-title">Midterm Examination Week</h4>
+                <p class="info-desc">Calculus and Literature exams commence next Monday. Check schedule.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. UPCOMING DEADLINES -->
+    <div class="section-header">
+        <h2 class="section-title">Upcoming Deadlines</h2>
+    </div>
+
+    <div class="deadline-card">
+        <div class="deadline-left">
+            <div class="deadline-icon">⏰</div>
+            <div>
+                <h4 class="deadline-title">N3 Vocabulary Mini-Quiz</h4>
+                <p class="deadline-sub">Due: Tomorrow, 11:59 PM • Japanese N3</p>
+            </div>
+        </div>
+        <span class="deadline-badge">1 day left</span>
+    </div>
+
+    <!-- 7. TANUKI AI ASSISTANT -->
+    <div class="ai-assistant-banner">
+        <div class="ai-profile">
+            <div class="ai-avatar">🦝</div>
+            <div>
+                <h3 class="ai-name">Tanuki Study Assistant</h3>
+                <p class="ai-msg">"How can I help you study today?"</p>
+            </div>
+        </div>
+        <div class="chat-bubble-icon">💬</div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const savedAvatar = localStorage.getItem("dash_user_avatar");
+    if (savedAvatar) applyAvatarImage(savedAvatar);
+
+    checkAndStreak();
+    initUsageTracker();
+    updateXpAndLevel();
+    updateGoalDisplay();
+
+    renderCustomSubjects();
+    applyHiddenDefaultSubjects();
+});
+
+/* 教科追加テキストボックスの表示制御 */
+function showSubjectInput() {
+    const card = document.getElementById("addSubjectCard");
+    const defaultContent = document.getElementById("addSubjectDefaultContent");
+    const inputForm = document.getElementById("addSubjectInputForm");
+    const input = document.getElementById("newSubjectInput");
+
+    if (card.classList.contains("input-mode")) return;
+
+    card.classList.add("input-mode");
+    defaultContent.style.display = "none";
+    inputForm.style.display = "block";
+    input.value = "";
+    setTimeout(() => input.focus(), 50);
+}
+
+function resetAddSubjectCard(event) {
+    if (event) event.stopPropagation();
+    const card = document.getElementById("addSubjectCard");
+    const defaultContent = document.getElementById("addSubjectDefaultContent");
+    const inputForm = document.getElementById("addSubjectInputForm");
+
+    card.classList.remove("input-mode");
+    defaultContent.style.display = "block";
+    inputForm.style.display = "none";
+}
+
+function handleNewSubjectKeydown(event) {
+    if (event.key === "Enter") {
+        event.preventDefault();
+        submitNewSubject();
+    } else if (event.key === "Escape") {
+        resetAddSubjectCard(event);
+    }
+}
+
+function submitNewSubject() {
+    const input = document.getElementById("newSubjectInput");
+    const name = input.value.trim();
+
+    if (!name) {
+        alert("教科名を入力してください。");
+        return;
+    }
+
+    let customSubjects = JSON.parse(localStorage.getItem("user_custom_subjects") || "[]");
+    let hiddenDefault = JSON.parse(localStorage.getItem("user_hidden_default_subjects") || "[]");
+
+    const slug = name.toLowerCase().replace(/\s+/g, '-');
+
+    if (hiddenDefault.includes(slug)) {
+        hiddenDefault = hiddenDefault.filter(s => s !== slug);
+        localStorage.setItem("user_hidden_default_subjects", JSON.stringify(hiddenDefault));
+        applyHiddenDefaultSubjects();
+        resetAddSubjectCard();
+        return;
+    }
+
+    if (!customSubjects.some(s => s.slug === slug)) {
+        customSubjects.push({ name: name, slug: slug });
+        localStorage.setItem("user_custom_subjects", JSON.stringify(customSubjects));
+        renderCustomSubjects();
+        resetAddSubjectCard();
+    } else {
+        alert("その教科はすでに追加されています。");
+    }
+}
+
+/* 🌟 教科削除処理 (即時DOM取り除き & 自動判定対応) */
+function deleteSubject(event, slug, name) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    // クリックされた削除ボタンが属するカードを取得
+    const card = event.currentTarget.closest('.course-card');
+
+    if (confirm(`「${name}」をMy Coursesから削除しますか？`)) {
+        let customSubjects = JSON.parse(localStorage.getItem("user_custom_subjects") || "[]");
+        
+        // カスタム教科かどうかを判定
+        const isCustom = customSubjects.some(s => s.slug === slug) || (card && card.classList.contains('custom-subject-card'));
+
+        if (isCustom) {
+            // LocalStorageの追加教科から削除
+            customSubjects = customSubjects.filter(s => s !== slug && s.slug !== slug);
+            localStorage.setItem("user_custom_subjects", JSON.stringify(customSubjects));
+        } else {
+            // デフォルト教科の非表示リストに追加
+            let hiddenDefault = JSON.parse(localStorage.getItem("user_hidden_default_subjects") || "[]");
+            if (!hiddenDefault.includes(slug)) {
+                hiddenDefault.push(slug);
+                localStorage.setItem("user_hidden_default_subjects", JSON.stringify(hiddenDefault));
+            }
+        }
+
+        // 🌟 画面上から直接カードを取り除く
+        if (card) {
+            card.remove();
+        }
+    }
+}
+
+function applyHiddenDefaultSubjects() {
+    const hiddenDefault = JSON.parse(localStorage.getItem("user_hidden_default_subjects") || "[]");
+    document.querySelectorAll('.course-card[data-subject-slug]').forEach(card => {
+        const slug = card.getAttribute('data-subject-slug');
+        if (hiddenDefault.includes(slug)) {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function renderCustomSubjects() {
+    document.querySelectorAll('.custom-subject-card').forEach(el => el.remove());
+
+    const grid = document.querySelector('.courses-grid');
+    const addCard = document.getElementById('addSubjectCard');
+    if (!grid || !addCard) return;
+
+    const customSubjects = JSON.parse(localStorage.getItem("user_custom_subjects") || "[]");
+
+    customSubjects.forEach(subject => {
+        const card = document.createElement('a');
+        card.href = `/topics/${subject.slug}/`; 
+        card.className = 'course-card custom-subject-card';
+        card.setAttribute('data-subject-slug', subject.slug);
+        card.innerHTML = `
+            <button class="delete-subject-btn" onclick="deleteSubject(event, '${subject.slug}', '${subject.name}')">✕</button>
+            <div class="course-icon default">📚</div>
+            <h3 class="course-name">${subject.name}</h3>
+        `;
+        grid.insertBefore(card, addCard);
+    });
+}
+
+function checkAndStreak() {
+    const today = new Date().toISOString().split('T')[0];
+    const lastLogin = localStorage.getItem("dash_last_login_date");
+    let streak = parseInt(localStorage.getItem("dash_streak_count") || "1", 10);
+
+    if (lastLogin) {
+        const lastDate = new Date(lastLogin);
+        const currDate = new Date(today);
+        const diffDays = Math.floor((currDate - lastDate) / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 1) {
+            streak += 1;
+            localStorage.setItem("dash_streak_count", streak);
+        } else if (diffDays > 1) {
+            streak = 1;
+            localStorage.setItem("dash_streak_count", streak);
+        }
+    } else {
+        localStorage.setItem("dash_streak_count", 1);
+    }
+
+    localStorage.setItem("dash_last_login_date", today);
+    document.getElementById("streakCountText").textContent = `${streak}-day streak!`;
+}
+
+let activeSeconds = 0;
+function initUsageTracker() {
+    const today = new Date().toISOString().split('T')[0];
+    const storedDate = localStorage.getItem("dash_usage_date");
+
+    if (storedDate !== today) {
+        localStorage.setItem("dash_usage_date", today);
+        localStorage.setItem("dash_active_seconds", 0);
+        activeSeconds = 0;
+    } else {
+        activeSeconds = parseInt(localStorage.getItem("dash_active_seconds") || "0", 10);
+    }
+
+    renderUsageTime();
+
+    setInterval(() => {
+        activeSeconds += 1;
+        localStorage.setItem("dash_active_seconds", activeSeconds);
+
+        if (activeSeconds % 6 === 0) {
+            addXp(1);
+        }
+
+        renderUsageTime();
+        updateGoalProgressRing();
+    }, 1000);
+}
+
+function renderUsageTime() {
+    const timeEl = document.getElementById("usageTimeText");
+    const hours = (activeSeconds / 3600);
+
+    if (hours < 1) {
+        const mins = Math.floor(activeSeconds / 60);
+        timeEl.textContent = `${mins}m`;
+    } else {
+        timeEl.textContent = `${hours.toFixed(1)}h`;
+    }
+}
+
+const XP_PER_LEVEL = 200;
+
+function updateXpAndLevel() {
+    const xp = parseInt(localStorage.getItem("dash_user_xp") || "0", 10);
+
+    const level = Math.floor(xp / XP_PER_LEVEL) + 1;
+    const currentLevelXp = xp % XP_PER_LEVEL;
+    const progressPercent = (currentLevelXp / XP_PER_LEVEL) * 100;
+
+    document.getElementById("xpText").textContent = `${xp.toLocaleString()} XP`;
+    document.getElementById("levelText").textContent = `Lvl ${level}`;
+    document.getElementById("xpBarFill").style.width = `${progressPercent}%`;
+}
+
+function addXp(amount) {
+    let currentXp = parseInt(localStorage.getItem("dash_user_xp") || "0", 10);
+    currentXp += amount;
+    localStorage.setItem("dash_user_xp", currentXp);
+    updateXpAndLevel();
+}
+
+function editGoal() {
+    const currentGoal = localStorage.getItem("dash_user_goal_hours") || "15";
+    const newGoal = prompt("1日の目標学習時間（時間）を入力してください:", currentGoal);
+
+    if (newGoal !== null) {
+        const val = parseFloat(newGoal);
+        if (!isNaN(val) && val > 0) {
+            localStorage.setItem("dash_user_goal_hours", val);
+            updateGoalDisplay();
+        }
+    }
+}
+
+function updateGoalDisplay() {
+    const goalVal = localStorage.getItem("dash_user_goal_hours") || "15";
+    document.getElementById("goalText").textContent = `Goal: ${goalVal}h`;
+    updateGoalProgressRing();
+}
+
+function updateGoalProgressRing() {
+    const goalHours = parseFloat(localStorage.getItem("dash_user_goal_hours") || "15");
+    const currentHours = activeSeconds / 3600;
+
+    let percent = Math.min(currentHours / goalHours, 1);
+    let degrees = percent * 360;
+
+    const ring = document.getElementById("goalCircle");
+    ring.style.background = `conic-gradient(#4f46e5 ${degrees}deg, #e0e7ff ${degrees}deg)`;
+}
+
+function handleAvatarChange(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imageDataUrl = e.target.result;
+            applyAvatarImage(imageDataUrl);
+            localStorage.setItem("dash_user_avatar", imageDataUrl);
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function applyAvatarImage(src) {
+    document.getElementById("avatarEmoji").style.display = "none";
+    const img = document.getElementById("avatarImage");
+    img.src = src;
+    img.style.display = "block";
+}
+</script>
+{% endblock %}

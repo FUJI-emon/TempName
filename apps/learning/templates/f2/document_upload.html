@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+body {
+    background-color: #0f0d23 !important;
+    color: #ffffff;
+}
+
+.upload-container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 20px 16px 40px 16px;
+    min-height: 100vh;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+.upload-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.back-btn-dark {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.2rem;
+    transition: background 0.2s;
+}
+
+.back-btn-dark:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.upload-title {
+    flex: 1;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+    padding-right: 40px;
+    color: #f1f5f9;
+}
+
+.main-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.sub-title {
+    font-size: 0.9rem;
+    color: #a5b4fc;
+    margin-bottom: 24px;
+}
+
+.drop-zone {
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    padding: 40px 20px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.03);
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 24px;
+}
+
+.drop-zone:hover {
+    border-color: #6366f1;
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.drop-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+}
+
+.drop-text {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    margin-bottom: 16px;
+}
+
+.select-file-btn {
+    display: inline-block;
+    padding: 10px 24px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.file-input {
+    display: none;
+}
+</style>
+
+<div class="upload-container">
+    <!-- 🌟 topic.idが0の時は安全にトピック一覧画面(/topics/subject/)へ戻る -->
+    <div class="upload-header">
+        <a href="{% if topic.id and topic.id != 0 %}/topic/{{ topic.id }}/{% else %}/topics/{{ subject|default:'math' }}/{% endif %}" class="back-btn-dark">‹</a>
+        <h1 class="upload-title">Upload Document</h1>
+    </div>
+
+    <h2 class="main-title">Add Learning Material</h2>
+    <p class="sub-title">PDFやテキストファイルをアップロードしてAI学習を開始しましょう</p>
+
+    <form method="POST" enctype="multipart/form-data" action="{% if topic.id and topic.id != 0 %}{% url 'document_upload' topic.id %}{% else %}{% url 'add_topic' subject|default:'math' %}{% endif %}" id="upload-form">
+        {% csrf_token %}
+        <div class="drop-zone" onclick="document.getElementById('file-input').click()">
+            <div class="drop-icon">📁</div>
+            <div class="drop-text" id="file-name-display">ファイルをドラッグ＆ドロップ<br>またはクリックして選択</div>
+            <span class="select-file-btn">ファイルを選択</span>
+            <input type="file" name="file" id="file-input" class="file-input" onchange="handleFileSelect(this)">
+        </div>
+    </form>
+</div>
+
+<script>
+function handleFileSelect(input) {
+    if (input.files && input.files[0]) {
+        const fileName = input.files[0].name;
+        document.getElementById('file-name-display').innerHTML = '選択中: <strong>' + fileName + '</strong>';
+        
+        if (typeof showAiLoading === 'function') {
+            showAiLoading('資料を解析中...', 'AIがドキュメントの構成を分析しています。');
+        }
+        
+        document.getElementById('upload-form').submit();
+    }
+}
+</script>
+{% endblock %}
