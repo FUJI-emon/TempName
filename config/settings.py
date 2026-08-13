@@ -37,6 +37,7 @@ INSTALLED_APPS = [
 
     # Phase 1 Domain Applications
     'apps.learning.apps.LearningConfig',
+    'apps.ai.apps.AiConfig'
 ]
 
 MIDDLEWARE = [
