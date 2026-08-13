@@ -1,125 +1,108 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
-
-# ---- Data Transfer Objects ----
-
-@dataclass
-class LearningGoalDTO:
-    title: str
-    description: str
-
-@dataclass
-class AnalyzeMaterialResult:
-    goals: List[LearningGoalDTO]
-    suggested_skills: List[str]          # usefor Self-Check checkbox
-
-@dataclass
-class PathStepDTO:
-    order: int
-    title: str
-    goal_refs: List[str]
-
-@dataclass
-class GeneratePathResult:
-    steps: List[PathStepDTO]
-
-@dataclass
-class LessonCardDTO:
-    order: int
-    heading: str
-    body: str
-
-@dataclass
-class GenerateLessonCardsResult:
-    cards: List[LessonCardDTO]
-
-@dataclass
-class QuestionOptionDTO:
-    text: str
-    is_correct: bool
-
-@dataclass
-class QuestionDTO:
-    text: str
-    options: List[QuestionOptionDTO]
-    explanation: str
-
-@dataclass
-class GenerateCheckpointResult:
-    question: QuestionDTO
-
-@dataclass
-class GenerateFinalTestResult:
-    questions: List[QuestionDTO]
-
-@dataclass
-class HintResult:
-    level: int
-    text: str
-
-@dataclass
-class ChatMessageDTO:
-    role: str          # "student" | "ai"
-    content: str
-
-@dataclass
-class ChatReplyResult:
-    reply: str
-
-
-class LLMServiceError(Exception):
-    """Raised when the AI provider fails or returns malformed data."""
-    pass
+from .dto import (
+    AnalyzeMaterialResult, AnswerEvaluationResult, ChatMessageDTO,
+    ChatReplyResult, ChatScope, CheckQuestionResult, ConceptDTO,
+    ConversationResult, HintResult, LearningContextDTO,
+    LearningPathBatchResult, LessonDTO, NextActionResult,
+    QuestionDTO, QuestionPurpose,
+)
 
 
 class LLMService(ABC):
     """
     Interface duy nhất mà toàn bộ app được phép gọi để tương tác AI.
-    Không import adapter cụ thể (OpenRouter/Gemini) ở bất kỳ đâu ngoài
-    factory/DI setup.
-    Interface that can only can use to call all app that need to use AI.
-    Don't import exactly adapter like (OpenRouter/Gemini) in anywhere that is not factory/ID setup.
+    Luôn lấy instance qua factory.get_llm_service().
     """
 
     @abstractmethod
-    def analyze_material(self, material_content: str) -> AnalyzeMaterialResult: ...
+    def start_conversation(
+        self, user_message: str, uploaded_material: Optional[str] = None
+    ) -> ConversationResult:
+        """Mở đầu: xác định mục tiêu học, có thể kèm tài liệu."""
+        raise NotImplementedError
 
     @abstractmethod
-    def generate_path(self, goals: List[LearningGoalDTO]) -> GeneratePathResult: ...
+    def analyze_material(self, material_content: str, goal: str) -> AnalyzeMaterialResult:
+        """Tài liệu + mục tiêu -> danh sách concept cần học."""
+        raise NotImplementedError
 
     @abstractmethod
-    def generate_lesson_cards(
-        self, step: PathStepDTO, material_content: str
-    ) -> GenerateLessonCardsResult: ...
+    def generate_learning_path(
+        self,
+        concepts: List[ConceptDTO],   # đã lọc known_by_user=True sau Self-Check
+        mastery_context: dict,
+        batch_size: int = 3,
+    ) -> LearningPathBatchResult:
+        """
+        Sinh THỨ TỰ đợt kế tiếp (mặc định 3 concept), KHÔNG sinh nội
+        dung lesson. Đợt sau thay thế đợt trước — path forward-only,
+        không giữ lại để duyệt lại toàn bộ.
+        """
+        raise NotImplementedError
 
     @abstractmethod
-    def generate_checkpoint_question(
-        self, cards: List[LessonCardDTO]
-    ) -> GenerateCheckpointResult: ...
+    def generate_lesson(self, concept: ConceptDTO, mastery_context: dict) -> LessonDTO:
+        """
+        Nội dung học của 1 concept: explanation, example, key_points,
+        flashcards, cards (thẻ next-next). KHÔNG chứa câu hỏi.
+        """
+        raise NotImplementedError
 
     @abstractmethod
-    def generate_final_test(
-        self, goals: List[LearningGoalDTO], all_cards: List[LessonCardDTO]
-    ) -> GenerateFinalTestResult: ...
+    def generate_check_question(
+        self,
+        concept: ConceptDTO,
+        lesson: LessonDTO,
+        purpose: QuestionPurpose,
+        previous_misconceptions: Optional[List[str]] = None,
+    ) -> CheckQuestionResult:
+        """
+        purpose=CHECKPOINT: 1 câu hỏi giữa/cuối chuỗi thẻ.
+        purpose=LESSON_WRAPUP: bài luyện tập cuối lesson (có thể nhiều câu hơn).
+        previous_misconceptions: nếu có (từ lần EXPLAIN_AGAIN trước), AI
+        nên ra câu hỏi nhắm đúng vào điểm hiểu sai đó.
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def evaluate_answer(
+        self, question: QuestionDTO, selected_option_index: int
+    ) -> AnswerEvaluationResult:
+        """Đánh giá đúng/sai + phát hiện misconception nếu sai."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def decide_next_action(
+        self, concept: ConceptDTO, evaluation_history: List[AnswerEvaluationResult]
+    ) -> NextActionResult:
+        """
+        Bước Adapt: dựa trên lịch sử evaluate_answer của concept hiện tại
+        -> EXPLAIN_AGAIN / SHOW_EXAMPLE / PRACTICE_MORE / MOVE_NEXT.
+        """
+        raise NotImplementedError
 
     @abstractmethod
     def generate_hint(
         self, question: QuestionDTO, level: int, previous_hints: List[str]
     ) -> HintResult:
         """
-        level 1: gợi ý nhẹ, không hé lộ hướng giải (chotto)
-        level 2: gợi ý rõ hơn, chỉ ra hướng tiếp cận (motto chotto)
-        level 3: gần đáp án, học sinh vẫn phải tự hoàn thiện bước cuối (motto motto chotto)
-        Không bao giờ trả đáp án trực tiếp ở bất kỳ cấp nào. (never giving the final answer for users)
-        ---
+        3 cấp, dùng chung cho checkpoint và wrap-up. Không bao giờ trả
+        đáp án trực tiếp.
         """
-        ...
+        raise NotImplementedError
 
     @abstractmethod
     def chat_reply(
-        self, history: List[ChatMessageDTO], new_message: str, scope: str
+        self,
+        history: List[ChatMessageDTO],
+        new_message: str,
+        scope: ChatScope,
+        learning_context: Optional[LearningContextDTO] = None,
     ) -> ChatReplyResult:
-        """scope: "material" (guardrail lỏng) | "quiz" (guardrail chặt)"""
-        ...
+        """
+        scope=QUIZ: guardrail chặt, không lộ đáp án dù hỏi vòng vo.
+        learning_context giúp AI biết user đang học goal/concept nào.
+        """
+        raise NotImplementedError

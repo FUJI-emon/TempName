@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 *.so
 .Python
+
+# Build / Distribution
 build/
 develop-eggs/
 dist/
@@ -41,4 +43,7 @@ media/
 .idea/
 *.swp
 *.swo
+
+# OS
 .DS_Store
+Thumbs.db
