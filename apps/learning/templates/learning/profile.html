@@ -1,0 +1,213 @@
+{% extends 'learning/base.html' %}
+{% load static %}
+
+{% block title %}プロフィール{% endblock %}
+
+{% block content %}
+<style>
+/* ☀️ プロフィール画面スタイル */
+.profile-container {
+    max-width: 580px;
+    margin: 40px auto;
+    padding: 0 20px 80px 20px;
+}
+
+.profile-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+.top-bar-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    font-size: 1.1rem;
+    color: #1e293b;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+body.dark-mode .top-bar-btn {
+    background: #1e293b;
+    border-color: #334155;
+    color: #f8fafc;
+}
+
+.top-bar-btn:hover {
+    transform: scale(1.05);
+    background: #f8fafc;
+}
+
+.profile-page-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+}
+body.dark-mode .profile-page-title { color: #f8fafc; }
+
+.profile-card {
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 36px 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    border: 1px solid #f1f5f9;
+    text-align: center;
+    transition: background 0.3s, border-color 0.3s;
+}
+body.dark-mode .profile-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+.profile-avatar-wrapper {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: #fde68a;
+    margin: 0 auto 16px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.8rem;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    position: relative;
+    overflow: hidden;
+}
+
+.profile-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: none;
+}
+
+.profile-user-name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px 0;
+}
+body.dark-mode .profile-user-name { color: #f8fafc; }
+
+.profile-user-role {
+    font-size: 0.95rem;
+    color: #64748b;
+    margin: 0 0 28px 0;
+    font-weight: 600;
+}
+body.dark-mode .profile-user-role { color: #94a3b8; }
+
+.profile-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.stat-box {
+    background: #f8fafc;
+    border-radius: 20px;
+    padding: 20px 16px;
+    text-align: center;
+    border: 1px solid #e2e8f0;
+    transition: background 0.3s, border-color 0.3s;
+}
+body.dark-mode .stat-box {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #6366f1;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 700;
+}
+body.dark-mode .stat-label { color: #94a3b8; }
+</style>
+
+<div class="profile-container">
+    <div class="profile-top-bar">
+        <a href="javascript:history.back()" class="top-bar-btn" title="戻る">‹</a>
+        <h1 class="profile-page-title" data-i18n="profile">Profile</h1>
+        <a href="{% url 'learning:settings' %}" class="top-bar-btn" title="設定">⚙️</a>
+    </div>
+
+    <div class="profile-card">
+        <div class="profile-avatar-wrapper">
+            <span id="profileAvatarEmoji">👧</span>
+            <img id="profileAvatarImg" class="profile-avatar-img" src="" alt="Profile Avatar" />
+        </div>
+
+        <!-- 👤 全画面共有クラス `user-name-display` を付与（ログイン名と自動同期） -->
+        <h2 class="profile-user-name user-name-display">ゲストユーザー</h2>
+        <p class="profile-user-role" data-i18n="studentAccount">Student Account</p>
+
+        <div class="profile-stats-grid">
+            <div class="stat-box">
+                <div class="stat-value" id="profileXpValue">0 XP</div>
+                <div class="stat-label" data-i18n="earnedScore">獲得スコア</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="profileStreakValue">0日</div>
+                <div class="stat-label" data-i18n="streakStudy">連続学習</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const savedAvatar = localStorage.getItem("dash_user_avatar");
+    if (savedAvatar) {
+        document.getElementById("profileAvatarEmoji").style.display = "none";
+        const img = document.getElementById("profileAvatarImg");
+        img.src = savedAvatar;
+        img.style.display = "block";
+    }
+
+    updateProfileXp();
+    updateProfileStreak();
+});
+
+window.onLanguageChanged = function(lang) {
+    updateProfileXp();
+    updateProfileStreak();
+};
+
+function updateProfileXp() {
+    const xp = parseInt(localStorage.getItem('user_xp') || localStorage.getItem('dash_user_xp') || '0', 10);
+    const xpEl = document.getElementById("profileXpValue");
+    if (xpEl) {
+        xpEl.textContent = `${xp.toLocaleString()} XP`;
+    }
+}
+
+function updateProfileStreak() {
+    const streak = parseInt(localStorage.getItem('quiz_streak_count') || '0', 10);
+    const streakEl = document.getElementById("profileStreakValue");
+    const lang = localStorage.getItem("app_language") || "ja";
+    const unit = (lang === 'en') ? ' Days' : (lang === 'vi') ? ' Ngày' : '日';
+
+    if (streakEl) {
+        streakEl.textContent = `${streak}${unit}`;
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,348 @@
+{% extends 'learning/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+.topic-grid-container {
+    padding: 30px 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+    min-height: calc(100vh - 100px);
+    display: flex;
+    flex-direction: column;
+}
+
+.topic-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.back-link {
+    text-decoration: none;
+    color: #475569;
+    font-weight: 600;
+    padding: 8px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background-color: #ffffff;
+    transition: background 0.2s;
+}
+
+.back-link:hover {
+    background-color: #f1f5f9;
+}
+
+.batch-delete-btn {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.batch-delete-btn:disabled {
+    background-color: #cbd5e1;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.topic-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    flex-grow: 1;
+}
+
+@media (max-width: 768px) {
+    .topic-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.topic-card {
+    position: relative;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    min-height: 160px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.topic-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.card-top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+.card-action-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: #ffffff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #475569;
+    transition: background 0.2s, transform 0.1s;
+    padding: 0;
+}
+
+.card-action-btn:hover {
+    transform: scale(1.1);
+    background: #f1f5f9;
+}
+
+.card-checkbox {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    accent-color: #ef4444;
+    margin: 0;
+}
+
+.card-title-input {
+    width: 100%;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    text-align: center;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: 4px;
+    box-sizing: border-box;
+    transition: all 0.2s;
+}
+
+.card-title-input:hover {
+    border-color: #cbd5e1;
+    background: #ffffff;
+}
+
+.card-title-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.card-link {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-top: 6px;
+}
+
+.add-card {
+    background-color: #ffffff;
+    border: 2px dashed #cbd5e1;
+    justify-content: center;
+    align-items: center;
+}
+
+.add-card:hover {
+    border-color: #94a3b8;
+    background-color: #f8fafc;
+}
+
+.add-icon {
+    font-size: 2rem;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.add-text {
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.empty-card {
+    background-color: #f1f5f9;
+    border: 1px dashed #cbd5e1;
+    opacity: 0.5;
+    pointer-events: none;
+}
+</style>
+
+<div class="topic-grid-container">
+    <form id="batch-delete-form" action="{% url 'learning:batch_delete_topics' subject %}" method="POST" style="display: flex; flex-direction: column; flex-grow: 1;">
+        {% csrf_token %}
+
+        <div class="topic-header">
+            <div class="header-left">
+                <a href="{% url 'learning:dashboard' %}" class="back-link"><span data-i18n="back">‹ 戻る</span></a>
+                <h2 style="margin: 0; font-size: 1.5rem; color: #0f172a; font-weight: 700;">{{ subject_name }} Topics</h2>
+            </div>
+            
+            <button type="submit" id="batch-delete-btn" class="batch-delete-btn" disabled onclick="return confirm('選択した項目をまとめて削除しますか？');">
+                🗑️ <span data-i18n="deleteSelected">選択した項目を削除</span> (<span id="selected-count">0</span>)
+            </button>
+        </div>
+
+        <div class="topic-grid" id="topic-grid">
+            <!-- ➕ 新規追加カード -->
+            <div class="topic-card add-card">
+                <a href="{% url 'learning:add_topic' subject %}" class="card-link" style="color: #64748b;">
+                    <div class="add-icon">+</div>
+                    <div class="add-text" data-i18n="addFile">ファイルを追加</div>
+                </a>
+            </div>
+
+            <!-- 登録済みトピック一覧 -->
+            {% for topic in topics %}
+            <div class="topic-card">
+                <div class="card-top-bar">
+                    <button type="button" 
+                            class="card-action-btn" 
+                            title="名前を変更"
+                            onclick="event.stopPropagation(); focusTitleInput('input-{{ topic.id }}');">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                    </button>
+
+                    <input type="checkbox" 
+                           name="topic_ids" 
+                           value="{{ topic.id }}" 
+                           class="card-checkbox topic-checkbox" 
+                           onclick="event.stopPropagation();" 
+                           onchange="updateBatchDeleteBtn();">
+                </div>
+
+                <input type="text" 
+                       id="input-{{ topic.id }}"
+                       value="{{ topic.title }}" 
+                       class="card-title-input" 
+                       onclick="event.stopPropagation();"
+                       onblur="handleTitleBlur(this, '{{ topic.id }}', '{{ topic.title|escapejs }}')"
+                       onkeydown="if(event.key === 'Enter') { this.blur(); }">
+
+                <a href="{% url 'learning:topic_detail' topic.id %}" 
+                   class="card-link topic-card-link"
+                   data-id="{{ topic.id }}"
+                   data-title="{{ topic.title }}">
+                    <span data-i18n="progress">進捗</span>: {{ topic.progress }}%
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </form>
+</div>
+
+<script src="{% static 'js/main.js' %}"></script>
+<script>
+function focusTitleInput(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) {
+        input.focus();
+        input.select();
+    }
+}
+
+function handleTitleBlur(inputElem, topicId, originalTitle) {
+    const newTitle = inputElem.value.trim();
+    if (newTitle && newTitle !== originalTitle) {
+        submitTitleChange(topicId, newTitle);
+    } else if (!newTitle) {
+        inputElem.value = originalTitle;
+    }
+}
+
+function submitTitleChange(topicId, newTitle) {
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/topic/${topicId}/edit-title/`;
+    
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = '{{ csrf_token }}';
+    form.appendChild(csrfInput);
+
+    const titleInput = document.createElement('input');
+    titleInput.type = 'hidden';
+    titleInput.name = 'title';
+    titleInput.value = newTitle;
+    form.appendChild(titleInput);
+
+    document.body.appendChild(form);
+    form.submit();
+}
+
+function updateBatchDeleteBtn() {
+    const checkedBoxes = document.querySelectorAll('.topic-checkbox:checked');
+    const btn = document.getElementById('batch-delete-btn');
+    const countSpan = document.getElementById('selected-count');
+    
+    countSpan.textContent = checkedBoxes.length;
+    btn.disabled = checkedBoxes.length === 0;
+}
+
+function fillEmptySlotsToBottom() {
+    const grid = document.getElementById('topic-grid');
+    if (!grid) return;
+
+    document.querySelectorAll('.empty-card').forEach(el => el.remove());
+
+    const cols = window.innerWidth <= 768 ? 2 : 4;
+    const existingCards = grid.querySelectorAll('.topic-card:not(.empty-card)').length;
+
+    const gridTop = grid.getBoundingClientRect().top;
+    const windowHeight = window.innerHeight;
+    const availableHeight = windowHeight - gridTop - 40;
+
+    const cardHeightWithGap = 160 + 20;
+    const rowsNeeded = Math.max(2, Math.ceil(availableHeight / cardHeightWithGap));
+    const totalSlotsNeeded = cols * rowsNeeded;
+
+    const emptySlotsCount = Math.max(0, totalSlotsNeeded - existingCards);
+
+    for (let i = 0; i < emptySlotsCount; i++) {
+        const emptyCard = document.createElement('div');
+        emptyCard.className = 'topic-card empty-card';
+        grid.appendChild(emptyCard);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    fillEmptySlotsToBottom();
+});
+
+window.addEventListener('resize', fillEmptySlotsToBottom);
+</script>
+{% endblock %}

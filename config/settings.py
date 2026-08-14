@@ -27,6 +27,8 @@ ALLOWED_HOSTS = [
 
 # Application definition
 
+# settings.py の一番下
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -55,7 +57,10 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [
+            BASE_DIR / 'templates',
+            BASE_DIR / 'apps' / 'learning' / 'templates',
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -73,14 +78,10 @@ ASGI_APPLICATION = 'config.asgi.application'
 
 # Database
 # Starting with SQLite for Phase 1 development (can migrate to PostgreSQL later)
-DATABASES = { 
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "TempName",
-        "USER": "postgres",
-        "PASSWORD": "12345678",
-        "HOST": "localhost",
-        "PORT": "5432",
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
@@ -100,6 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+
 # Internationalization
 LANGUAGE_CODE = 'ja'
 TIME_ZONE = 'Asia/Tokyo'
@@ -117,3 +119,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# 🔑 ログイン成功後にダッシュボードへジャンプ！
+LOGIN_REDIRECT_URL = 'learning:dashboard'
+LOGOUT_REDIRECT_URL = 'learning:index'
