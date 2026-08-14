@@ -5,12 +5,12 @@
 <style>
 .lesson-page-bg {
     min-height: calc(100vh - 80px);
-    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+    background: linear-gradient(135deg, #0b0f19 0%, #131b2e 50%, #1e1b4b 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 40px 20px;
+    padding: 30px 20px;
     box-sizing: border-box;
 
     width: 100vw !important;
@@ -23,13 +23,13 @@
 
 .lesson-container {
     width: 90% !important;
-    max-width: 1100px !important;
-    min-height: calc(100vh - 160px);
+    max-width: 1080px !important;
+    min-height: calc(100vh - 140px);
     margin: 0 auto;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: 28px;
+    gap: 24px;
     box-sizing: border-box;
 }
 
@@ -42,11 +42,11 @@
 }
 
 .back-btn-card {
-    width: 48px;
-    height: 48px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
     color: #ffffff;
     display: flex;
     align-items: center;
@@ -54,16 +54,49 @@
     text-decoration: none;
     font-size: 1.4rem;
     font-weight: bold;
-    transition: background 0.2s;
+    transition: var(--transition-fast);
 }
 
 .back-btn-card:hover {
     background: rgba(255, 255, 255, 0.25);
+    transform: translateX(-2px);
+}
+
+.header-center-info {
+    text-align: center;
 }
 
 .step-title-header {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.concept-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(99, 102, 241, 0.25);
+    border: 1px solid rgba(165, 180, 252, 0.4);
+    color: #c7d2fe;
+    font-size: 0.78rem;
+    font-weight: 800;
+    padding: 3px 12px;
+    border-radius: var(--radius-pill);
+}
+
+.card-tracker-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+.card-text-count {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #a5b4fc;
+    letter-spacing: 0.5px;
 }
 
 .card-indicator {
@@ -73,32 +106,44 @@
 }
 
 .indicator-dot {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.25);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .indicator-dot.active {
     width: 28px;
     border-radius: 12px;
-    background: #818cf8;
+    background: var(--primary);
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.8);
 }
 
+/* Swipeable Card Deck */
 .main-lesson-card {
     background: #ffffff;
     border-radius: 32px;
-    padding: 56px;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.35);
+    padding: 48px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
     display: grid;
     grid-template-columns: 1.2fr 1fr;
-    gap: 48px;
+    gap: 40px;
     align-items: stretch;
-    min-height: 560px;
+    min-height: 460px;
     box-sizing: border-box;
     width: 100%;
     flex: 1;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    opacity: 1;
+    transform: translateY(0);
+    touch-action: pan-y;
+    user-select: none;
+    cursor: grab;
+}
+
+.main-lesson-card:active {
+    cursor: grabbing;
 }
 
 .main-lesson-card.is-single-col {
@@ -110,13 +155,14 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 24px;
+    gap: 20px;
 }
 
 .card-icon-box {
     width: 64px;
     height: 64px;
-    background: #f1f5f9;
+    background: var(--primary-light);
+    color: var(--primary);
     border-radius: 20px;
     display: flex;
     align-items: center;
@@ -125,7 +171,7 @@
 }
 
 .card-title {
-    font-size: 2rem;
+    font-size: 1.85rem;
     font-weight: 800;
     color: #0f172a;
     margin: 0;
@@ -133,16 +179,16 @@
 }
 
 .card-content-text {
-    font-size: 1.2rem;
+    font-size: 1.15rem;
     color: #475569;
-    line-height: 1.8;
+    line-height: 1.85;
     margin: 0;
 }
 
 .diagram-placeholder {
     width: 100%;
     height: 100%;
-    min-height: 360px;
+    min-height: 300px;
     border: 2px dashed #cbd5e1;
     border-radius: 24px;
     background: #f8fafc;
@@ -150,9 +196,9 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 20px;
+    gap: 16px;
     color: #64748b;
-    padding: 32px;
+    padding: 28px;
     box-sizing: border-box;
 }
 
@@ -165,42 +211,78 @@
 }
 
 .diagram-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #475569;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: #334155;
     text-align: center;
 }
 
-.next-action-btn {
+.action-bar-footer {
+    display: flex;
+    align-items: center;
+    gap: 16px;
     width: 100%;
-    padding: 24px;
-    border: none;
-    border-radius: 22px;
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
-    color: #ffffff;
-    font-size: 1.25rem;
-    font-weight: 700;
+}
+
+.btn-card-nav {
+    padding: 18px 24px;
+    border-radius: 20px;
+    font-size: 1.05rem;
+    font-weight: 800;
     cursor: pointer;
-    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
-    transition: transform 0.2s, opacity 0.2s;
-    text-decoration: none;
+    transition: var(--transition-fast);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    box-sizing: border-box;
+    border: none;
+}
+
+.btn-card-prev {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    backdrop-filter: blur(8px);
+    width: 160px;
+}
+
+.btn-card-prev:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.btn-card-prev:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.next-action-btn {
+    flex: 1;
+    padding: 20px;
+    border-radius: 20px;
+    background: var(--primary-gradient);
+    color: #ffffff;
+    font-size: 1.15rem;
+    font-weight: 800;
+    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+    transition: var(--transition-fast);
+    text-decoration: none;
 }
 
 .next-action-btn:hover {
     transform: translateY(-2px);
-    opacity: 0.95;
+    box-shadow: 0 14px 32px rgba(99, 102, 241, 0.55);
 }
 
 @media (max-width: 868px) {
     .main-lesson-card {
         grid-template-columns: 1fr;
-        padding: 32px;
+        padding: 32px 24px;
         min-height: auto;
+    }
+    .action-bar-footer {
+        flex-direction: column;
+    }
+    .btn-card-prev {
+        width: 100%;
     }
 }
 </style>
@@ -208,19 +290,28 @@
 <div class="lesson-page-bg">
     <div class="lesson-container">
 
-        <!-- ヘッダー -->
+        <!-- Header -->
         <div class="lesson-header">
-            <a href="{% url 'learning:path_map' topic.id %}" class="back-btn-card">‹</a>
-            <div class="step-title-header"><span data-i18n="step">ステップ</span> {{ step_num }}: {{ step_title }}</div>
+            <a href="{% url 'learning:path_map' topic.id %}" class="back-btn-card" title="ラーニングパスへ戻る">‹</a>
             
-            <div class="card-indicator">
-                {% for card in cards %}
-                    <div class="indicator-dot {% if forloop.first %}active{% endif %}" id="dot-{{ forloop.counter0 }}"></div>
-                {% endfor %}
+            <div class="header-center-info">
+                <div class="step-title-header"><span data-i18n="step">ステップ</span> {{ step_num }}: {{ step_title }}</div>
+                <div class="concept-badge">
+                    <span>💡</span> <span>スワイプ対応解説カード</span>
+                </div>
+            </div>
+
+            <div class="card-tracker-wrapper">
+                <span class="card-text-count" id="cardCountDisplay">Card 1 / {{ cards|length }}</span>
+                <div class="card-indicator">
+                    {% for card in cards %}
+                        <div class="indicator-dot {% if forloop.first %}active{% endif %}" id="dot-{{ forloop.counter0 }}"></div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
 
-        <!-- メインカード -->
+        <!-- Main Swipeable Card -->
         {% with cards|first as current_card %}
         <div class="main-lesson-card {% if not current_card.diagram_title %}is-single-col{% endif %}" id="card-display">
             
@@ -238,10 +329,15 @@
         </div>
         {% endwith %}
 
-        <!-- ボタン -->
-        <button type="button" class="next-action-btn" id="card-action-btn" onclick="nextCard()" data-i18n="nextStep">
-            次へ進む →
-        </button>
+        <!-- Action Footer Navigation -->
+        <div class="action-bar-footer">
+            <button type="button" class="btn-card-nav btn-card-prev" id="btn-prev-card" onclick="prevCard()" disabled>
+                ← 前へ
+            </button>
+            <button type="button" class="btn-card-nav next-action-btn" id="card-action-btn" onclick="nextCard()" data-i18n="nextStep">
+                次へ進む →
+            </button>
+        </div>
 
     </div>
 </div>
@@ -253,43 +349,55 @@ const cardsData = JSON.parse(document.getElementById('cards-data').textContent);
 let currentCardIndex = 0;
 const totalCards = cardsData.length;
 const checkpointUrl = "{% url 'learning:lesson_checkpoint' topic.id step_num %}";
+const cardDisplay = document.getElementById('card-display');
 
 function updateCardView() {
-    const card = cardsData[currentCardIndex];
-    
-    document.getElementById('card-icon').textContent = card.icon;
-    document.getElementById('card-title').textContent = card.title;
-    document.getElementById('card-content').textContent = card.content;
-    
-    const cardDisplay = document.getElementById('card-display');
-    const diagramBox = document.getElementById('diagram-box');
-    
-    if (card.diagram_title) {
-        diagramBox.classList.remove('is-hidden');
-        document.getElementById('diagram-title').textContent = card.diagram_title;
-        cardDisplay.classList.remove('is-single-col');
-    } else {
-        diagramBox.classList.add('is-hidden');
-        cardDisplay.classList.add('is-single-col');
-    }
+    cardDisplay.style.opacity = '0';
+    cardDisplay.style.transform = 'translateY(8px)';
 
-    for (let i = 0; i < totalCards; i++) {
-        const dot = document.getElementById(`dot-${i}`);
-        if (dot) {
-            if (i === currentCardIndex) {
-                dot.classList.add('active');
-            } else {
-                dot.classList.remove('active');
+    setTimeout(() => {
+        const card = cardsData[currentCardIndex];
+        
+        document.getElementById('card-icon').textContent = card.icon;
+        document.getElementById('card-title').textContent = card.title;
+        document.getElementById('card-content').textContent = card.content;
+        document.getElementById('cardCountDisplay').textContent = `Card ${currentCardIndex + 1} / ${totalCards}`;
+        
+        const diagramBox = document.getElementById('diagram-box');
+        
+        if (card.diagram_title) {
+            diagramBox.classList.remove('is-hidden');
+            document.getElementById('diagram-title').textContent = card.diagram_title;
+            cardDisplay.classList.remove('is-single-col');
+        } else {
+            diagramBox.classList.add('is-hidden');
+            cardDisplay.classList.add('is-single-col');
+        }
+
+        for (let i = 0; i < totalCards; i++) {
+            const dot = document.getElementById(`dot-${i}`);
+            if (dot) {
+                if (i === currentCardIndex) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
             }
         }
-    }
 
-    const actionBtn = document.getElementById('card-action-btn');
-    if (currentCardIndex === totalCards - 1) {
-        actionBtn.innerHTML = '理解度チェックへ進む ✍️';
-    } else {
-        actionBtn.innerHTML = '次へ進む →';
-    }
+        const prevBtn = document.getElementById('btn-prev-card');
+        prevBtn.disabled = (currentCardIndex === 0);
+
+        const actionBtn = document.getElementById('card-action-btn');
+        if (currentCardIndex === totalCards - 1) {
+            actionBtn.innerHTML = '理解度チェックへ進む ✍️';
+        } else {
+            actionBtn.innerHTML = '次へ進む →';
+        }
+
+        cardDisplay.style.opacity = '1';
+        cardDisplay.style.transform = 'translateY(0)';
+    }, 150);
 }
 
 function nextCard() {
@@ -299,6 +407,27 @@ function nextCard() {
     } else {
         window.location.href = checkpointUrl;
     }
+}
+
+function prevCard() {
+    if (currentCardIndex > 0) {
+        currentCardIndex--;
+        updateCardView();
+    }
+}
+
+// Keyboard arrow navigation
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowRight' || event.key === 'Space') {
+        nextCard();
+    } else if (event.key === 'ArrowLeft') {
+        prevCard();
+    }
+});
+
+// Touch and Mouse Swipe Listener integration
+if (typeof window.setupSwipeableCard === 'function') {
+    window.setupSwipeableCard(cardDisplay, () => nextCard(), () => prevCard());
 }
 </script>
 {% endblock %}

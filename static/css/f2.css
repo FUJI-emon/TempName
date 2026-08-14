@@ -1,167 +1,226 @@
-/* --- 全体共通背景・レイアウト --- */
-body {
-    background-color: #fcfdfe;
-    font-family: 'Inter', sans-serif;
-    margin: 0;
-    padding: 2rem;
+/* ==========================================================================
+   AI Adaptive Learning Platform - Learning Flow & F2 Stylesheet
+   ========================================================================== */
+
+.topic-grid-container {
+  padding: 36px 24px;
+  max-width: 1140px;
+  margin: 0 auto;
+  min-height: calc(100vh - 100px);
+  display: flex;
+  flex-direction: column;
 }
 
-/* 戻るボタン */
-.back-btn {
-    position: absolute;
-    top: 2rem;
-    left: 2rem;
-    font-size: 2rem;
-    text-decoration: none;
-    color: #000;
-    font-weight: bold;
+.topic-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
-/* --- 1. 教科選択画面のCSS --- */
-.subject-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 80vh;
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-.title-banner {
-    background-color: #e0f7fa;
-    padding: 1.5rem 4rem;
-    border-radius: 35px;
-    text-align: center;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-    margin-bottom: 4rem;
+.back-link {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 700;
+  padding: 10px 18px;
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
+  transition: var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.title-banner h1 {
-    margin: 0;
-    font-size: 2rem;
-    font-weight: 500;
+.back-link:hover {
+  background-color: var(--bg-surface-elevated);
+  border-color: var(--text-subtle);
+  color: var(--text-main);
 }
 
-.title-banner p {
-    margin: 0.5rem 0 0 0;
-    font-size: 1.2rem;
-    color: #333;
+.batch-delete-btn {
+  background-color: var(--danger);
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
 }
 
-.subject-grid {
-    display: flex;
-    gap: 3rem;
+.batch-delete-btn:hover:not(:disabled) {
+  background-color: #dc2626;
+  transform: translateY(-1px);
 }
 
-.subject-card {
-    width: 220px;
-    height: 180px;
-    border-radius: 45px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.5rem;
-    font-weight: 500;
-    text-decoration: none;
-    color: #000;
-    transition: transform 0.2s ease;
-}
-
-.subject-card:hover {
-    transform: translateY(-5px);
-}
-
-.card-math { background-color: #e0f7fa; }     /* 水色 */
-.card-english { background-color: #f8e1f4; }  /* 薄ピンク */
-
-/* --- 2. トピック一覧画面（グリッド）のCSS --- */
-.page-title {
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 2.5rem;
-    font-weight: 500;
+.batch-delete-btn:disabled {
+  background-color: var(--border-light);
+  color: var(--text-subtle);
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
 }
 
 .topic-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
-    max-width: 1100px;
-    margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  flex-grow: 1;
 }
 
-/* カード共通（丸みの強い枠） */
-.grid-card {
-    aspect-ratio: 1 / 1;
-    border-radius: 45px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-decoration: none;
-    position: relative;
-    padding: 1.5rem;
-    box-sizing: border-box;
+@media (max-width: 900px) {
+  .topic-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-/* ① ファイル追加カード */
-.card-add {
-    background-color: #f0f0f0;
-    color: #000;
-    cursor: pointer;
+@media (max-width: 480px) {
+  .topic-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
-.card-add .add-icon {
-    font-size: 3rem;
-    font-weight: 300;
-    margin-top: 0.5rem;
+.topic-card {
+  position: relative;
+  background-color: var(--bg-surface);
+  border: 1.5px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  min-height: 170px;
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: var(--shadow-md);
+  transition: var(--transition-normal);
+  box-sizing: border-box;
 }
 
-.card-add .add-text {
-    font-size: 1.1rem;
+.topic-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--primary);
 }
 
-/* ② 追加済みトピックカード (水色) */
-.card-active {
-    background-color: #e0f7fa;
-    color: #000;
-    justify-content: space-between;
+.card-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 10px;
 }
 
-.topic-title {
-    font-size: 1.5rem;
-    font-weight: 500;
-    margin-top: 2rem;
-    text-align: center;
+.card-action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border-light);
+  background: var(--bg-surface-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: var(--transition-fast);
 }
 
-.topic-stats {
-    width: 100%;
-    margin-bottom: 0.5rem;
+.card-action-btn:hover {
+  transform: scale(1.1);
+  background: var(--primary-light);
+  color: var(--primary);
 }
 
-.progress-bar-bg {
-    width: 100%;
-    height: 6px;
-    background-color: #d1f2f5;
-    border-radius: 3px;
-    margin-bottom: 0.5rem;
+.card-checkbox {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  accent-color: var(--danger);
+  margin: 0;
 }
 
-.progress-bar-fill {
-    height: 100%;
-    background-color: #7c4dff;
-    border-radius: 3px;
-    width: var(--p, 0%); /* ← ここでHTMLから渡された変数を受け取ります */
+.card-title-input {
+  width: 100%;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  text-align: center;
+  background: transparent;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius-sm);
+  padding: 6px;
+  box-sizing: border-box;
+  transition: var(--transition-fast);
 }
 
-.stats-text {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.85rem;
-    color: #333;
+.card-title-input:hover {
+  border-color: var(--border-light);
+  background: var(--bg-app);
 }
 
-/* ③ 未追加の空カード (灰色) */
-.card-empty {
-    background-color: #f2f2f2;
+.card-title-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: var(--bg-surface);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.card-link {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-top: 8px;
+  transition: var(--transition-fast);
+}
+
+.card-link:hover {
+  color: var(--primary);
+}
+
+.add-card {
+  background-color: var(--bg-surface);
+  border: 2px dashed var(--primary);
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.add-card:hover {
+  background-color: var(--primary-light);
+  transform: translateY(-4px);
+}
+
+.add-icon {
+  font-size: 2.2rem;
+  line-height: 1;
+  margin-bottom: 6px;
+  color: var(--primary);
+}
+
+.add-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.empty-card {
+  background-color: var(--bg-surface-elevated);
+  border: 1px dashed var(--border-light);
+  opacity: 0.4;
+  pointer-events: none;
 }

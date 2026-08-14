@@ -3,32 +3,20 @@
 
 {% block content %}
 <style>
-/* ☀️ ライトモード（デフォルト） */
-body {
-    background-color: #f8fafc !important;
-    color: #1e293b;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* 🌙 ダークモード */
-body.dark-mode {
-    background-color: #0f172a !important;
-    color: #f8fafc;
-}
-
 .dashboard-container {
-    max-width: 860px;
-    margin: 40px auto;
+    max-width: 980px;
+    margin: 28px auto;
     padding: 0 20px 80px 20px;
 }
 
-/* 1. ユーザーヘッダー */
+/* 1. User Header */
 .user-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 16px;
 }
 
 .profile-area {
@@ -38,49 +26,34 @@ body.dark-mode {
 }
 
 .avatar {
-    width: 56px;
-    height: 56px;
+    width: 58px;
+    height: 58px;
     border-radius: 50%;
-    background: #fed7aa;
+    background: var(--primary-gradient);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    cursor: pointer;
+    box-shadow: var(--shadow-indigo);
     position: relative;
     overflow: hidden;
-    transition: transform 0.2s, filter 0.2s;
-}
-
-.avatar:hover {
-    transform: scale(1.05);
-    filter: brightness(0.95);
-}
-
-.avatar-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-    display: none;
+    color: #ffffff;
 }
 
 .user-greeting {
-    font-size: 0.9rem;
-    color: #64748b;
+    font-size: 0.88rem;
+    color: var(--text-muted);
     margin: 0 0 2px 0;
+    font-weight: 500;
 }
-body.dark-mode .user-greeting { color: #94a3b8; }
 
 .user-name {
-    font-size: 1.3rem;
+    font-size: 1.45rem;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--text-main);
     margin: 0;
     line-height: 1.2;
 }
-body.dark-mode .user-name { color: #f8fafc; }
 
 .header-right-actions {
     display: flex;
@@ -88,953 +61,727 @@ body.dark-mode .user-name { color: #f8fafc; }
     gap: 12px;
 }
 
-.notification-btn, .settings-btn {
+.settings-btn {
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border-light);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: var(--shadow-sm);
     font-size: 1.1rem;
-    transition: all 0.2s ease;
-    color: #0f172a;
+    transition: var(--transition-fast);
+    color: var(--text-main);
     text-decoration: none;
 }
 
-body.dark-mode .notification-btn,
-body.dark-mode .settings-btn {
-    background: #1e293b;
-    border-color: #334155;
-    color: #f8fafc;
-}
-
 .settings-btn:hover {
-    background: #f8fafc;
-    border-color: #cbd5e1;
-    transform: rotate(30deg);
+    background: var(--bg-surface-elevated);
+    border-color: var(--primary);
+    transform: translateY(-2px);
 }
 
-/* 2. 学習ストリーク */
-.streak-card {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 20px 24px;
+/* 2. Hero Continue Learning Banner */
+.continue-hero-card {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #4338ca 100%);
+    border-radius: var(--radius-xl);
+    padding: 30px 34px;
+    color: #ffffff;
+    box-shadow: 0 16px 36px rgba(49, 46, 129, 0.35);
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-    margin-bottom: 24px;
-    border: 1px solid #f1f5f9;
-    transition: background 0.3s, border-color 0.3s;
-}
-body.dark-mode .streak-card {
-    background: #1e293b;
-    border-color: #334155;
+    gap: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-.streak-info { flex: 1; }
+.continue-hero-card::before {
+    content: '';
+    position: absolute;
+    top: -50px;
+    right: -50px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: rgba(99, 102, 241, 0.25);
+    filter: blur(40px);
+    pointer-events: none;
+}
 
-.streak-title {
+.hero-left-info {
+    flex: 1;
+    z-index: 2;
+}
+
+.hero-badge-active {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(8px);
+    color: #e0e7ff;
+    font-size: 0.78rem;
+    font-weight: 800;
+    padding: 5px 14px;
+    border-radius: var(--radius-pill);
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.hero-topic-title {
+    font-size: 1.65rem;
+    font-weight: 800;
+    margin: 0 0 12px 0;
+    color: #ffffff;
+    line-height: 1.3;
+}
+
+.hero-progress-wrapper {
     display: flex;
+    align-items: center;
+    gap: 14px;
+    max-width: 440px;
+}
+
+.hero-progress-bar {
+    flex: 1;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+}
+
+.hero-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #38bdf8, #818cf8);
+    border-radius: var(--radius-pill);
+    transition: width 0.6s ease;
+}
+
+.hero-progress-pct {
+    font-size: 0.88rem;
+    font-weight: 800;
+    color: #c7d2fe;
+}
+
+.hero-action-cta {
+    z-index: 2;
+    padding: 16px 30px;
+    background: #ffffff;
+    color: #312e81;
+    font-weight: 800;
+    font-size: 1.02rem;
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    display: inline-flex;
     align-items: center;
     gap: 8px;
-    font-size: 1.15rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin-bottom: 10px;
-}
-body.dark-mode .streak-title { color: #f8fafc; }
-
-.xp-bar-container {
-    width: 80%;
-    height: 8px;
-    background: #f1f5f9;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 6px;
-}
-body.dark-mode .xp-bar-container { background: #334155; }
-
-.xp-bar-fill {
-    width: 0%;
-    height: 100%;
-    background: #6366f1;
-    border-radius: 10px;
-    transition: width 0.4s ease-out;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    transition: var(--transition-normal);
+    white-space: nowrap;
 }
 
-.streak-stats {
-    display: flex;
-    justify-content: space-between;
-    width: 80%;
-    font-size: 0.85rem;
-    color: #64748b;
-    margin-top: 6px;
-    font-weight: 600;
-}
-body.dark-mode .streak-stats { color: #94a3b8; }
-
-.goal-circle {
-    width: 76px;
-    height: 76px;
-    border-radius: 50%;
-    background: conic-gradient(#4f46e5 0deg, #e0e7ff 0deg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    position: relative;
-    transition: transform 0.2s;
+.hero-action-cta:hover {
+    transform: translateY(-2px) scale(1.03);
+    background: #f8fafc;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+    color: #1e1b4b;
 }
 
-.goal-circle:hover { transform: scale(1.04); }
+/* 3. Learning Metrics Cards Grid */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 18px;
+    margin-bottom: 32px;
+}
 
-.goal-circle-inner {
-    width: 62px;
-    height: 62px;
-    border-radius: 50%;
-    background: #ffffff;
+@media (max-width: 868px) {
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .continue-hero-card {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 24px;
+    }
+    .hero-action-cta {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+.metric-card {
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    padding: 20px 22px;
+    border: 1.5px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 0.95rem;
-    color: #0f172a;
-    line-height: 1.1;
-    transition: background 0.3s, color 0.3s;
-}
-body.dark-mode .goal-circle-inner {
-    background: #1e293b;
-    color: #f8fafc;
+    gap: 8px;
+    transition: var(--transition-fast);
 }
 
-.goal-sub {
-    font-size: 0.62rem;
-    color: #64748b;
-    font-weight: 600;
-    margin-top: 2px;
-}
-body.dark-mode .goal-sub { color: #94a3b8; }
-
-/* 3. 直近の学習履歴 */
-.history-section-card {
-    background: #ffffff;
-    border-radius: 24px;
-    padding: 24px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-    margin-bottom: 32px;
-    border: 1px solid #f1f5f9;
-    transition: background 0.3s, border-color 0.3s;
-}
-body.dark-mode .history-section-card {
-    background: #1e293b;
-    border-color: #334155;
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary);
 }
 
-.history-header-center { text-align: center; margin-bottom: 20px; }
-
-.history-main-title {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 0;
-}
-body.dark-mode .history-main-title { color: #f8fafc; }
-
-.history-grid-container {
+.metric-header {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+}
+
+.metric-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.metric-icon.blue { background: #e0f2fe; color: #0284c7; }
+.metric-icon.green { background: #dcfce7; color: #16a34a; }
+.metric-icon.purple { background: #f3e8ff; color: #9333ea; }
+.metric-icon.amber { background: #fef3c7; color: #d97706; }
+
+.metric-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-main);
+    line-height: 1;
+}
+
+.metric-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* 4. Recent Activity Section */
+.history-section-card {
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    padding: 24px 26px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 32px;
+    border: 1.5px solid var(--border-light);
+}
+
+.history-header-center {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.history-main-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0;
+}
+
+.history-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 16px;
-    overflow-x: auto;
-    padding-bottom: 6px;
-    min-height: 40px;
+}
+
+.history-card-item {
+    background: var(--bg-app);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition-fast);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 110px;
+}
+
+.history-card-item:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.history-item-title {
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+
+.history-item-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-weight: 600;
 }
 
 .empty-history-text {
     width: 100%;
     text-align: center;
-    color: #94a3b8;
-    font-size: 0.88rem;
-    font-weight: 600;
-    margin: 12px 0;
-}
-
-.history-card-item {
-    flex: 1;
-    min-width: 145px;
-    max-width: 180px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: inherit;
-}
-
-.history-thumb {
-    width: 100%;
-    height: 100px;
-    border-radius: 16px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    box-sizing: border-box;
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: 1px solid rgba(0,0,0,0.06);
-}
-
-.history-thumb:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 18px rgba(0,0,0,0.08);
-}
-
-.history-thumb.blue { background: linear-gradient(135deg, #a5f3fc 0%, #93c5fd 100%); color: #1e3a8a; }
-
-.history-dates {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.65rem;
-    font-weight: 800;
-    opacity: 0.85;
-}
-
-.history-item-label {
-    margin-top: 10px;
+    color: var(--text-subtle);
     font-size: 0.9rem;
-    font-weight: 800;
-    color: #334155;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    text-align: center;
-    word-break: break-all;
+    font-weight: 600;
+    padding: 24px 0;
 }
-body.dark-mode .history-item-label { color: #cbd5e1; }
 
-/* 4. セクションタイトル */
+/* 5. Subject / Course Grid Section */
 .section-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
 
 .section-title {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--text-main);
     margin: 0;
 }
-body.dark-mode .section-title { color: #f8fafc; }
 
-.view-all-link {
-    color: #6366f1;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 0.9rem;
-}
-
-/* 5. MY COURSES */
 .courses-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
     margin-bottom: 32px;
 }
 
 .course-card {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 20px;
-    border: 1.5px solid #f1f5f9;
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    padding: 22px;
+    border: 1.5px solid var(--border-light);
     text-decoration: none;
     color: inherit;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
     display: flex;
     flex-direction: column;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+    box-shadow: var(--shadow-sm);
     position: relative;
-}
-body.dark-mode .course-card {
-    background: #1e293b;
-    border-color: #334155;
+    min-height: 160px;
+    justify-content: space-between;
 }
 
 .course-card:hover {
-    border-color: #818cf8;
+    border-color: var(--primary);
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.12);
+    box-shadow: var(--shadow-md);
 }
 
-.delete-subject-btn {
+.delete-course-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 24px;
-    height: 24px;
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background: #f1f5f9;
-    color: #94a3b8;
-    border: none;
+    background: var(--bg-surface-elevated);
+    color: var(--danger);
+    border: 1px solid var(--border-light);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
-    font-weight: bold;
+    font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.2s ease;
-    opacity: 0;
-    z-index: 10;
+    transition: var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+    z-index: 5;
 }
-body.dark-mode .delete-subject-btn { background: #334155; color: #94a3b8; }
 
-.course-card:hover .delete-subject-btn { opacity: 1; }
+.delete-course-btn:hover {
+    background: var(--danger-light);
+    transform: scale(1.1);
+}
 
 .course-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    margin-bottom: 14px;
+    font-size: 1.4rem;
+    margin-bottom: 12px;
+    background: var(--primary-light);
+    color: var(--primary);
 }
-
-.course-icon.math { background: #e0f2fe; color: #0284c7; }
-.course-icon.english { background: #fce7f3; color: #db2777; }
-.course-icon.history { background: #fef3c7; color: #d97706; }
-.course-icon.science { background: #dcfce7; color: #16a34a; }
-.course-icon.default { background: #e2e8f0; color: #475569; }
-
-.course-card.add-card {
-    border: 2px dashed #cbd5e1;
-    background: #f8fafc;
-    align-items: center;
-    justify-content: center;
-    color: #64748b;
-    cursor: pointer;
-}
-body.dark-mode .course-card.add-card {
-    background: #0f172a;
-    border-color: #334155;
-    color: #94a3b8;
-}
-
-.course-card.add-card.input-mode {
-    border: 2px solid #6366f1;
-    background: #ffffff;
-    cursor: default;
-    padding: 16px;
-}
-
-.new-subject-input {
-    width: 100%;
-    padding: 8px 10px;
-    font-size: 0.9rem;
-    font-weight: 700;
-    border: 1.5px solid #cbd5e1;
-    border-radius: 8px;
-    outline: none;
-    box-sizing: border-box;
-    margin-bottom: 10px;
-    color: #0f172a;
-}
-
-.add-card-btns { display: flex; gap: 6px; width: 100%; }
-
-.add-sub-btn {
-    flex: 1;
-    padding: 6px 0;
-    border-radius: 8px;
-    border: none;
-    font-size: 0.8rem;
-    font-weight: 800;
-    cursor: pointer;
-}
-.add-sub-btn.confirm { background: #6366f1; color: #ffffff; }
-.add-sub-btn.cancel { background: #f1f5f9; color: #64748b; }
 
 .course-name {
-    font-size: 1rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 0;
-}
-body.dark-mode .course-name { color: #f8fafc; }
-
-/* 6. ANNOUNCEMENTS & TIPS */
-.info-card-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
-
-.info-card {
-    background: #f8fafc;
-    border-radius: 18px;
-    padding: 16px 20px;
-    display: flex;
-    align-items: flex-start;
-    gap: 16px;
-    border: 1px solid #e2e8f0;
-}
-body.dark-mode .info-card {
-    background: #1e293b;
-    border-color: #334155;
-}
-
-.info-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 12px;
-    background: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-size: 1.1rem;
-    flex-shrink: 0;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0 0 6px 0;
+    line-height: 1.3;
 }
 
-.info-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #0f172a;
-    margin: 0 0 4px 0;
-}
-body.dark-mode .info-title { color: #f8fafc; }
-
-.info-desc {
-    font-size: 0.85rem;
-    color: #64748b;
-    margin: 0;
-    line-height: 1.4;
-}
-
-/* 7. UPCOMING DEADLINES */
-.deadline-card {
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 20px;
-    border: 1px solid #f1f5f9;
-    display: flex;
+.course-add-card {
+    border: 2px dashed var(--primary);
+    background: var(--bg-surface);
     align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-    margin-bottom: 32px;
-}
-body.dark-mode .deadline-card {
-    background: #1e293b;
-    border-color: #334155;
+    justify-content: center;
+    color: var(--primary);
+    cursor: pointer;
+    text-align: center;
 }
 
-.deadline-left { display: flex; align-items: center; gap: 16px; }
+.course-add-card:hover {
+    background: var(--primary-light);
+    transform: translateY(-3px);
+}
 
-.deadline-icon {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-    background: #ffe4e6;
-    color: #e11d48;
+.add-icon-big {
+    font-size: 2.2rem;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+/* Delete Confirmation Modal */
+.modal-backdrop {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    z-index: 9999;
+    animation: fadeIn 0.25s ease;
 }
 
-.deadline-title {
-    font-size: 1rem;
+.delete-modal-card {
+    background: var(--bg-surface);
+    border-radius: 28px;
+    padding: 36px;
+    max-width: 440px;
+    width: 90%;
+    box-shadow: var(--shadow-lg);
+    border: 1.5px solid var(--border-light);
+    text-align: center;
+}
+
+.delete-icon-warning {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--danger-light);
+    color: var(--danger);
+    font-size: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px auto;
+}
+
+.delete-title {
+    font-size: 1.35rem;
     font-weight: 800;
-    color: #0f172a;
-    margin: 0 0 4px 0;
+    color: var(--text-main);
+    margin: 0 0 10px 0;
 }
-body.dark-mode .deadline-title { color: #f8fafc; }
 
-.deadline-sub { font-size: 0.8rem; color: #64748b; margin: 0; }
+.delete-desc {
+    font-size: 0.92rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
 
-.deadline-badge {
-    background: #ffe4e6;
-    color: #e11d48;
-    font-size: 0.75rem;
+.delete-actions-flex {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-cancel-modal {
+    flex: 1;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    background: var(--bg-surface-elevated);
+    border: 1.5px solid var(--border-light);
+    color: var(--text-main);
     font-weight: 800;
-    padding: 6px 12px;
-    border-radius: 12px;
+    cursor: pointer;
 }
 
-/* 8. TANUKI AI ASSISTANT BANNER */
+.btn-delete-confirm {
+    flex: 1;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    background: var(--danger);
+    border: none;
+    color: #ffffff;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+/* 6. AI Assistant Banner */
 .ai-assistant-banner {
-    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-    border-radius: 24px;
-    padding: 20px 24px;
+    background: var(--primary-gradient);
+    border-radius: var(--radius-lg);
+    padding: 24px 28px;
     color: white;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+    box-shadow: var(--shadow-indigo);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    text-decoration: none;
+    margin-top: 10px;
 }
 
-.ai-profile { display: flex; align-items: center; gap: 14px; }
+.ai-assistant-banner:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(99, 102, 241, 0.45);
+}
+
+.ai-profile { display: flex; align-items: center; gap: 16px; }
 
 .ai-avatar {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
     background: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
+    box-shadow: var(--shadow-sm);
 }
 
-.ai-name { font-weight: 800; font-size: 1.05rem; margin: 0 0 2px 0; }
-.ai-msg { font-size: 0.85rem; opacity: 0.9; margin: 0; }
+.ai-name { font-weight: 800; font-size: 1.1rem; margin: 0 0 4px 0; color: #ffffff; }
+.ai-msg { font-size: 0.88rem; opacity: 0.95; margin: 0; color: #ffffff; }
 
 .chat-bubble-icon {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
+    width: 44px;
+    height: 44px;
+    border-radius: 14px;
     background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
 }
 </style>
 
 <div class="dashboard-container">
-    <!-- 1. ユーザーヘッダー -->
+    <!-- 1. User Header -->
     <div class="user-header">
         <div class="profile-area">
-            <div class="avatar" id="avatarContainer" onclick="document.getElementById('avatarInput').click();" title="クリックして画像を変更">
-                <span id="avatarEmoji">👧</span>
-                <img id="avatarImage" class="avatar-img" src="" alt="Avatar" />
+            <div class="avatar">
+                <span>🎓</span>
             </div>
-            <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="handleAvatarChange(event)">
-
             <div>
-                <p class="user-greeting" data-i18n="greeting">こんにちは！ 👋</p>
-                <!-- 🌟 全画面共有クラス `user-name-display` を付与 -->
-                <h2 class="user-name user-name-display">ゲストユーザー</h2>
+                <p class="user-greeting" data-i18n="greeting">Xin chào! 👋</p>
+                <h2 class="user-name user-name-display">Học viên</h2>
             </div>
         </div>
 
         <div class="header-right-actions">
-            <div class="notification-btn">🔔</div>
-            <a href="{% url 'learning:settings' %}" class="settings-btn" title="設定">⚙️</a>
+            <a href="{% url 'learning:settings' %}" class="settings-btn" title="Cài đặt">⚙️</a>
         </div>
     </div>
 
-    <!-- 2. 学習ストリーク -->
-    <div class="streak-card">
-        <div class="streak-info">
-            <div class="streak-title">
-                <span>🔥</span> <span id="streakCountText">0日連続学習！</span>
+    <!-- 2. Continue Learning Hero Card -->
+    {% if active_material %}
+    <div class="continue-hero-card">
+        <div class="hero-left-info">
+            <div class="hero-badge-active">
+                <span>📖</span> <span>Đang học gần đây</span>
             </div>
-            <div class="xp-bar-container">
-                <div class="xp-bar-fill" id="xpBarFill"></div>
-            </div>
-            <div class="streak-stats">
-                <span id="xpText">0 XP</span>
-                <span id="levelText">Lvl 1</span>
+            <h2 class="hero-topic-title">{{ active_material.title }}</h2>
+            <div class="hero-progress-wrapper">
+                <div class="hero-progress-bar">
+                    <div class="hero-progress-fill" style="width: {{ active_material.progress|default:'0' }}%;"></div>
+                </div>
+                <span class="hero-progress-pct">{{ active_material.progress|default:'0' }}% Hoàn thành</span>
             </div>
         </div>
 
-        <div class="goal-circle" id="goalCircle" onclick="editGoal()" title="クリックして目標時間を変更">
-            <div class="goal-circle-inner">
-                <span id="usageTimeText">0m</span>
-                <!-- 🌟 初期表示を「目標: 30分」に修正 -->
-                <span class="goal-sub daily-goal-display" id="goalText">目標: 30分</span>
+        <a href="{% url 'learning:topic_detail' active_material.id %}" class="hero-action-cta" data-i18n="continueLearning">
+            Tiếp tục học →
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- 3. Genuine Learning Metrics Cards -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-header">
+                <div class="metric-icon">📚</div>
             </div>
+            <div class="metric-value">{{ total_materials_count|default:"0" }}</div>
+            <div class="metric-label">Khóa học / Chủ đề</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <div class="metric-icon">✓</div>
+            </div>
+            <div class="metric-value">{{ completed_materials_count|default:"0" }}</div>
+            <div class="metric-label">Khóa học hoàn thành</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <div class="metric-icon">⚡</div>
+            </div>
+            <div class="metric-value">{{ completed_steps_count|default:"0" }}</div>
+            <div class="metric-label">Bài học đã xong</div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-header">
+                <div class="metric-icon">📊</div>
+            </div>
+            <div class="metric-value">{{ avg_progress|default:"0" }}%</div>
+            <div class="metric-label">Tiến độ trung bình</div>
         </div>
     </div>
 
-    <!-- 3. 直近の学習履歴 -->
+
+    <!-- 4. Recent Activity Section -->
     <div class="history-section-card">
         <div class="history-header-center">
-            <h2 class="history-main-title" data-i18n="recentHistory">直近の学習履歴</h2>
+            <h2 class="history-main-title" data-i18n="recentHistory">Lịch sử học tập gần đây</h2>
+            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Tổng {{ total_materials_count }} mục</span>
         </div>
 
-        <div class="history-grid-container" id="historyGridContainer">
-            {% if recent_materials %}
-                {% for item in recent_materials %}
+        <div class="history-grid-container">
+            {% if recent_activity %}
+                {% for item in recent_activity %}
                 <a href="{% url 'learning:topic_detail' item.id %}" class="history-card-item">
-                    <div class="history-thumb blue">
-                        <div class="history-dates">
-                            <span>Made: {{ item.created_at|date:"d/m"|default:"--" }}</span>
-                            <span>Recent: {{ item.last_used_at|date:"d/m"|default:"--" }}</span>
-                        </div>
+                    <div class="history-item-title">{{ item.title|truncatechars:26|default:"Untitled Topic" }}</div>
+                    <div class="history-item-meta">
+                        <span>Tiến độ {{ item.progress }}%</span>
+                        <span>{{ item.last_used_at|date:"d/m/Y"|default:"--" }}</span>
                     </div>
-                    <div class="history-item-label">{{ item.title|default:"no title" }}✏️</div>
                 </a>
                 {% endfor %}
             {% else %}
-                <div class="empty-history-text" data-i18n="noHistory">まだ作成されたファイル履歴はありません</div>
+                <div class="empty-history-text" data-i18n="noHistory">Chưa có lịch sử học tập. Hãy bắt đầu một khóa học mới!</div>
             {% endif %}
         </div>
     </div>
 
-    <!-- 4. MY COURSES -->
+    <!-- 5. Subject / Course Grid Section -->
     <div class="section-header">
-        <h2 class="section-title" data-i18n="myCourses">マイコース</h2>
-        <a href="#" class="view-all-link" data-i18n="viewAll">すべて見る</a>
+        <h2 class="section-title" data-i18n="myCourses">Khóa học của tôi</h2>
     </div>
 
     <div class="courses-grid">
-        <a href="{% url 'learning:topic_list' 'math' %}" class="course-card" data-subject-slug="math">
-            <button class="delete-subject-btn" onclick="deleteSubject(event, 'math', 'Mathematics')">✕</button>
-            <div class="course-icon math">🧮</div>
-            <h3 class="course-name" data-i18n="math">数学</h3>
+        <!-- Add New Course Button (Links to AI Onboarding Chat) -->
+        <a href="{% url 'learning:onboarding' %}" class="course-card course-add-card">
+            <div class="add-icon-big">+</div>
+            <h3 class="course-name">+ Thêm khóa học mới</h3>
         </a>
 
-        <a href="{% url 'learning:topic_list' 'english' %}" class="course-card" data-subject-slug="english">
-            <button class="delete-subject-btn" onclick="deleteSubject(event, 'english', 'English')">✕</button>
-            <div class="course-icon english">📕</div>
-            <h3 class="course-name" data-i18n="english">英語</h3>
-        </a>
+        <!-- Real Materials / Topics Courses -->
+        {% if materials %}
+            {% for m in materials %}
+            <div class="course-card" id="course-card-{{ m.id }}">
+                <button type="button" class="delete-course-btn" title="Xóa khóa học" onclick="openDeleteCourseModal('{{ m.id }}', '{{ m.title|escapejs }}')">
+                    🗑️
+                </button>
 
-        <a href="{% url 'learning:topic_list' 'history' %}" class="course-card" data-subject-slug="history">
-            <button class="delete-subject-btn" onclick="deleteSubject(event, 'history', 'History')">✕</button>
-            <div class="course-icon history">🧭</div>
-            <h3 class="course-name" data-i18n="history">歴史</h3>
-        </a>
+                <a href="{% url 'learning:topic_detail' m.id %}" style="text-decoration:none; color:inherit; height:100%; display:flex; flex-direction:column; justify-content:space-between;">
+                    <div>
+                        <div class="course-icon">📖</div>
+                        <h3 class="course-name">{{ m.title|truncatechars:28 }}</h3>
+                    </div>
 
-        <a href="{% url 'learning:topic_list' 'science' %}" class="course-card" data-subject-slug="science">
-            <button class="delete-subject-btn" onclick="deleteSubject(event, 'science', 'Science')">✕</button>
-            <div class="course-icon science">🧪</div>
-            <h3 class="course-name" data-i18n="science">科学</h3>
-        </a>
+                    <div style="margin-top: 14px;">
+                        <div style="font-size:0.8rem; color:var(--text-muted); font-weight:700; margin-bottom:4px;">
+                            Tiến độ: {{ m.progress }}%
+                        </div>
+                        <div style="height:6px; background:var(--bg-surface-elevated); border-radius:var(--radius-pill); overflow:hidden;">
+                            <div style="width: {{ m.progress }}%; height:100%; background:var(--primary-gradient);"></div>
+                        </div>
+                    </div>
+                </a>
 
-        <div class="course-card add-card" id="addSubjectCard" onclick="showSubjectInput()">
-            <div id="addSubjectDefaultContent">
-                <div class="course-icon">+</div>
-                <h3 class="course-name" data-i18n="addSubject">教科を追加</h3>
+                <!-- Hidden Delete Form -->
+                <form id="delete-form-{{ m.id }}" method="POST" action="{% url 'learning:delete_topic' m.id %}" style="display:none;">
+                    {% csrf_token %}
+                </form>
             </div>
-            
-            <div id="addSubjectInputForm" style="display: none; width: 100%;">
-                <input type="text" 
-                       id="newSubjectInput" 
-                       class="new-subject-input" 
-                       placeholder="例: 物理" 
-                       data-i18n-placeholder="addSubjectPlaceholder"
-                       maxlength="15"
-                       onclick="event.stopPropagation();"
-                       onkeydown="handleNewSubjectKeydown(event)">
-                <div class="add-card-btns" onclick="event.stopPropagation();">
-                    <button type="button" class="add-sub-btn confirm" onclick="submitNewSubject()" data-i18n="add">追加</button>
-                    <button type="button" class="add-sub-btn cancel" onclick="resetAddSubjectCard(event)" data-i18n="cancel">キャンセル</button>
-                </div>
-            </div>
-        </div>
+            {% endfor %}
+        {% endif %}
     </div>
 
-    <!-- 5. ANNOUNCEMENTS & TIPS -->
-    <div class="section-header">
-        <h2 class="section-title" data-i18n="announcementsAndTips">お知らせ＆ヒント</h2>
-    </div>
-
-    <div class="info-card-list">
-        <div class="info-card">
-            <div class="info-icon">💡</div>
-            <div>
-                <h4 class="info-title" data-i18n="aiTipTitle">AIヒント: 漢字復習の間隔を空ける</h4>
-                <p class="info-desc" data-i18n="aiTipDesc">就寝30分前にN3漢字カードを復習すると記憶が定着しやすくなります。</p>
-            </div>
-        </div>
-        <div class="info-card">
-            <div class="info-icon">📅</div>
-            <div>
-                <h4 class="info-title" data-i18n="midtermTitle">中間試験期間</h4>
-                <p class="info-desc" data-i18n="midtermDesc">来週月曜日から微積分と文学の試験が始まります。日程を確認してください。</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- 6. UPCOMING DEADLINES -->
-    <div class="section-header">
-        <h2 class="section-title" data-i18n="upcomingDeadlines">今後の提出期限</h2>
-    </div>
-
-    <div class="deadline-card">
-        <div class="deadline-left">
-            <div class="deadline-icon">⏰</div>
-            <div>
-                <h4 class="deadline-title" data-i18n="quizTitle">N3 語彙ミニクイズ</h4>
-                <p class="deadline-sub" data-i18n="quizSub">期限: 明日 23:59 • 日本語 N3</p>
-            </div>
-        </div>
-        <span class="deadline-badge" data-i18n="daysLeft">残り1日</span>
-    </div>
-
-    <!-- 7. TANUKI AI ASSISTANT -->
-    <div class="ai-assistant-banner">
+    <!-- 6. AI Assistant Banner -->
+    <a href="{% url 'learning:chat_thread_list' %}" class="ai-assistant-banner">
         <div class="ai-profile">
-            <div class="ai-avatar">🦝</div>
+            <div class="ai-avatar">🤖</div>
             <div>
-                <h3 class="ai-name" data-i18n="aiAssistantName">タヌキ学習アシスタント</h3>
-                <p class="ai-msg" data-i18n="aiAssistantMsg">「今日はどんな学習をお手伝いしましょうか？」</p>
+                <h3 class="ai-name" data-i18n="aiAssistantName">AI Trợ Lý Học Tập</h3>
+                <p class="ai-msg" data-i18n="aiAssistantMsg">"Hãy thảo luận với tôi bất cứ khi nào bạn cần giải đáp!"</p>
             </div>
         </div>
         <div class="chat-bubble-icon">💬</div>
+    </a>
+</div>
+
+<!-- Delete Confirmation Warning Modal -->
+<div id="deleteCourseModal" class="modal-backdrop" style="display: none;">
+    <div class="delete-modal-card">
+        <div class="delete-icon-warning">⚠️</div>
+        <h3 class="delete-title">Xác nhận xóa khóa học</h3>
+        <p class="delete-desc">
+            Bạn có chắc chắn muốn xóa khóa học <strong id="deleteTargetTitle" style="color:var(--text-main);">"Machine Learning"</strong> không?<br><br>
+            <span style="color:var(--danger); font-weight:700;">Lưu ý:</span> Nếu xóa, toàn bộ tiến trình học, bài kiểm tra và tài liệu liên quan sẽ bị xóa hoàn toàn khỏi hệ thống.
+        </p>
+
+        <div class="delete-actions-flex">
+            <button type="button" class="btn-cancel-modal" onclick="closeDeleteCourseModal()">Hủy bỏ</button>
+            <button type="button" class="btn-delete-confirm" id="confirmDeleteBtn">Xóa khóa học</button>
+        </div>
     </div>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    const savedAvatar = localStorage.getItem("dash_user_avatar");
-    if (savedAvatar) applyAvatarImage(savedAvatar);
+let targetDeleteId = null;
 
-    checkQuizStreak();
-    initUsageTracker();
-    updateXpAndLevel();
-    updateGoalDisplay();
+function openDeleteCourseModal(topicId, topicTitle) {
+    targetDeleteId = topicId;
+    document.getElementById('deleteTargetTitle').textContent = `"${topicTitle}"`;
+    document.getElementById('deleteCourseModal').style.display = 'flex';
+}
 
-    renderCustomSubjects();
-    applyHiddenDefaultSubjects();
+function closeDeleteCourseModal() {
+    targetDeleteId = null;
+    document.getElementById('deleteCourseModal').style.display = 'none';
+}
+
+document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+    if (targetDeleteId) {
+        const form = document.getElementById(`delete-form-${targetDeleteId}`);
+        if (form) {
+            form.submit();
+        }
+    }
 });
-
-window.onLanguageChanged = function(lang) {
-    checkQuizStreak();
-    updateGoalDisplay();
-};
-
-function checkQuizStreak() {
-    const streak = parseInt(localStorage.getItem('quiz_streak_count') || '0', 10);
-    const lang = localStorage.getItem("app_language") || "ja";
-    const dict = (window.i18nDictionary && window.i18nDictionary[lang]) ? window.i18nDictionary[lang] : { streakText: "日連続学習！" };
-    document.getElementById("streakCountText").textContent = `${streak}${dict.streakText || '日連続学習！'}`;
-}
-
-function showSubjectInput() {
-    const card = document.getElementById("addSubjectCard");
-    const defaultContent = document.getElementById("addSubjectDefaultContent");
-    const inputForm = document.getElementById("addSubjectInputForm");
-    const input = document.getElementById("newSubjectInput");
-
-    if (card.classList.contains("input-mode")) return;
-
-    card.classList.add("input-mode");
-    defaultContent.style.display = "none";
-    inputForm.style.display = "block";
-    input.value = "";
-    setTimeout(() => input.focus(), 50);
-}
-
-function resetAddSubjectCard(event) {
-    if (event) event.stopPropagation();
-    const card = document.getElementById("addSubjectCard");
-    const defaultContent = document.getElementById("addSubjectDefaultContent");
-    const inputForm = document.getElementById("addSubjectInputForm");
-
-    card.classList.remove("input-mode");
-    defaultContent.style.display = "block";
-    inputForm.style.display = "none";
-}
-
-function handleNewSubjectKeydown(event) {
-    if (event.key === "Enter") {
-        event.preventDefault();
-        submitNewSubject();
-    } else if (event.key === "Escape") {
-        resetAddSubjectCard(event);
-    }
-}
-
-function submitNewSubject() {
-    const input = document.getElementById("newSubjectInput");
-    const name = input.value.trim();
-
-    if (!name) {
-        alert("教科名を入力してください。");
-        return;
-    }
-
-    let customSubjects = JSON.parse(localStorage.getItem("user_custom_subjects") || "[]");
-    let hiddenDefault = JSON.parse(localStorage.getItem("user_hidden_default_subjects") || "[]");
-    const slug = name.toLowerCase().replace(/\s+/g, '-');
-
-    if (hiddenDefault.includes(slug)) {
-        hiddenDefault = hiddenDefault.filter(s => s !== slug);
-        localStorage.setItem("user_hidden_default_subjects", JSON.stringify(hiddenDefault));
-        applyHiddenDefaultSubjects();
-        resetAddSubjectCard();
-        return;
-    }
-
-    if (!customSubjects.some(s => s.slug === slug)) {
-        customSubjects.push({ name: name, slug: slug });
-        localStorage.setItem("user_custom_subjects", JSON.stringify(customSubjects));
-        renderCustomSubjects();
-        resetAddSubjectCard();
-    } else {
-        alert("その教科はすでに追加されています。");
-    }
-}
-
-function deleteSubject(event, slug, name) {
-    event.preventDefault();
-    event.stopPropagation();
-    const card = event.currentTarget.closest('.course-card');
-
-    if (confirm(`「${name}」をMy Coursesから削除しますか？`)) {
-        let customSubjects = JSON.parse(localStorage.getItem("user_custom_subjects") || "[]");
-        const isCustom = customSubjects.some(s => s.slug === slug) || (card && card.classList.contains('custom-subject-card'));
-
-        if (isCustom) {
-            customSubjects = customSubjects.filter(s => s.slug !== slug);
-            localStorage.setItem("user_custom_subjects", JSON.stringify(customSubjects));
-        } else {
-            let hiddenDefault = JSON.parse(localStorage.getItem("user_hidden_default_subjects") || "[]");
-            if (!hiddenDefault.includes(slug)) {
-                hiddenDefault.push(slug);
-                localStorage.setItem("user_hidden_default_subjects", JSON.stringify(hiddenDefault));
-            }
-        }
-
-        if (card) card.remove();
-    }
-}
-
-function applyHiddenDefaultSubjects() {
-    const hiddenDefault = JSON.parse(localStorage.getItem("user_hidden_default_subjects") || "[]");
-    document.querySelectorAll('.course-card[data-subject-slug]').forEach(card => {
-        const slug = card.getAttribute('data-subject-slug');
-        if (hiddenDefault.includes(slug)) {
-            card.style.display = 'none';
-        }
-    });
-}
-
-function renderCustomSubjects() {
-    document.querySelectorAll('.custom-subject-card').forEach(el => el.remove());
-    const grid = document.querySelector('.courses-grid');
-    const addCard = document.getElementById('addSubjectCard');
-    if (!grid || !addCard) return;
-
-    const customSubjects = JSON.parse(localStorage.getItem("user_custom_subjects") || "[]");
-
-    customSubjects.forEach(subject => {
-        const card = document.createElement('a');
-        card.href = `/topics/${subject.slug}/`; 
-        card.className = 'course-card custom-subject-card';
-        card.setAttribute('data-subject-slug', subject.slug);
-        card.innerHTML = `
-            <button class="delete-subject-btn" onclick="deleteSubject(event, '${subject.slug}', '${subject.name}')">✕</button>
-            <div class="course-icon default">📚</div>
-            <h3 class="course-name">${subject.name}</h3>
-        `;
-        grid.insertBefore(card, addCard);
-    });
-}
-
-let activeSeconds = 0;
-function initUsageTracker() {
-    const today = new Date().toISOString().split('T')[0];
-    const storedDate = localStorage.getItem("dash_usage_date");
-
-    if (storedDate !== today) {
-        localStorage.setItem("dash_usage_date", today);
-        localStorage.setItem("dash_active_seconds", 0);
-        activeSeconds = 0;
-    } else {
-        activeSeconds = parseInt(localStorage.getItem("dash_active_seconds") || "0", 10);
-    }
-
-    renderUsageTime();
-    setInterval(() => {
-        activeSeconds += 1;
-        localStorage.setItem("dash_active_seconds", activeSeconds);
-        renderUsageTime();
-        updateGoalProgressRing();
-    }, 1000);
-}
-
-function renderUsageTime() {
-    const timeEl = document.getElementById("usageTimeText");
-    const hours = (activeSeconds / 3600);
-    if (hours < 1) {
-        const mins = Math.floor(activeSeconds / 60);
-        timeEl.textContent = `${mins}m`;
-    } else {
-        timeEl.textContent = `${hours.toFixed(1)}h`;
-    }
-}
-
-const XP_PER_LEVEL = 200;
-function updateXpAndLevel() {
-    const xp = parseInt(localStorage.getItem("user_xp") || localStorage.getItem("dash_user_xp") || "0", 10);
-    const level = Math.floor(xp / XP_PER_LEVEL) + 1;
-    const currentLevelXp = xp % XP_PER_LEVEL;
-    const progressPercent = (currentLevelXp / XP_PER_LEVEL) * 100;
-
-    document.getElementById("xpText").textContent = `${xp.toLocaleString()} XP`;
-    document.getElementById("levelText").textContent = `Lvl ${level}`;
-    document.getElementById("xpBarFill").style.width = `${progressPercent}%`;
-}
-
-// ⏱️ 目標時間編集モーダル（設定画面のキー 'daily_study_goal' / 分単位 に完全連動）
-function editGoal() {
-    const currentGoal = localStorage.getItem("daily_study_goal") || "30";
-    const newGoal = prompt("1日の目標学習時間（分）を入力してください:", currentGoal);
-
-    if (newGoal !== null) {
-        const val = parseFloat(newGoal);
-        if (!isNaN(val) && val > 0) {
-            localStorage.setItem("daily_study_goal", String(val));
-            if (typeof window.applyGlobalDailyStudyGoal === "function") {
-                window.applyGlobalDailyStudyGoal();
-            } else {
-                updateGoalDisplay();
-            }
-        }
-    }
-}
-
-// ⏱️ 設定画面の目標（分）を取得して「目標: ○○分」と反映
-function updateGoalDisplay() {
-    const goalVal = localStorage.getItem("daily_study_goal") || "30";
-    const lang = localStorage.getItem("app_language") || "ja";
-    const dict = (window.i18nDictionary && window.i18nDictionary[lang]) ? window.i18nDictionary[lang] : {};
-    const prefix = dict.goalPrefix || "目標: ";
-
-    const goalEl = document.getElementById("goalText");
-    if (goalEl) {
-        goalEl.textContent = `${prefix}${goalVal}分`;
-    }
-    updateGoalProgressRing();
-}
-
-// ⏱️ 進捗リングのパーセンテージ計算を「分単位」へ同期修正
-function updateGoalProgressRing() {
-    const goalMinutes = parseFloat(localStorage.getItem("daily_study_goal") || "30");
-    const currentMinutes = activeSeconds / 60;
-    let percent = Math.min(currentMinutes / goalMinutes, 1);
-    let degrees = percent * 360;
-
-    const ring = document.getElementById("goalCircle");
-    if (ring) {
-        ring.style.background = `conic-gradient(#4f46e5 ${degrees}deg, #e0e7ff ${degrees}deg)`;
-    }
-}
-
-function handleAvatarChange(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const imageDataUrl = e.target.result;
-            applyAvatarImage(imageDataUrl);
-            localStorage.setItem("dash_user_avatar", imageDataUrl);
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-function applyAvatarImage(src) {
-    document.getElementById("avatarEmoji").style.display = "none";
-    const img = document.getElementById("avatarImage");
-    img.src = src;
-    img.style.display = "block";
-}
 </script>
 {% endblock %}

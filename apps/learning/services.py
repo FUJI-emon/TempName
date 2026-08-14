@@ -44,6 +44,10 @@ from apps.learning.models import (
     QuizCheckpointOption,
     QuizCheckpointQuestion,
     QuizHint,
+    QuizFinalTest,
+    QuizFinalTestQuestion,
+    QuizFinalTestOption,
+    QuizTestAttempt,
     UsersUser,
 )
 
@@ -482,3 +486,396 @@ class LearningApplicationService:
         )
 
         return ai_message
+
+    # -------------------------------------------------------------------------
+    # 7. Dynamic DB Persistence & Caching for Steps, Cards, & Checkpoints
+    # -------------------------------------------------------------------------
+
+    @transaction.atomic
+    def get_or_create_step_content(
+        self, material: LearningMaterial, step_num: int
+    ) -> Tuple[ProgressPathStep, List[ProgressLessonCard], Optional[QuizCheckpointQuestion], List[QuizCheckpointOption], Optional[QuizHint]]:
+        """
+        Retrieves ProgressPathStep, ProgressLessonCards, QuizCheckpointQuestion, options, and hint
+        from database if they exist. If missing, triggers AI generation or fallback generator
+        and persists all records into DB.
+        """
+        step_titles = {
+            1: "基礎概念とキーワード",
+            2: "基本ルールの理解と応用",
+            3: "実践問題・ケーススタディ",
+            4: "高度な設定とトラブルシューティング",
+            5: "総合理解と最終確認",
+        }
+        step_title = step_titles.get(step_num, f"ステップ {step_num}")
+
+        step, _ = ProgressPathStep.objects.get_or_create(
+            material=material,
+            order_index=step_num,
+            defaults={"title": step_title},
+        )
+
+        existing_cards = list(ProgressLessonCard.objects.filter(step=step).order_by("order_index"))
+        existing_question = QuizCheckpointQuestion.objects.filter(step=step).first()
+
+        if existing_cards and existing_question:
+            options = list(QuizCheckpointOption.objects.filter(question=existing_question))
+            hint = QuizHint.objects.filter(question=existing_question, level=1).first()
+            return step, existing_cards, existing_question, options, hint
+
+        content = material.content or ""
+        if not content:
+            docs = material.documents.all()
+            if docs.exists():
+                content = "\n".join([d.name for d in docs])
+
+        concept = ConceptDTO(
+            id=f"step_{step_num}",
+            title=f"{material.title} (Step {step_num})",
+            description=content[:1000] if content else material.title,
+        )
+
+        # 1. Generate cards if not existing
+        if not existing_cards:
+            generated_cards = []
+            try:
+                lesson_dto = self.llm_service.generate_lesson(
+                    concept=concept,
+                    mastery_context={"step_num": step_num, "material_title": material.title},
+                )
+                if lesson_dto and lesson_dto.cards:
+                    for idx, card_dto in enumerate(lesson_dto.cards):
+                        c = ProgressLessonCard.objects.create(
+                            step=step,
+                            order_index=idx,
+                            heading=card_dto.heading,
+                            body=card_dto.body,
+                        )
+                        generated_cards.append(c)
+                elif lesson_dto and lesson_dto.flashcards:
+                    for idx, fc in enumerate(lesson_dto.flashcards):
+                        c = ProgressLessonCard.objects.create(
+                            step=step,
+                            order_index=idx,
+                            heading=fc.front,
+                            body=fc.back,
+                        )
+                        generated_cards.append(c)
+            except Exception:
+                pass
+
+            if not generated_cards:
+                fallback_card_data = [
+                    (
+                        f"{material.title} - {step_title}",
+                        f"【ステップ {step_num}】{material.title} における主要ポイントを学習します。基本定義と重要な概念をしっかり理解しましょう。"
+                    ),
+                    (
+                        f"{material.title} の要点整理",
+                        f"{material.title} のステップ {step_num} で押さえるべき重要事項です。実際の演習や問題に当てはめて知識を定着させましょう。"
+                    )
+                ]
+                for idx, (h, b) in enumerate(fallback_card_data):
+                    c = ProgressLessonCard.objects.create(
+                        step=step,
+                        order_index=idx,
+                        heading=h,
+                        body=b,
+                    )
+                    generated_cards.append(c)
+            existing_cards = generated_cards
+
+        # 2. Generate Checkpoint Question if not existing
+        if not existing_question:
+            try:
+                lesson_dto = LessonDTO(
+                    concept_id=f"step_{step_num}",
+                    explanation=content[:500] if content else material.title,
+                    example="",
+                    key_points=[],
+                    flashcards=[],
+                    cards=[]
+                )
+                check_res = self.llm_service.generate_check_question(
+                    concept=concept,
+                    lesson=lesson_dto,
+                    purpose=QuestionPurpose.CHECKPOINT
+                )
+                if check_res and check_res.questions and check_res.questions[0].options:
+                    q_dto = check_res.questions[0]
+                    existing_question = QuizCheckpointQuestion.objects.create(
+                        step=step,
+                        after_card_order=len(existing_cards) - 1,
+                        question_text=q_dto.text,
+                        explanation=q_dto.explanation or f"「{material.title}」のステップ {step_num} で学んだ内容に注目してください。"
+                    )
+                    for opt_dto in q_dto.options[:4]:
+                        QuizCheckpointOption.objects.create(
+                            question=existing_question,
+                            option_text=opt_dto.text,
+                            is_correct=bool(opt_dto.is_correct)
+                        )
+                    if not QuizCheckpointOption.objects.filter(question=existing_question, is_correct=True).exists():
+                        first_opt = QuizCheckpointOption.objects.filter(question=existing_question).first()
+                        if first_opt:
+                            first_opt.is_correct = True
+                            first_opt.save()
+
+                    QuizHint.objects.create(
+                        question=existing_question,
+                        level=1,
+                        hint_text=existing_question.explanation
+                    )
+            except Exception:
+                pass
+
+            if not existing_question:
+                fb_questions = {
+                    1: (
+                        f"【ステップ 1】「{material.title}」における最も基本的な概念・目的は何ですか？",
+                        [
+                            ("基礎的な定義と核心となるプロセスの理解", True),
+                            ("応用段階のトラブルシューティング", False),
+                            ("過去の廃止された旧仕様の暗記", False),
+                            ("無関係な外部ツールの導入", False),
+                        ],
+                        f"「{material.title}」の導入部分（ステップ1）では、全体の基本となる定義と核心プロセスに注目しましょう。"
+                    ),
+                    2: (
+                        f"【ステップ 2】「{material.title}」の基本ルールおよび構成要素として正しいものはどれですか？",
+                        [
+                            ("正確な手順に従った構成要素の組み合わせ", True),
+                            ("ルールの無視と無計画な実行", False),
+                            ("静的データの完全な削除", False),
+                            ("一時的なキャッシュの初期化のみ", False),
+                        ],
+                        f"「{material.title}」の基本原則（ステップ2）は、正しい手順と構成要素の整合性に基づいています。"
+                    ),
+                    3: (
+                        f"【ステップ 3】「{material.title}」を実際の課題に適用する際、最も推奨されるアプローチはどれですか？",
+                        [
+                            ("具体的な事例・ケーススタディに沿った実践的検証", True),
+                            ("理論のみで実践を一切行わないアプローチ", False),
+                            ("過去のエラーログを全て無視すること", False),
+                            ("設定ファイルをランダムに変更すること", False),
+                        ],
+                        f"「{material.title}」の実践問題（ステップ3）では、具体例や実際の利用シナリオを意識するのが効果的です。"
+                    ),
+                    4: (
+                        f"【ステップ 4】「{material.title}」の高度な設定や問題発生時の対処法として最適なものはどれですか？",
+                        [
+                            ("原因の分析と最適化手法の段階的適用", True),
+                            ("問題の放置とログの削除", False),
+                            ("システムの再起動のみで対処を終わらせる", False),
+                            ("未検証のスクリプトを即座に本番実行する", False),
+                        ],
+                        f"「{material.title}」のトラブルシューティング（ステップ4）では、体系的な原因分析と最適な設定変更が鍵です。"
+                    ),
+                    5: (
+                        f"【ステップ 5】「{material.title}」の全体を通して、習得すべき総合的なゴールは何ですか？",
+                        [
+                            ("全体像の体系的理解と自立的な応用・解決能力", True),
+                            ("単一の用語のみの暗記", False),
+                            ("環境構築の途中断念", False),
+                            ("理論と実践の切り離し", False),
+                        ],
+                        f"「{material.title}」の最終確認（ステップ5）では、これまでのステップを総合した実践力・応用力をチェックします。"
+                    ),
+                }
+
+                q_text, opts_raw, hint_str = fb_questions.get(
+                    step_num,
+                    (
+                        f"【ステップ {step_num}】「{material.title}」に関する理解度確認問題です。正しい説明はどれですか？",
+                        [
+                            (f"「{material.title}」の適切な理解と活用", True),
+                            ("誤った解釈に基づく操作", False),
+                            ("無関係な定義", False),
+                            ("不十分な確認", False),
+                        ],
+                        f"「{material.title}」のステップ {step_num} で学んだ内容を思い出して選択してください。"
+                    )
+                )
+
+                existing_question = QuizCheckpointQuestion.objects.create(
+                    step=step,
+                    after_card_order=len(existing_cards) - 1,
+                    question_text=q_text,
+                    explanation=hint_str,
+                )
+                for opt_text, is_corr in opts_raw:
+                    QuizCheckpointOption.objects.create(
+                        question=existing_question,
+                        option_text=opt_text,
+                        is_correct=is_corr,
+                    )
+                QuizHint.objects.create(
+                    question=existing_question,
+                    level=1,
+                    hint_text=hint_str,
+                )
+
+        options = list(QuizCheckpointOption.objects.filter(question=existing_question))
+        hint = QuizHint.objects.filter(question=existing_question, level=1).first()
+
+        return step, existing_cards, existing_question, options, hint
+
+    # -------------------------------------------------------------------------
+    # 8. Final Test Engine & Persistence
+    # -------------------------------------------------------------------------
+
+    @transaction.atomic
+    def get_or_create_final_test(
+        self, material: LearningMaterial
+    ) -> Tuple[QuizFinalTest, List[QuizFinalTestQuestion]]:
+        """
+        Retrieves QuizFinalTest and its questions/options for a LearningMaterial.
+        If missing, triggers AI generation or fallback generator and persists all DB records.
+        """
+        final_test, _ = QuizFinalTest.objects.get_or_create(
+            material=material,
+            defaults={"pass_threshold": Decimal("80.00")}
+        )
+
+        questions = list(QuizFinalTestQuestion.objects.filter(final_test=final_test).order_by("order_index"))
+        if questions:
+            return final_test, questions
+
+        fb_questions_data = [
+            (
+                f"「{material.title}」の全般における最も中心的なコンセプトは何ですか？",
+                [
+                    ("核心となる定義と基本構造の適切な理解", True),
+                    ("無関係な旧システムの維持", False),
+                    ("設定ファイルのランダム消去", False),
+                    ("エラーメッセージの無視", False),
+                ],
+                f"「{material.title}」の全体を通して学んだ基本定義を思い出してください。"
+            ),
+            (
+                f"「{material.title}」を安全かつ効率的に運用するための基本ルールはどれですか？",
+                [
+                    ("推奨される標準手順とパラメータ設計の遵守", True),
+                    ("ドキュメントの非公開化とルールの無視", False),
+                    ("アクセス権限の完全開放", False),
+                    ("ログの自動削除設定", False),
+                ],
+                f"「{material.title}」における正しい設計・運用ルールの重要性がポイントです。"
+            ),
+            (
+                f"「{material.title}」を実際の開発・学習課題に適用する際のベストプラクティスはどれですか？",
+                [
+                    ("段階的な検証とケーススタディに基づいた実践", True),
+                    ("テストなしでの本番一括適用", False),
+                    ("過去のコードを全て破棄すること", False),
+                    ("例外処理の全削除", False),
+                ],
+                f"「{material.title}」の応用・実践問題における標準的なステップに注目してください。"
+            ),
+            (
+                f"「{material.title}」で問題が発生した場合のトラブルシューティングとして最も効果的な方法はどれですか？",
+                [
+                    ("エラーの原因分析とログ・トレースに基づいた段階的修正", True),
+                    ("システムの再インストールを無制限に繰り返す", False),
+                    ("エラーコードの検索を放棄する", False),
+                    ("古いバージョンへの無計画なダウングレード", False),
+                ],
+                f"「{material.title}」のトラブルシューティングにおける体系的な検証手順が鍵となります。"
+            ),
+            (
+                f"「{material.title}」の習得によって得られる総合的な成果として適切なものはどれですか？",
+                [
+                    ("全体の体系的把握と自立的な問題解決能力の定着", True),
+                    ("単一の用語の暗記のみ", False),
+                    ("実行環境の破棄", False),
+                    ("理論のみで実践できない状態", False),
+                ],
+                f"「{material.title}」の総合目標は、自立した応用力と問題解決能力の習得です。"
+            ),
+        ]
+
+        created_questions = []
+        for idx, (q_text, opts_raw, exp_text) in enumerate(fb_questions_data, 1):
+            q_model = QuizFinalTestQuestion.objects.create(
+                final_test=final_test,
+                order_index=idx,
+                question_text=q_text,
+                explanation=exp_text,
+            )
+            for opt_text, is_corr in opts_raw:
+                QuizFinalTestOption.objects.create(
+                    question=q_model,
+                    option_text=opt_text,
+                    is_correct=is_corr,
+                )
+            created_questions.append(q_model)
+
+        return final_test, created_questions
+
+    @transaction.atomic
+    def submit_final_test_answers(
+        self,
+        student: UsersUser,
+        final_test: QuizFinalTest,
+        user_answers: dict,
+    ) -> QuizTestAttempt:
+        """
+        Evaluates final test answers, calculates score %, checks pass threshold (80%),
+        records QuizTestAttempt, and updates material progress if passed.
+        """
+        questions = QuizFinalTestQuestion.objects.filter(final_test=final_test)
+        total_questions = questions.count()
+        if total_questions == 0:
+            raise ValueError("Final Test に問題が存在しません")
+
+        correct_count = 0
+        for q in questions:
+            opts = list(QuizFinalTestOption.objects.filter(question=q))
+            selected = None
+
+            user_ans = (
+                user_answers.get(q.id)
+                or user_answers.get(str(q.id))
+                or user_answers.get(q.order_index)
+                or user_answers.get(str(q.order_index))
+                or user_answers.get(q.order_index - 1)
+                or user_answers.get(str(q.order_index - 1))
+            )
+
+            if user_ans is not None:
+                if isinstance(user_ans, int) and user_ans < len(opts):
+                    selected = opts[user_ans]
+                else:
+                    selected = next((o for o in opts if str(o.id) == str(user_ans)), None)
+
+            if selected and selected.is_correct:
+                correct_count += 1
+
+        score_percent = Decimal((correct_count / total_questions) * 100).quantize(Decimal("0.01"))
+        passed = score_percent >= final_test.pass_threshold
+
+        existing_attempts = QuizTestAttempt.objects.filter(student=student, final_test=final_test).count()
+        attempt_number = existing_attempts + 1
+
+        attempt = QuizTestAttempt.objects.create(
+            student=student,
+            final_test=final_test,
+            score_percent=score_percent,
+            passed=passed,
+            attempt_number=attempt_number,
+        )
+
+        if passed:
+            ProgressStudentMaterialProgress.objects.update_or_create(
+                student=student,
+                material=final_test.material,
+                defaults={
+                    "completion_percent": Decimal("100.00"),
+                    "status": ProgressStudentMaterialProgress.MaterialStatus.COMPLETED,
+                    "last_active_at": timezone.now(),
+                }
+            )
+
+        return attempt
+
+

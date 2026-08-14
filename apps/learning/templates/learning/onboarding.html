@@ -1,0 +1,337 @@
+{% extends 'learning/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+.onboarding-container {
+    max-width: 860px;
+    margin: 28px auto;
+    padding: 0 20px 80px 20px;
+    box-sizing: border-box;
+}
+
+.onboarding-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.back-btn-header {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 18px;
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border-light);
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.92rem;
+    font-weight: 700;
+    transition: var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+}
+
+.back-btn-header:hover {
+    background: var(--bg-surface-elevated);
+    border-color: var(--text-subtle);
+    color: var(--text-main);
+}
+
+.onboarding-card {
+    background: var(--bg-surface);
+    border-radius: 28px;
+    border: 1.5px solid var(--border-light);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 540px;
+}
+
+.onboarding-card-header {
+    padding: 20px 28px;
+    background: var(--bg-surface-elevated);
+    border-bottom: 1px solid var(--border-light);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.tutor-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    background: var(--primary-gradient);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.tutor-title {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin: 0 0 2px 0;
+}
+
+.tutor-sub {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.chat-box {
+    flex-grow: 1;
+    padding: 28px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: var(--bg-app);
+    max-height: 460px;
+}
+
+.msg-row {
+    display: flex;
+    gap: 14px;
+    max-width: 85%;
+    animation: fadeIn 0.3s ease;
+}
+
+.msg-row.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.msg-row.ai {
+    align-self: flex-start;
+}
+
+.msg-bubble {
+    padding: 16px 22px;
+    border-radius: 22px;
+    font-size: 1rem;
+    line-height: 1.6;
+    word-break: break-word;
+}
+
+.msg-row.user .msg-bubble {
+    background: var(--primary-gradient);
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+    box-shadow: var(--shadow-indigo);
+}
+
+.msg-row.ai .msg-bubble {
+    background: var(--bg-surface);
+    color: var(--text-main);
+    border: 1px solid var(--border-light);
+    border-bottom-left-radius: 4px;
+    box-shadow: var(--shadow-sm);
+}
+
+/* Integrated Dropzone Box */
+.embedded-upload-box {
+    margin-top: 16px;
+    border: 2px dashed var(--primary);
+    background: var(--bg-surface);
+    border-radius: 20px;
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition-normal);
+}
+
+.embedded-upload-box:hover {
+    background: var(--primary-light);
+    transform: translateY(-2px);
+}
+
+.upload-box-icon {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+}
+
+.upload-box-text {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-main);
+    margin-bottom: 12px;
+}
+
+.input-footer {
+    padding: 18px 24px;
+    background: var(--bg-surface);
+    border-top: 1px solid var(--border-light);
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-app);
+    padding: 8px 12px 8px 20px;
+    border-radius: var(--radius-pill);
+    border: 1.5px solid var(--border-light);
+}
+
+.input-wrapper:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.chat-field {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    padding: 8px 0;
+    font-size: 0.98rem;
+    color: var(--text-main);
+    outline: none;
+}
+
+.btn-send {
+    border: none;
+    background: var(--primary-gradient);
+    color: #ffffff;
+    padding: 12px 24px;
+    border-radius: var(--radius-pill);
+    font-weight: 800;
+    font-size: 0.92rem;
+    cursor: pointer;
+    box-shadow: var(--shadow-indigo);
+    transition: var(--transition-fast);
+}
+
+.btn-send:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+</style>
+
+<div class="onboarding-container">
+    <div class="onboarding-header">
+        <a href="{% url 'learning:dashboard' %}" class="back-btn-header">‹ Quay lại Dashboard</a>
+        <h2 style="margin: 0; font-size: 1.5rem; color: var(--text-main); font-weight: 800;">Tạo khóa học mới với AI</h2>
+        <div style="width: 140px;"></div>
+    </div>
+
+    <div class="onboarding-card">
+        <div class="onboarding-card-header">
+            <div class="tutor-avatar">🤖</div>
+            <div>
+                <h3 class="tutor-title">AI Learning Tutor</h3>
+                <p class="tutor-sub">Khởi tạo lộ trình học cá nhân hóa cho bạn</p>
+            </div>
+        </div>
+
+        <div class="chat-box" id="chatBox">
+            <!-- Initial AI Message -->
+            <div class="msg-row ai">
+                <div class="msg-bubble">
+                    Xin chào! 👋 Bạn muốn xây dựng lộ trình học cho **Chủ đề / Môn học** nào hôm nay? <br>
+                    Hãy cho tôi biết tên khóa học hoặc mục tiêu học tập của bạn nhé! (Ví dụ: <em>Machine Learning, Python Web, Tiếng Anh N3...</em>)
+                </div>
+            </div>
+        </div>
+
+        <div class="input-footer">
+            <form id="onboardingForm" class="input-wrapper">
+                <input type="text" id="chatInput" class="chat-field" placeholder="Nhập chủ đề muốn học..." required autocomplete="off">
+                <button type="submit" class="btn-send" id="sendBtn">Gửi AI →</button>
+            </form>
+
+            <form method="POST" enctype="multipart/form-data" action="{% url 'learning:add_topic' 'math' %}" id="uploadForm" style="display: none;">
+                {% csrf_token %}
+                <input type="file" name="file" id="onboardingFileInput" onchange="handleFileSelected(this)">
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+const chatBox = document.getElementById('chatBox');
+const onboardingForm = document.getElementById('onboardingForm');
+const chatInput = document.getElementById('chatInput');
+const sendBtn = document.getElementById('sendBtn');
+const uploadForm = document.getElementById('uploadForm');
+const onboardingFileInput = document.getElementById('onboardingFileInput');
+
+let currentTopic = '';
+let stepState = 1; // 1: Topic discussion, 2: File upload requested
+
+function scrollToBottom() {
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+onboardingForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const userText = chatInput.value.trim();
+    if (!userText) return;
+
+    // Render User Message
+    const userRow = document.createElement('div');
+    userRow.className = 'msg-row user';
+    userRow.innerHTML = `<div class="msg-bubble">${escapeHtml(userText)}</div>`;
+    chatBox.appendChild(userRow);
+
+    currentTopic = userText;
+    chatInput.value = '';
+    scrollToBottom();
+
+    // Render AI Response asking for material upload
+    setTimeout(() => {
+        const aiRow = document.createElement('div');
+        aiRow.className = 'msg-row ai';
+        aiRow.innerHTML = `
+            <div class="msg-bubble">
+                Tệt vời! Chủ đề <strong>"${escapeHtml(userText)}"</strong> là một chủ đề vô cùng thú vị và giá trị. 🚀<br><br>
+                Để tôi có thể phân tích và khởi tạo **Lộ trình học chính xác nhất**, bạn có sẵn **tài liệu học** (tệp PDF, Text, Slide...) nào muốn tải lên không?<br><br>
+                <div class="embedded-upload-box" onclick="onboardingFileInput.click()">
+                    <div class="upload-box-icon">📁</div>
+                    <div class="upload-box-text">Nhấp vào đây để chọn hoặc thả tệp tài liệu học</div>
+                    <span class="select-file-btn" style="font-size:0.85rem; padding:8px 18px;">Chọn tệp PDF/TXT</span>
+                </div>
+            </div>
+        `;
+        chatBox.appendChild(aiRow);
+        scrollToBottom();
+        stepState = 2;
+    }, 600);
+});
+
+function handleFileSelected(input) {
+    if (input.files && input.files[0]) {
+        const fileName = input.files[0].name;
+
+        const aiRow = document.createElement('div');
+        aiRow.className = 'msg-row ai';
+        aiRow.innerHTML = `
+            <div class="msg-bubble">
+                📄 Đã nhận tệp: <strong>${escapeHtml(fileName)}</strong><br>
+                AI đang phân tích tài liệu và tạo danh sách các chủ đề kiến thức...
+            </div>
+        `;
+        chatBox.appendChild(aiRow);
+        scrollToBottom();
+
+        if (typeof showAiLoading === 'function') {
+            showAiLoading('AI đang phân tích tài liệu...', 'Đang trích xuất khái niệm và danh sách chủ đề.');
+        }
+
+        setTimeout(() => {
+            uploadForm.submit();
+        }, 1000);
+    }
+}
+
+function escapeHtml(str) {
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+</script>
+{% endblock %}

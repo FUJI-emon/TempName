@@ -3,17 +3,14 @@
 
 {% block content %}
 <style>
-body {
-    background-color: #f8fafc !important;
-}
-
 .path-container {
-    max-width: 900px;
-    margin: 40px auto;
-    padding: 40px;
-    background: #ffffff;
-    border-radius: 24px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    max-width: 960px;
+    margin: 30px auto;
+    padding: 36px;
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    border: 1.5px solid var(--border-light);
     box-sizing: border-box;
 }
 
@@ -21,9 +18,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-bottom: 24px;
-    border-bottom: 1px solid #f1f5f9;
-    margin-bottom: 40px;
+    padding-bottom: 20px;
+    border-bottom: 1.5px solid var(--border-light);
+    margin-bottom: 24px;
     gap: 16px;
     flex-wrap: wrap;
 }
@@ -31,221 +28,392 @@ body {
 .back-btn {
     display: inline-flex;
     align-items: center;
-    padding: 8px 16px;
-    border-radius: 12px;
-    background: #f1f5f9;
-    color: #475569;
+    padding: 10px 18px;
+    border-radius: var(--radius-md);
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border-light);
+    color: var(--text-muted);
     text-decoration: none;
-    font-size: 0.95rem;
-    font-weight: 600;
-    transition: all 0.2s;
+    font-size: 0.92rem;
+    font-weight: 700;
+    transition: var(--transition-fast);
     white-space: nowrap;
 }
 
 .back-btn:hover {
-    background: #e2e8f0;
-    color: #1e293b;
-}
-
-.path-title-form {
-    flex: 1;
-    min-width: 200px;
+    background: var(--primary-light);
+    color: var(--primary);
+    transform: translateX(-2px);
 }
 
 .path-title-input {
-    width: 100%;
-    font-size: 1.35rem;
+    flex: 1;
+    font-size: 1.5rem;
     font-weight: 800;
-    color: #0f172a;
-    background: #f8fafc;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 8px 14px;
-    box-sizing: border-box;
-    transition: all 0.2s;
+    color: var(--text-main);
+    background: var(--bg-app);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 10px 16px;
+    transition: var(--transition-fast);
 }
 
-.path-title-input:focus {
-    outline: none;
-    border-color: #6366f1;
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+/* Tabs */
+.path-tabs {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+    border-bottom: 2px solid var(--border-light);
+    padding-bottom: 2px;
 }
 
-.step-badge {
-    background: #eef2ff;
-    color: #6366f1;
-    font-size: 0.9rem;
-    font-weight: 700;
-    padding: 8px 18px;
-    border-radius: 30px;
-    white-space: nowrap;
+.path-tab-btn {
+    padding: 12px 24px;
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: var(--transition-fast);
 }
 
-.path-tree {
-    position: relative;
-    max-width: 700px;
-    margin: 0 auto 50px auto;
-    padding: 20px 0;
+.path-tab-btn.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
 }
 
-.path-tree::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 50%;
-    width: 4px;
-    background: #e2e8f0;
-    transform: translateX(-50%);
-    z-index: 1;
-}
-
-.step-node {
+/* Overall Topic Progress Banner */
+.topic-progress-banner {
+    background: var(--bg-surface-elevated);
+    border-radius: var(--radius-md);
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    border: 1px solid var(--border-light);
     display: flex;
     align-items: center;
-    justify-content: center;
-    position: relative;
-    margin-bottom: 40px;
-    z-index: 2;
+    justify-content: space-between;
+    gap: 20px;
 }
 
-.node-badge {
-    width: 64px;
-    height: 64px;
+.topic-progress-bar-bg {
+    flex: 1;
+    height: 12px;
+    background: var(--bg-app);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+}
+
+.topic-progress-fill {
+    height: 100%;
+    background: var(--primary-gradient);
+    border-radius: var(--radius-pill);
+    transition: width 0.6s ease;
+}
+
+/* Path Tree List */
+.path-tree {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto 40px auto;
+    padding: 10px 0;
+}
+
+.lesson-card-item {
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 22px 26px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: var(--transition-fast);
+    position: relative;
+}
+
+.lesson-card-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.lesson-card-item.status-current {
+    border-color: var(--primary);
+    box-shadow: var(--shadow-indigo);
+    background: var(--primary-light);
+}
+
+.lesson-card-item.status-not_generated {
+    border-style: dashed;
+    border-color: #c084fc;
+    background: rgba(192, 132, 252, 0.05);
+}
+
+.lesson-left {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.lesson-icon {
+    width: 52px;
+    height: 52px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.4rem;
+    font-weight: 800;
     flex-shrink: 0;
-    z-index: 3;
 }
 
-.node-badge.current {
-    background: #6366f1;
-    color: white;
-    box-shadow: 0 0 0 8px rgba(99, 102, 241, 0.18);
-    animation: pulse 2s infinite;
+.lesson-icon.completed { background: var(--primary-light); color: var(--primary); border: 1.5px solid rgba(99, 102, 241, 0.3); }
+.lesson-icon.current { background: var(--primary-gradient); color: #ffffff; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.45); }
+.lesson-icon.available { background: var(--bg-surface-elevated); color: var(--text-muted); border: 1.5px solid var(--border-light); }
+.lesson-icon.not_generated { background: rgba(99, 102, 241, 0.08); color: var(--primary); border: 2px dashed rgba(99, 102, 241, 0.35); }
+
+
+.lesson-details h3 {
+    font-size: 1.15rem;
+    font-weight: 800;
+    margin: 0 0 6px 0;
+    color: var(--text-main);
 }
 
-.node-badge.completed { background: #4f46e5; color: white; }
-.node-badge.locked { background: #ffffff; color: #94a3b8; border: 3px solid #cbd5e1; }
-
-.node-card {
-    width: calc(50% - 60px);
-    background: #ffffff;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 18px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-    position: absolute;
-}
-
-.step-node.align-left .node-card { right: calc(50% + 50px); text-align: right; }
-.step-node.align-right .node-card { left: calc(50% + 50px); text-align: left; }
-
-.node-title { font-size: 1.1rem; font-weight: 700; color: #1e293b; margin: 0 0 6px 0; }
-.node-desc { font-size: 0.88rem; color: #64748b; margin: 0 0 8px 0; }
-
-.xp-reward-badge {
-    display: inline-flex;
+.lesson-badges {
+    display: flex;
     align-items: center;
-    gap: 4px;
-    font-size: 0.8rem;
-    font-weight: 700;
-    color: #d97706;
-    background: #fef3c7;
-    padding: 3px 10px;
-    border-radius: 12px;
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
 }
 
-.action-area {
-    text-align: center;
-    margin-top: 40px;
-    padding-top: 30px;
-    border-top: 1px solid #f1f5f9;
-}
-
-.continue-btn {
-    display: inline-block;
-    width: 100%;
-    max-width: 360px;
-    padding: 18px 32px;
-    background: #6366f1;
-    color: white;
-    border-radius: 16px;
-    font-size: 1.05rem;
-    font-weight: 700;
-    text-align: center;
+.btn-start-lesson {
+    padding: 12px 24px;
+    border-radius: var(--radius-md);
+    background: var(--primary-gradient);
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 0.95rem;
     text-decoration: none;
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    box-shadow: var(--shadow-indigo);
+    transition: var(--transition-fast);
+    white-space: nowrap;
 }
 
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.4); }
-    70% { box-shadow: 0 0 0 14px rgba(99, 102, 241, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+.btn-start-lesson:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(99, 102, 241, 0.4);
+}
+
+/* AI Dynamic Generation Card */
+.ai-generation-card {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.06) 0%, rgba(192, 132, 252, 0.08) 100%);
+    border: 2px dashed rgba(168, 85, 247, 0.4);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    text-align: center;
+    margin-top: 24px;
+}
+
+.ai-generation-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #7e22ce;
+    margin: 0 0 6px 0;
+}
+
+.ai-generation-sub {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* Materials Tab List */
+.materials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.material-doc-card {
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.material-doc-title {
+    font-size: 1rem;
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    color: var(--text-main);
+}
+
+.material-doc-meta {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 14px;
 }
 </style>
 
 <div class="path-container">
+    <!-- Topic Header -->
     <div class="path-header">
-        <a href="/topics/{{ topic.subject }}/" class="back-btn"><span data-i18n="backToTopics">‹ Topicsに戻る</span></a>
+        <a href="/topics/{{ topic.subject }}/" class="back-btn">‹ 教科一覧に戻る</a>
         
-        <form method="POST" action="{% url 'learning:edit_topic_title' topic.id %}" class="path-title-form">
+        <form method="POST" action="{% url 'learning:edit_topic_title' topic.id %}" style="flex:1;">
             {% csrf_token %}
-            <input type="text" 
-                   name="title" 
-                   value="{{ topic.title|default:'学習ロードマップ' }}" 
-                   class="path-title-input" 
-                   onblur="if(this.value.trim()) this.form.submit();"
-                   onkeydown="if(event.key === 'Enter') { this.blur(); }">
+            <input type="text" name="title" value="{{ topic.title|default:'学習ロードマップ' }}" class="path-title-input" onblur="if(this.value.trim()) this.form.submit();">
         </form>
 
-        <span class="step-badge"><span data-i18n="step">Step</span> {{ current_step_num|default:"1" }} / Adaptive</span>
+        <span class="badge-status current">適応型ラーニングパス</span>
     </div>
 
-    <div class="path-tree">
-        {% for step in steps %}
-            <div class="step-node {% cycle 'align-left' 'align-right' %} status-{{ step.status }}">
-                <div class="node-card">
-                    <h3 class="node-title"><span data-i18n="step">Step</span> {{ step.number }}: {{ step.title }}</h3>
-                    {% if step.status == 'locked' %}
-                        <p style="font-size: 0.85rem; color: #94a3b8; font-style: italic;">
-                            <span data-i18n="step">Step</span> {{ step.number|add:"-1" }} <span data-i18n="generatedByAiNote">の学習結果からAIが生成します</span>
-                        </p>
-                    {% else %}
-                        <p class="node-desc">{{ step.card_count }} Flashcards + Quiz</p>
-                        <span class="xp-reward-badge">⚡ +{{ step.xp_reward }} XP</span>
-                    {% endif %}
-                </div>
-
-                <div class="node-badge {{ step.status }}">
-                    {% if step.status == 'completed' %}✓{% elif step.status == 'current' %}▶{% else %}🔒{% endif %}
-                </div>
+    <!-- Topic Progress Banner -->
+    <div class="topic-progress-banner">
+        <div style="flex:1;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-weight:800; font-size:0.9rem;">
+                <span>トピック全般の進捗率</span>
+                <span>{{ topic.progress|default:"0" }}%</span>
             </div>
-        {% endfor %}
+            <div class="topic-progress-bar-bg">
+                <div class="topic-progress-fill" style="width: {{ topic.progress|default:'0' }}%;"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="action-area">
-        <a href="/topic/{{ topic.id }}/step/{{ current_step_num|default:'1' }}/" 
-           class="continue-btn" 
-           data-xp="{{ current_step_xp|default:100 }}"
-           onclick="handleContinue(this)">
-            <span data-i18n="continueLearning">Continue Learning</span> (+{{ current_step_xp|default:100 }} XP)
-        </a>
+    <!-- Navigation Tabs (Learning Path vs Materials) -->
+    <div class="path-tabs">
+        <button class="path-tab-btn active" id="tabPathBtn" onclick="switchTab('path')">🗺️ ラーニングパス (Learning Path)</button>
+        <button class="path-tab-btn" id="tabMaterialsBtn" onclick="switchTab('materials')">📄 学習資料・ドキュメント (Materials)</button>
     </div>
+
+    <!-- TAB 1: Learning Path -->
+    <div id="tabPathContent">
+        <div class="path-tree">
+            {% for step in steps %}
+                <div class="lesson-card-item status-{{ step.status }}">
+                    <div class="lesson-left">
+                        <div class="lesson-icon {{ step.status }}">
+                            {% if step.status == 'completed' %}✓{% elif step.status == 'current' %}▶{% elif step.status == 'available' %}○{% else %}✨{% endif %}
+                        </div>
+
+                        <div class="lesson-details">
+                            <h3>Lesson {{ step.number }}: {{ step.title }}</h3>
+                            <p style="margin:0; font-size:0.88rem; color:var(--text-muted);">{{ step.card_count }} Learning Cards + Checkpoint Quiz</p>
+
+                            <div class="lesson-badges">
+                                {% if step.status == 'completed' %}
+                                    <span class="badge-status completed">完了</span>
+                                {% elif step.status == 'current' %}
+                                    <span class="badge-status current">学習中</span>
+                                {% elif step.status == 'available' %}
+                                    <span class="badge-status current" style="background:var(--bg-surface-elevated); color:var(--text-muted); border-color:var(--border-light);">挑戦可能</span>
+                                {% elif step.status == 'not_generated' %}
+                                    <span class="badge-status generated">✨ 未生成 (AI生成予定)</span>
+                                {% endif %}
+
+                                {% if step.is_review %}
+                                    <span class="badge-status review">⚡ 復習・過去概念強化</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        {% if step.status == 'completed' or step.status == 'current' or step.status == 'available' %}
+                            <a href="/topic/{{ topic.id }}/step/{{ step.number }}/" class="btn-start-lesson">
+                                {% if step.status == 'completed' %}復習する →{% else %}レッスンを開始 →{% endif %}
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+
+            <!-- AI Dynamic Generation Banner -->
+            <div class="ai-generation-card">
+                <h4 class="ai-generation-title">✨ AIが学習状況に合わせて次のレッスンを動的に生成します</h4>
+                <p class="ai-generation-sub">現在のレッスン（1〜3）を完了すると、理解度に応じて新しいレッスンが自動生成されます（最大1バッチ3レッスン）。</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/topic/{{ topic.id }}/step/{{ current_step_num|default:'1' }}/" class="btn-start-lesson" style="padding:16px 40px; font-size:1.1rem;">
+                🚀 保存された位置から学習を再開
+            </a>
+        </div>
+    </div>
+
+    <!-- TAB 2: Materials/Documents -->
+    <div id="tabMaterialsContent" style="display: none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h3 style="margin:0; font-weight:800;">「{{ topic.title }}」の学習資料一覧</h3>
+            <a href="{% url 'learning:document_upload' topic.id %}" class="btn-start-lesson" style="font-size:0.88rem; padding:10px 18px;">
+                + 学習資料を追加
+            </a>
+        </div>
+
+        {% if documents %}
+            <div class="materials-grid">
+                {% for doc in documents %}
+                    <div class="material-doc-card" id="doc-card-{{ doc.id }}">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                            <div>
+                                <div style="font-size:1.8rem; margin-bottom:8px;">📄</div>
+                                <h4 class="material-doc-title">{{ doc.name }}</h4>
+                                <div class="material-doc-meta">サイズ: {{ doc.size|filesizeformat|default:"File Document" }} • 追加: {{ doc.uploaded_at|date:"Y/m/d"|default:"Recently" }}</div>
+                            </div>
+                            <form method="POST" action="{% url 'learning:delete_document' doc.id %}" onsubmit="return confirm('「{{ doc.name|escapejs }}」を削除しますか？この操作は取り消せません。');">
+                                {% csrf_token %}
+                                <button type="submit" class="card-action-btn" title="資料を削除" style="color: var(--danger);">🗑️</button>
+                            </form>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px;">
+                            <span class="badge-status completed">準備完了</span>
+                            {% if doc.file %}
+                            <a href="{{ doc.file.url }}" target="_blank" style="font-size: 0.85rem; font-weight: 700; color: var(--primary);">閲覧 / ダウンロード →</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align:center; padding:40px; color:var(--text-muted); background:var(--bg-surface-elevated); border-radius:var(--radius-md);">
+                <div style="font-size:2.5rem; margin-bottom:10px;">📚</div>
+                <p style="font-weight:700; margin-bottom:14px;">まだこのトピックに資料は追加されていません</p>
+                <a href="{% url 'learning:document_upload' topic.id %}" class="btn-start-lesson" style="font-size:0.9rem;">資料をアップロードしてAI学習を最適化</a>
+            </div>
+        {% endif %}
+    </div>
+
 </div>
 
 <script>
-function handleContinue(element) {
-    const xp = parseInt(element.getAttribute('data-xp') || '100', 10);
-    if (typeof addXp === 'function') {
-        addXp(xp);
-    }
-    if (typeof showAiLoading === 'function') {
-        showAiLoading('Lessonを準備中...', 'あなたの理解度に合わせた学習コンテンツを作成しています。');
+function switchTab(tab) {
+    const tabPathBtn = document.getElementById("tabPathBtn");
+    const tabMaterialsBtn = document.getElementById("tabMaterialsBtn");
+    const tabPathContent = document.getElementById("tabPathContent");
+    const tabMaterialsContent = document.getElementById("tabMaterialsContent");
+
+    if (tab === 'path') {
+        tabPathBtn.classList.add("active");
+        tabMaterialsBtn.classList.remove("active");
+        tabPathContent.style.display = "block";
+        tabMaterialsContent.style.display = "none";
+    } else {
+        tabMaterialsBtn.classList.add("active");
+        tabPathBtn.classList.remove("active");
+        tabMaterialsContent.style.display = "block";
+        tabPathContent.style.display = "none";
     }
 }
 </script>

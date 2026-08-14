@@ -1,167 +1,277 @@
-{% extends 'base.html' %}
+{% extends 'learning/base.html' %}
+{% load static %}
 
-{% block title %}Final Test | WebApp Title{% endblock %}
-
-{% block page_title %}Final Test{% endblock %}
+{% block title %}Final Test | AI Learning Platform{% endblock %}
 
 {% block content %}
 <style>
-    .test-container {
-        max-width: 900px;
-        margin: 0 auto;
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 12px; /* 全体の間隔を少しコンパクトに調整 */
-    }
+.test-container {
+    max-width: 860px;
+    margin: 28px auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 0 20px 80px 20px;
+    box-sizing: border-box;
+}
 
-    /* プログレスバー */
-    .progress-section {
-        background-color: #99b2c2;
-        padding: 8px 16px;
-        border-radius: 8px;
-    }
-    .progress-label {
-        text-align: center;
-        font-size: 13px;
-        margin-bottom: 6px;
-        font-weight: bold;
-    }
-    .progress-bar-container {
-        display: flex;
-        height: 20px;
-        background-color: #ffffff;
-        border-radius: 10px;
-        overflow: hidden;
-    }
-    .progress-fill {
-        width: 10%;
-        background-color: #1b6383;
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        padding-right: 10px;
-        color: white;
-        font-size: 13px;
-        font-weight: bold;
-        transition: width 0.3s ease;
-    }
+/* Test Header Card */
+.test-header-card {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+    border-radius: var(--radius-xl);
+    padding: 28px 32px;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 12px 30px rgba(49, 46, 129, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
 
-    /* 問題エリア */
-    .question-box {
-        background-color: #f5b79d;
-        padding: 24px 16px; /* 高さを抑えるためにパディングを調整 */
-        border-radius: 8px;
-        text-align: center;
-        min-height: 100px; /* 最小高さをすっきりさせる */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-        font-weight: bold;
-    }
+.test-topic-name {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 0 0 6px 0;
+}
 
-    /* 選択肢ボタンエリア */
-    .options-container {
-        display: flex;
-        flex-direction: column;
-        gap: 8px; /* 選択肢同士の間隔を少し縮める */
-    }
-    .option-btn {
-        background-color: #ffffff;
-        border: 2px solid #e86a33;
-        padding: 12px 16px; /* ボタンの大きさを小さく調整 */
-        text-align: left;
-        border-radius: 8px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background-color 0.2s, color 0.2s;
-    }
-    .option-btn:hover {
-        background-color: #fdf2ed;
-    }
-    .option-btn.selected {
-        background-color: #e86a33;
-        color: #ffffff;
-        border-color: #e86a33;
-    }
+.test-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(8px);
+    color: #e0e7ff;
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 4px 14px;
+    border-radius: var(--radius-pill);
+}
 
-    /* コントロールパネル（ボタンとタイマー） */
-    .control-panel {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 5px;
-    }
+/* Progress section */
+.progress-section {
+    background: var(--bg-surface);
+    padding: 20px 24px;
+    border-radius: var(--radius-lg);
+    border: 1.5px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
+}
+.progress-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.progress-label {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-main);
+}
+.progress-count-pill {
+    font-size: 0.82rem;
+    font-weight: 800;
+    color: var(--primary);
+    background: var(--primary-light);
+    padding: 5px 14px;
+    border-radius: var(--radius-pill);
+}
+.progress-bar-container {
+    display: flex;
+    height: 12px;
+    background-color: var(--bg-surface-elevated);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+    border: 1px solid var(--border-light);
+}
+.progress-fill {
+    width: 10%;
+    background: var(--primary-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 10px;
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 800;
+    transition: width 0.4s ease;
+}
 
-    .btn-test {
-        background-color: #1b6383;
-        color: #ffffff;
-        padding: 10px 24px; /* 前へ・次へボタンもすっきりさせる */
-        border: none;
-        border-radius: 8px;
-        font-size: 15px;
-        font-weight: bold;
-        cursor: pointer;
-    }
-    .btn-test:hover {
-        opacity: 0.9;
-    }
+/* Question box */
+.question-box {
+    background: var(--bg-surface);
+    color: var(--text-main);
+    padding: 36px 32px;
+    border-radius: var(--radius-xl);
+    border: 2px solid var(--border-light);
+    min-height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    font-weight: 800;
+    box-shadow: var(--shadow-md);
+    line-height: 1.5;
+    text-align: center;
+}
 
-    /* タイマー */
-    .timer-container {
-        background-color: #cda0c9;
-        padding: 8px 16px;
-        border-radius: 8px;
-        display: flex;
-        gap: 16px;
-    }
-    .timer-block {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .timer-label {
-        font-size: 11px;
-        margin-bottom: 2px;
-    }
-    .timer-value {
-        background-color: #ffffff;
-        padding: 2px 12px;
-        border-radius: 4px;
-        font-size: 18px;
-        font-weight: bold;
-        font-family: monospace;
-    }
+/* Options container */
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.option-btn {
+    background-color: var(--bg-surface);
+    border: 2px solid var(--border-light);
+    padding: 18px 22px;
+    text-align: left;
+    border-radius: var(--radius-lg);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-main);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow-sm);
+}
+.option-btn:hover {
+    border-color: var(--primary);
+    background-color: var(--primary-light);
+    transform: translateY(-1px);
+}
+.option-btn.selected {
+    background: var(--primary-gradient);
+    color: #ffffff;
+    border-color: var(--primary);
+    box-shadow: var(--shadow-indigo);
+}
+
+/* Control Panel */
+.control-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.btn-test {
+    background: var(--primary-gradient);
+    color: #ffffff;
+    padding: 16px 32px;
+    border: none;
+    border-radius: var(--radius-pill);
+    font-size: 1rem;
+    font-weight: 800;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    box-shadow: var(--shadow-indigo);
+}
+.btn-test:hover {
+    transform: translateY(-2px);
+    opacity: 0.95;
+}
+
+/* Timer Container */
+.timer-container {
+    background-color: var(--bg-surface);
+    border: 1.5px solid var(--border-light);
+    padding: 10px 22px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    gap: 24px;
+    box-shadow: var(--shadow-sm);
+}
+.timer-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.timer-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+    text-transform: uppercase;
+}
+.timer-value {
+    background-color: var(--bg-surface-elevated);
+    color: var(--primary);
+    padding: 4px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 1.1rem;
+    font-weight: 800;
+    font-family: monospace;
+    border: 1px solid var(--border-light);
+}
+
+/* Modal for Score Result */
+.result-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+.result-card {
+    background: var(--bg-surface);
+    border-radius: 28px;
+    padding: 40px;
+    max-width: 440px;
+    width: 90%;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    border: 1.5px solid var(--border-light);
+}
 </style>
 
 <div class="test-container">
 
-    <!-- プログレスバー -->
+    <!-- Header Card -->
+    <div class="test-header-card">
+        <div>
+            <h1 class="test-topic-name">{{ topic.title|default:"最終理解度総合テスト" }}</h1>
+            <div class="test-badge">
+                <span>🏆</span> <span>Final Subject Assessment</span>
+            </div>
+        </div>
+        <div style="font-size: 2.2rem;">🎓</div>
+    </div>
+
+    <!-- Progress section -->
     <div class="progress-section">
-        <div class="progress-label">進捗度 (1/10問目)</div>
+        <div class="progress-header-flex">
+            <div class="progress-label" id="progressTitle">進捗度 (1/10問目)</div>
+            <span class="progress-count-pill" id="progressPill">残り 9 問</span>
+        </div>
         <div class="progress-bar-container">
-            <div class="progress-fill">あと 9 問!!</div>
+            <div class="progress-fill" id="progressFill">10%</div>
         </div>
     </div>
 
-    <!-- メインコンテンツ：問題文 -->
+    <!-- Question box -->
     <div class="question-box" id="questionText">
         ここに問題文が表示されます
     </div>
     
-    <!-- 選択肢を表示するコンテナ -->
+    <!-- Options container -->
     <div class="options-container" id="optionsContainer">
-        <!-- JavaScriptによって選択肢ボタンがここに動的に生成されます -->
+        <!-- Dynamically rendered -->
     </div>
 
-    <!-- コントロールパネル -->
+    <!-- Control panel -->
     <div class="control-panel">
-        <button class="btn-test" id="btnPrev">← 前の問題</button>
+        <button class="btn-secondary" id="btnPrev" style="padding: 14px 24px; border-radius: var(--radius-pill);">← 前の問題</button>
         
         <div class="timer-container">
             <div class="timer-block">
-                <div class="timer-label">この問題の経過時間</div>
+                <div class="timer-label">問題経過時間</div>
                 <div class="timer-value" id="currentTimer">00:00</div>
             </div>
             <div class="timer-block">
@@ -175,78 +285,79 @@
 
 </div>
 
+<!-- Result Modal -->
+<div id="resultModal" class="result-modal-overlay" style="display: none;">
+    <div class="result-card">
+        <div id="resultIcon" style="font-size: 3.5rem; margin-bottom: 12px;">🎉</div>
+        <h2 id="resultTitle" style="font-size: 1.8rem; font-weight: 800; margin: 0 0 8px 0; color: var(--text-main);">テスト完了</h2>
+        <div id="resultScore" style="font-size: 2.5rem; font-weight: 800; color: var(--primary); margin-bottom: 12px;">100%</div>
+        <p id="resultMeta" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 24px; font-weight: 600;">受験回数: 1回目</p>
+        <button type="button" class="btn-primary" id="btnFinishTest" style="width: 100%; padding: 14px;">ダッシュボードへ戻る →</button>
+    </div>
+</div>
+
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const questions = [
-        {
-            text: "JavaScriptで変数を宣言するキーワードではないものはどれ？",
-            options: ["let", "const", "var", "make"],
-            userAnswer: null,
-            timeSpent: 0
-        },
-        {
-            text: "Pythonで関数を定義するときに使用するキーワードはどれ？",
-            options: ["def", "func", "function", "lambda"],
-            userAnswer: null,
-            timeSpent: 0
-        },
-        {
-            text: "HTMLの構造を表すタグとして正しいものはどれ？",
-            options: ["<style>", "<div>", "<script>", "<p>"],
-            userAnswer: null,
-            timeSpent: 0
-        },
-        {
-            text: "CSSで文字の色を変更するプロパティはどれ？",
-            options: ["font-size", "color", "background-color", "text-align"],
-            userAnswer: null,
-            timeSpent: 0
-        },
-        {
-            text: "Gitでローカルの変更をステージングエリアに追加するコマンドはどれ？",
-            options: ["git push", "git commit", "git add", "git pull"],
-            userAnswer: null,
-            timeSpent: 0
-        },
-        {
-            text: "Djangoは何の言語のWebフレームワーク？",
-            options: ["Python", "JavaScript", "Ruby", "PHP"],
-            userAnswer: null,
-            timeSpent: 0
-        },
-        {
-            text: "配列の末尾に要素を追加するJavaScriptのメソッドはどれ？",
-            options: ["pop()", "push()", "shift()", "unshift()"],
-            userAnswer: null,
-            timeSpent: 0
-        },
-        {
-            text: "次のうち真偽値（ブール値）ではないものはどれ？",
-            options: ["true", "false", "null", "undefined"],
-            userAnswer: null,
-            timeSpent: 0
-        },
-        {
-            text: "Webページでスタイルを適用するための言語はどれ？",
-            options: ["HTML", "CSS", "Python", "SQL"],
-            userAnswer: null,
-            timeSpent: 0
-        },
-        {
-            text: "プログラムの処理を一定回数繰り返す制御構文はどれ？",
-            options: ["if文", "for文", "switch文", "while文"],
-            userAnswer: null,
-            timeSpent: 0
+function getCsrfToken() {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, 10) === ('csrftoken=')) {
+                cookieValue = decodeURIComponent(cookie.substring(10));
+                break;
+            }
         }
-    ];
+    }
+    return cookieValue;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const rawQuestions = {% if questions_json %}{{ questions_json|safe }}{% else %}null{% endif %};
+    
+    let questions = [];
+    if (rawQuestions && Array.isArray(rawQuestions) && rawQuestions.length > 0) {
+        questions = rawQuestions.map(q => ({
+            id: q.id,
+            text: q.text,
+            options: q.options,
+            userAnswer: null,
+            timeSpent: 0
+        }));
+    } else {
+        questions = [
+            {
+                id: 1,
+                text: "JavaScriptで変数を宣言するキーワードではないものはどれ？",
+                options: ["let", "const", "var", "make"],
+                userAnswer: null,
+                timeSpent: 0
+            },
+            {
+                id: 2,
+                text: "Pythonで関数を定義するときに使用するキーワードはどれ？",
+                options: ["def", "func", "function", "lambda"],
+                userAnswer: null,
+                timeSpent: 0
+            },
+            {
+                id: 3,
+                text: "Djangoは何の言語のWebフレームワーク？",
+                options: ["Python", "JavaScript", "Ruby", "PHP"],
+                userAnswer: null,
+                timeSpent: 0
+            }
+        ];
+    }
 
     let currentIndex = 0; 
     let totalSeconds = 0; 
     
     const questionTextEl = document.getElementById("questionText");
     const optionsContainerEl = document.getElementById("optionsContainer");
-    const progressLabelEl = document.querySelector(".progress-label");
-    const progressFillEl = document.querySelector(".progress-fill");
+    const progressTitleEl = document.getElementById("progressTitle");
+    const progressPillEl = document.getElementById("progressPill");
+    const progressFillEl = document.getElementById("progressFill");
     const btnPrev = document.getElementById("btnPrev");
     const btnNext = document.getElementById("btnNext");
     const currentTimerEl = document.getElementById("currentTimer");
@@ -261,7 +372,7 @@ document.addEventListener("DOMContentLoaded", () => {
         currentQ.options.forEach((optionText, index) => {
             const btn = document.createElement("button");
             btn.className = "option-btn";
-            btn.textContent = `${index + 1}. ${optionText}`;
+            btn.innerHTML = `<span style="opacity: 0.7; font-weight: 800;">${index + 1}.</span> <span>${escapeHtml(optionText)}</span>`;
             
             if (currentQ.userAnswer === index) {
                 btn.classList.add("selected");
@@ -278,12 +389,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         
         const questionNumber = currentIndex + 1;
-        progressLabelEl.textContent = `進捗度 (${questionNumber}/10問目)`;
-        progressFillEl.style.width = `${(questionNumber / 10) * 100}%`;
-        progressFillEl.textContent = `あと ${10 - questionNumber} 問!!`;
+        const total = questions.length;
+        progressTitleEl.textContent = `進捗度 (${questionNumber}/${total}問目)`;
+        progressPillEl.textContent = `残り ${total - questionNumber} 問`;
+        const pct = Math.round((questionNumber / total) * 100);
+        progressFillEl.style.width = `${pct}%`;
+        progressFillEl.textContent = `${pct}%`;
 
         btnPrev.style.visibility = currentIndex === 0 ? "hidden" : "visible";
-        btnNext.textContent = currentIndex === 9 ? "テスト終了" : "次の問題 →";
+        btnNext.textContent = currentIndex === total - 1 ? "テストを完了する ✨" : "次の問題 →";
     }
 
     function formatTime(seconds) {
@@ -294,18 +408,65 @@ document.addEventListener("DOMContentLoaded", () => {
 
     setInterval(() => {
         totalSeconds++;
-        questions[currentIndex].timeSpent++;
-        
+        if (questions[currentIndex]) {
+            questions[currentIndex].timeSpent++;
+            currentTimerEl.textContent = formatTime(questions[currentIndex].timeSpent);
+        }
         totalTimerEl.textContent = formatTime(totalSeconds);
-        currentTimerEl.textContent = formatTime(questions[currentIndex].timeSpent);
     }, 1000);
+
+    function submitFinalTest() {
+        btnNext.disabled = true;
+        btnNext.textContent = "採点中...";
+
+        const answers = {};
+        questions.forEach(q => {
+            answers[q.id] = q.userAnswer;
+        });
+
+        const submitUrl = "{% if topic %}{% url 'learning:submit_final_test_api' topic.id %}{% else %}{% url 'learning:submit_final_test_api_default' %}{% endif %}";
+
+        fetch(submitUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({ answers: answers })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                document.getElementById('resultIcon').textContent = data.passed ? "🏆" : "⚠️";
+                document.getElementById('resultTitle').textContent = data.passed ? "合格おめでとうございます！" : "再挑戦しましょう！";
+                document.getElementById('resultScore').textContent = `${data.score_percent}%`;
+                document.getElementById('resultMeta').textContent = `正解率: ${data.score_percent}% • 受験回数: ${data.attempt_number}回目`;
+                
+                document.getElementById('btnFinishTest').onclick = function() {
+                    window.location.href = data.redirect_url || "{% url 'learning:dashboard' %}";
+                };
+
+                document.getElementById('resultModal').style.display = 'flex';
+            } else {
+                alert("送信エラー: " + (data.message || "採点処理に失敗しました"));
+                btnNext.disabled = false;
+                btnNext.textContent = "テストを完了する ✨";
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            alert("通信エラーが発生しました: " + err.message);
+            btnNext.disabled = false;
+            btnNext.textContent = "テストを完了する ✨";
+        });
+    }
 
     btnNext.addEventListener("click", () => {
         if (currentIndex < questions.length - 1) {
             currentIndex++;
             render();
         } else {
-            alert("テスト終了！お疲れ様でした。");
+            submitFinalTest();
         }
     });
 
@@ -315,6 +476,10 @@ document.addEventListener("DOMContentLoaded", () => {
             render();
         }
     });
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
 
     render();
 });

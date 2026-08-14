@@ -1,32 +1,35 @@
 {% extends 'base.html' %}
 
-{% block title %}トップページ | WebApp Name{% endblock %}
+{% block title %}トップページ | LearnAI Platform{% endblock %}
 
 {% block content %}
 <div class="hero-section">
     
-    <!-- 中央のタイトルロゴ部分 -->
+    <!-- Hero Logo & Animated Glowing Icon -->
     <div class="hero-logo">
-        <div style="color: #d1d5db; font-size: 24px; font-weight: bold;">WebApp<br>Icon</div>
-        <h1>WebApp Title</h1>
+        <div class="hero-logo-icon">✨</div>
+        <h1>LearnAI Platform</h1>
     </div>
 
-    <!-- キャッチコピー -->
+    <!-- Hero Description -->
     <p class="hero-description">
-        学習状況・習熟度を管理してくれるAI先生が皆さんの学習をサポートしてくれます！<br>
-        授業資料や課題の解説、身に着けたいスキルをAI先生とチャットしましょう！
+        AI先生があなたの学習進捗と理解度をリアルタイムで追跡し、最適なロードマップを提案します！<br>
+        授業資料や課題の解説、身に着けたいスキルをAI先生とチャットしながらスピーディーに習得しましょう。
     </p>
 
-    <!-- メインボタン (「はじめる」を押したらダッシュボードへ移動) -->
-    <a href="{% url 'learning:dashboard' %}" class="btn-primary hero-btn-large" style="display: inline-block; text-decoration: none; text-align: center;">はじめる</a>
-    <p class="terms-text">
-        "WebApp Title"では、クッキー（Cookie）の同意を強く推奨します。<br>
-        同意することで、あなたの学習履歴が自動で保存され、次回学習時に続きから学習を行うことができます。
+    <!-- Main Action Button -->
+    <a href="{% url 'learning:dashboard' %}" class="btn-primary hero-btn-large">
+        🚀 はじめる (ダッシュボードへ)
+    </a>
+
+    <p class="terms-text" style="margin-top: 12px;">
+        "LearnAI Platform" ではクッキー (Cookie) を利用して学習進捗を自動保存します。<br>
+        同意いただくことで、次回ログイン時も続きからスムーズに学習を再開できます。
     </p>
 
 </div>
 
-<!-- クッキー同意カード (画面下部に固定) -->
+<!-- Cookie Banner Modal (Fixed Bottom) -->
 <div class="cookie-banner-wrapper" id="cookieBanner">
     <div class="card">
         <div class="cookie-header">
@@ -35,13 +38,12 @@
             <span class="badge-pill">プライバシー設定</span>
         </div>
         <p class="cookie-text">
-            "WebApp Titile"では、クッキー（Cookie）を保存して、ユーザの学習履歴を自動で復元します。同意することで、快適な利用体験を提供します。
+            当プラットフォームでは、クッキー（Cookie）を保存してユーザーの学習履歴や進捗を自動復元します。
         </p>
         <div class="cookie-actions">
             <div class="cookie-buttons">
-                <!-- 共通コンポーネントのテスト用ボタン -->
-                <button class="btn-secondary" id="rejectCookieBtn">拒否する</button>
-                <button class="btn-primary" id="acceptCookieBtn">同意する</button>
+                <button class="btn-secondary" id="rejectCookieBtn" style="padding: 8px 20px; font-size: 0.85rem;">拒否する</button>
+                <button class="btn-primary" id="acceptCookieBtn" style="padding: 8px 20px; font-size: 0.85rem;">同意する</button>
             </div>
         </div>
     </div>

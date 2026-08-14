@@ -1,22 +1,29 @@
-// Client-side JavaScript for AI Adaptive Learning App
+// Client-side JavaScript for AI Adaptive Learning Platform
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('AIとともに学習するクイズアプリ — Phase 1 Initialized');
+    console.log('✨ AI Adaptive Learning Platform Engine Initialized');
 
-    // 保存されている言語設定を取得（無ければブラウザ言語、デフォルトは 'ja'）
-    const savedLang = localStorage.getItem("app_language") || (navigator.language.startsWith('ja') ? 'ja' : 'en');
-    window.setLanguage(savedLang);
+    // 🌐 Load saved language or fall back to Japanese 'ja'
+    const savedLang = localStorage.getItem("app_language") || "ja";
+    if (typeof window.applyGlobalLanguage === 'function') {
+        window.applyGlobalLanguage(savedLang);
+    }
 
-    // 👤 保存されているユーザー名を各画面へ反映
-    window.applyGlobalUserName();
+    // 👤 Sync saved username across user display elements
+    if (typeof window.applyGlobalUserName === 'function') {
+        window.applyGlobalUserName();
+    }
 
-    // ⏱️ 設定の学習時間をダッシュボード（「目標: 15h」等）へ強制反映・同期
-    window.applyGlobalDailyStudyGoal();
+    // ⏱️ Sync daily study goal setting
+    if (typeof window.applyGlobalDailyStudyGoal === 'function') {
+        window.applyGlobalDailyStudyGoal();
+    }
 });
 
 // ==========================================
-// 0. 多言語化 (i18n) 処理エンジン
+// 🌐 Multilingual i18n Translation Engine
 // ==========================================
-const translations = {
+window.i18nDictionary = window.i18nDictionary || {};
+Object.assign(window.i18nDictionary, {
     ja: {
         guestUser: "ゲストユーザー",
         addFile: "ファイルを追加",
@@ -43,7 +50,35 @@ const translations = {
         markSectionsDesc: "すでに知っている部分にチェックを入れると、AIが重点的に学ぶべき内容を最適化します。",
         back: "‹ 戻る",
         deleteSelected: "選択した項目を削除",
-        progress: "進捗"
+        progress: "進捗",
+        aiThinking: "AIが思考中...",
+        aiAnalyzing: "コンテンツを解析しています。少々お待ちください。",
+        settings: "設定",
+        darkMode: "ダークモード",
+        language: "言語",
+        greeting: "こんにちは！ 👋",
+        recentHistory: "直近の学習履歴",
+        noHistory: "まだ作成されたファイル履歴はありません",
+        myCourses: "マイコース",
+        viewAll: "すべて見る",
+        math: "数学",
+        english: "英語",
+        history: "歴史",
+        science: "科学",
+        addSubject: "教科を追加",
+        addSubjectPlaceholder: "例: 物理",
+        add: "追加",
+        announcementsAndTips: "お知らせ＆ヒント",
+        aiTipTitle: "AIヒント: 漢字復習の間隔を空ける",
+        aiTipDesc: "就寝30分前にN3漢字カードを復習すると記憶が定着しやすくなります。",
+        midtermTitle: "中間試験期間",
+        midtermDesc: "来週月曜日から微積分と文学の試験が始まります。日程を確認してください。",
+        upcomingDeadlines: "今後の提出期限",
+        quizTitle: "N3 語彙ミニクイズ",
+        quizSub: "期限: 明日 23:59 • 日本語 N3",
+        daysLeft: "残り1日",
+        aiAssistantName: "タヌキ学習アシスタント",
+        aiAssistantMsg: "「今日はどんな学習をお手伝いしましょうか？」"
     },
     en: {
         guestUser: "Guest User",
@@ -71,60 +106,101 @@ const translations = {
         markSectionsDesc: "Check sections you know so AI optimizes what you need to focus on.",
         back: "‹ Back",
         deleteSelected: "Delete Selected",
-        progress: "Progress"
+        progress: "Progress",
+        aiThinking: "AI is thinking...",
+        aiAnalyzing: "Analyzing content. Please wait a moment.",
+        settings: "Settings",
+        darkMode: "Dark Mode",
+        language: "Language",
+        greeting: "Hello! 👋",
+        recentHistory: "Recent Activity",
+        noHistory: "No learning history yet",
+        myCourses: "My Courses",
+        viewAll: "View All",
+        math: "Mathematics",
+        english: "English",
+        history: "History",
+        science: "Science",
+        addSubject: "Add Course",
+        addSubjectPlaceholder: "e.g. Physics",
+        add: "Add",
+        announcementsAndTips: "Announcements & Tips",
+        aiTipTitle: "AI Tip: Space Out Your Kanji Review",
+        aiTipDesc: "Review N3 kanji cards 30 mins before sleeping to build stronger memory paths.",
+        midtermTitle: "Midterm Examination Week",
+        midtermDesc: "Calculus and Literature exams commence next Monday. Check schedule.",
+        upcomingDeadlines: "Upcoming Deadlines",
+        quizTitle: "N3 Vocabulary Mini-Quiz",
+        quizSub: "Due: Tomorrow, 11:59 PM • Japanese N3",
+        daysLeft: "1 day left",
+        aiAssistantName: "Tanuki Study Assistant",
+        aiAssistantMsg: "\"How can I help you study today?\""
+    },
+    vi: {
+        guestUser: "Người dùng khách",
+        addFile: "Thêm tệp",
+        title: "Tiêu đề",
+        lessonFile: "Tệp bài học (PDF, v.v.)",
+        cancel: "Hủy",
+        addAndStartAnalysis: "Thêm & Phân tích",
+        uploadDocument: "Tải tệp lên",
+        addLearningMaterial: "Thêm tài liệu học",
+        uploadSubTitle: "Tải lên tệp PDF hoặc văn bản để bắt đầu học với AI",
+        dragAndDropText: "Kéo & thả tệp vào đây<br>hoặc nhấp để chọn",
+        selectFile: "Chọn tệp",
+        step: "Bước",
+        nextStep: "Tiếp theo →",
+        understandingCheckQuestion: "Câu hỏi kiểm tra hiểu biết",
+        viewHint: "Xem gợi ý",
+        hint: "Gợi ý",
+        checkAnswer: "Kiểm tra đáp án",
+        backToTopics: "‹ Quay lại chủ đề",
+        generatedByAiNote: " được AI tạo dựa trên kết quả học tập",
+        continueLearning: "Tiếp tục học",
+        reviewDocument: "Xác nhận tài liệu",
+        whichPartsUnderstood: "Phần nào bạn đã hiểu rõ?",
+        markSectionsDesc: "Đánh dấu phần bạn đã biết để AI tập trung vào kiến thức cần nâng cao.",
+        back: "‹ Quay lại",
+        deleteSelected: "Xóa các mục đã chọn",
+        progress: "Tiến độ",
+        aiThinking: "AI đang suy nghĩ...",
+        aiAnalyzing: "Đang phân tích nội dung. Vui lòng chờ.",
+        settings: "Cài đặt",
+        darkMode: "Chế độ tối",
+        language: "Ngôn ngữ",
+        greeting: "Xin chào! 👋",
+        recentHistory: "Lịch sử học tập gần đây",
+        noHistory: "Chưa có lịch sử học tập",
+        myCourses: "Khóa học của tôi",
+        viewAll: "Xem tất cả",
+        math: "Toán học",
+        english: "Tiếng Anh",
+        history: "Lịch sử",
+        science: "Khoa học",
+        addSubject: "Thêm môn học",
+        addSubjectPlaceholder: "Ví dụ: Vật lý",
+        add: "Thêm",
+        announcementsAndTips: "Thông báo & Gợi ý",
+        aiTipTitle: "Gợi ý AI: Dãn cách thời gian ôn tập Kanji",
+        aiTipDesc: "Ôn tập thẻ Kanji N3 30 phút trước khi ngủ để ghi nhớ tốt hơn.",
+        midtermTitle: "Tuần thi giữa kỳ",
+        midtermDesc: "Kỳ thi Giải tích và Ngữ văn bắt đầu vào Thứ Hai tới. Kiểm tra lịch trình.",
+        upcomingDeadlines: "Hạn chót sắp tới",
+        quizTitle: "Bài kiểm tra nhỏ từ vựng N3",
+        quizSub: "Hạn: Ngày mai, 23:59 • Tiếng Nhật N3",
+        daysLeft: "Còn 1 ngày",
+        aiAssistantName: "Trợ lý học tập Tanuki",
+        aiAssistantMsg: "\"Tôi có thể giúp gì cho bạn học hôm nay?\""
     }
-};
-
-/**
- * 🌐 言語を変更して画面上の data-i18n タグをすべて書き換える関数
- * @param {string} lang - 'ja' | 'en'
- */
-window.setLanguage = function(lang) {
-    if (!translations[lang]) return;
-    
-    // 設定を保存
-    localStorage.setItem("app_language", lang);
-
-    // 画面内の data-i18n 属性を持つ要素をすべて更新
-    document.querySelectorAll('[data-i18n]').forEach(element => {
-        const key = element.getAttribute('data-i18n');
-        if (translations[lang] && translations[lang][key]) {
-            const text = translations[lang][key];
-            if (text.includes('<')) {
-                element.innerHTML = text;
-            } else {
-                element.textContent = text;
-            }
-        }
-    });
-
-    // <html> タグの lang 属性も更新
-    document.documentElement.lang = lang;
-
-    // 👤 言語変更に伴い名前の未設定表示（ゲストユーザー名）も同期
-    window.applyGlobalUserName();
-};
+});
 
 // ==========================================
-// ⏱️ 毎日の学習時間（目標時間）の全画面同期処理
+// ⏱️ Daily Study Goal Sync Engine
 // ==========================================
-
-/**
- * 設定画面の目標時間を重視し、ダッシュボード上の「目標: 15h」などの表示を
- * 設定値（例: 「目標: 30分」）へ書き換えて統一する関数
- */
 window.applyGlobalDailyStudyGoal = function() {
-    // デフォルト値: 30分（設定値が存在すればそれを使用）
     const savedGoal = localStorage.getItem("daily_study_goal") || "30";
     const goalNum = parseInt(savedGoal, 10) || 30;
 
-    // 1. 設定画面のフォーム要素（select/input）に反映
-    const goalSelect = document.getElementById("dailyGoalSelect");
-    const goalInput = document.getElementById("dailyGoalInput");
-    if (goalSelect) goalSelect.value = savedGoal;
-    if (goalInput) goalInput.value = savedGoal;
-
-    // 2. クラス属性指定のある要素への反映 (.daily-goal-display, .daily-goal-target など)
     document.querySelectorAll(".daily-goal-display, .daily-goal-target, #dailyGoalDisplay").forEach(el => {
         const format = el.dataset.format;
         if (format === "text") {
@@ -137,20 +213,8 @@ window.applyGlobalDailyStudyGoal = function() {
             el.textContent = `目標: ${goalNum}分`;
         }
     });
-
-    // 3. ダッシュボード上に直書きされている「目標: 15h」などの表示を自動検知して置換
-    document.querySelectorAll("div, span, p, text").forEach(el => {
-        if (el.children.length === 0 && el.textContent.includes("目標:")) {
-            el.textContent = `目標: ${goalNum}分`;
-            el.classList.add("daily-goal-display");
-        }
-    });
 };
 
-/**
- * 設定画面等で目標時間を変更した際に呼び出し、ローカルストレージに保存＆全体更新する関数
- * @param {string|number} minutes - 設定された目標学習時間（分）
- */
 window.saveDailyStudyGoal = function(minutes) {
     if (minutes !== undefined && minutes !== null && minutes !== "") {
         localStorage.setItem("daily_study_goal", String(minutes));
@@ -159,27 +223,20 @@ window.saveDailyStudyGoal = function(minutes) {
 };
 
 // ==========================================
-// 👤 ユーザー名同期 ＆ ログイン保存処理
+// 👤 Global Username Sync Engine
 // ==========================================
-
-/**
- * 画面全体の class="user-name-display" に保存されたユーザー名を反映する関数
- */
 window.applyGlobalUserName = function() {
     const savedName = localStorage.getItem("user_name");
     const lang = localStorage.getItem("app_language") || "ja";
-    const dict = translations[lang] || translations["ja"];
+    const dict = (window.i18nDictionary && window.i18nDictionary[lang]) ? window.i18nDictionary[lang] : { guestUser: "ゲストユーザー" };
 
-    const displayName = (savedName && savedName.trim() !== "") ? savedName : (dict.guestUser || "ゲストユーザー");
+    const displayName = (savedName && savedName.trim() !== "") ? savedName : dict.guestUser;
 
     document.querySelectorAll(".user-name-display").forEach(el => {
         el.textContent = displayName;
     });
 };
 
-/**
- * ログイン画面や名前変更フォームからユーザー名を保存する関数
- */
 window.saveUserNameOnLogin = function(inputElementOrString) {
     let username = "";
     if (typeof inputElementOrString === "string") {
@@ -195,168 +252,69 @@ window.saveUserNameOnLogin = function(inputElementOrString) {
 };
 
 // ==========================================
-// 📁 学習ファイル履歴の管理関数
+// 🖐️ Card Swipe Gesture Utility Engine
 // ==========================================
+window.setupSwipeableCard = function(cardElement, onSwipeLeft, onSwipeRight) {
+    if (!cardElement) return;
 
-window.addCreatedFile = function(id, fileName, theme, url) {
-    let files = JSON.parse(localStorage.getItem("user_created_files_history") || "[]");
-    let activeIds = JSON.parse(localStorage.getItem("user_active_file_ids") || "[]");
+    let startX = 0;
+    let startY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let isDragging = false;
 
-    const fileId = id ? id : ('file_' + Date.now() + '_' + Math.floor(Math.random() * 1000));
-    const today = new Date();
-    const dateStr = `${today.getDate()}/${today.getMonth() + 1}`;
+    const handleTouchStart = (e) => {
+        const touch = e.touches ? e.touches[0] : e;
+        startX = touch.clientX;
+        startY = touch.clientY;
+        isDragging = true;
+        cardElement.classList.add('swiping');
+    };
 
-    files = files.filter(f => f.id !== fileId);
+    const handleTouchMove = (e) => {
+        if (!isDragging) return;
+        const touch = e.touches ? e.touches[0] : e;
+        currentX = touch.clientX - startX;
+        currentY = touch.clientY - startY;
 
-    if (!activeIds.includes(fileId)) {
-        activeIds.push(fileId);
-        localStorage.setItem("user_active_file_ids", JSON.stringify(activeIds));
-    }
+        // Only rotate and transform if horizontal swipe is dominant
+        if (Math.abs(currentX) > Math.abs(currentY)) {
+            const rotate = currentX * 0.05;
+            cardElement.style.transform = `translateX(${currentX}px) rotate(${rotate}deg)`;
+            cardElement.style.opacity = Math.max(0.4, 1 - Math.abs(currentX) / 400);
+        }
+    };
 
-    files.unshift({
-        id: fileId,
-        name: fileName || 'no title',
-        theme: theme || 'blue',
-        made: dateStr,
-        recent: dateStr,
-        url: url || '#'
-    });
+    const handleTouchEnd = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        cardElement.classList.remove('swiping');
 
-    localStorage.setItem("user_created_files_history", JSON.stringify(files));
-
-    if (typeof window.renderRecentHistory === 'function') {
-        window.renderRecentHistory();
-    }
-};
-
-window.removeCreatedFile = function(fileId) {
-    let files = JSON.parse(localStorage.getItem("user_created_files_history") || "[]");
-    let activeIds = JSON.parse(localStorage.getItem("user_active_file_ids") || "[]");
-
-    files = files.filter(f => f.id !== fileId);
-    activeIds = activeIds.filter(id => id !== fileId);
-
-    localStorage.setItem("user_created_files_history", JSON.stringify(files));
-    localStorage.setItem("user_active_file_ids", JSON.stringify(activeIds));
-
-    if (typeof window.renderRecentHistory === 'function') {
-        window.renderRecentHistory();
-    }
-};
-
-window.clearAllHistory = function() {
-    if (confirm("学習履歴をすべて削除して0件に戻しますか？")) {
-        localStorage.removeItem("user_created_files_history");
-        localStorage.removeItem("user_active_file_ids");
-        location.reload();
-    }
-};
-
-window.onSaveFileSuccess = function(fileName, fileUrl, fileId) {
-    const title = fileName || "新しいファイル";
-    const url = fileUrl || "#";
-
-    window.addCreatedFile(fileId || null, title, 'blue', url);
-};
-
-// ==========================================
-// ⚙️ UIモーダル ＆ イベントリスナー登録
-// ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    // --- 毎日の学習時間 設定変更イベントの自動紐付け ---
-    const goalSelect = document.getElementById("dailyGoalSelect");
-    const goalInput = document.getElementById("dailyGoalInput");
-
-    if (goalSelect) {
-        goalSelect.addEventListener("change", (e) => {
-            window.saveDailyStudyGoal(e.target.value);
-        });
-    }
-    if (goalInput) {
-        goalInput.addEventListener("change", (e) => {
-            window.saveDailyStudyGoal(e.target.value);
-        });
-    }
-
-    // --- 名前編集モーダル ---
-    const nameEditBtn = document.getElementById('nameEditBtn');
-    const nameModalOverlay = document.getElementById('nameModalOverlay');
-    const cancelNameBtn = document.getElementById('cancelNameBtn');
-    const saveNameBtn = document.getElementById('saveNameBtn');
-    const nameInput = document.getElementById('nameInput');
-
-    if (nameEditBtn && nameModalOverlay) {
-        nameEditBtn.addEventListener('click', () => {
-            nameModalOverlay.classList.remove('hidden');
-            if (nameInput) nameInput.focus();
-        });
-
-        if (cancelNameBtn) {
-            cancelNameBtn.addEventListener('click', () => {
-                nameModalOverlay.classList.add('hidden');
-            });
+        const threshold = 100;
+        if (currentX < -threshold) {
+            cardElement.style.transform = '';
+            cardElement.style.opacity = '';
+            if (typeof onSwipeLeft === 'function') onSwipeLeft();
+        } else if (currentX > threshold) {
+            cardElement.style.transform = '';
+            cardElement.style.opacity = '';
+            if (typeof onSwipeRight === 'function') onSwipeRight();
+        } else {
+            cardElement.style.transform = '';
+            cardElement.style.opacity = '';
         }
 
-        if (saveNameBtn && nameInput) {
-            saveNameBtn.addEventListener('click', () => {
-                const newName = nameInput.value.trim();
-                if (newName) {
-                    document.cookie = `user_name=${newName}; path=/; max-age=2592000;`;
-                    window.saveUserNameOnLogin(newName);
-                    nameModalOverlay.classList.add('hidden');
-                }
-            });
-        }
-    }
+        startX = 0;
+        startY = 0;
+        currentX = 0;
+        currentY = 0;
+    };
 
-    // --- クッキー同意バナー ---
-    const cookieBanner = document.getElementById('cookieBanner');
-    const acceptCookieBtn = document.getElementById('acceptCookieBtn');
-    const rejectCookieBtn = document.getElementById('rejectCookieBtn');
+    cardElement.addEventListener('touchstart', handleTouchStart, { passive: true });
+    cardElement.addEventListener('touchmove', handleTouchMove, { passive: true });
+    cardElement.addEventListener('touchend', handleTouchEnd);
 
-    if (cookieBanner) {
-        if (document.cookie.includes('cookie_consent=true') || document.cookie.includes('cookie_consent=false')) {
-            cookieBanner.style.display = 'none';
-        }
-
-        if (acceptCookieBtn) {
-            acceptCookieBtn.addEventListener('click', () => {
-                document.cookie = "cookie_consent=true; path=/; max-age=2592000;";
-                cookieBanner.style.display = 'none';
-            });
-        }
-
-        if (rejectCookieBtn) {
-            rejectCookieBtn.addEventListener('click', () => {
-                document.cookie = "cookie_consent=false; path=/; max-age=2592000;";
-                cookieBanner.style.display = 'none';
-            });
-        }
-    }
-});
-
-// ==========================================
-// 🔥 連続学習記録（ストリーク）更新処理
-// ==========================================
-window.onQuizCleared = function() {
-    const today = new Date().toISOString().split('T')[0];
-    const lastQuizDate = localStorage.getItem("last_quiz_completed_date");
-    let streak = parseInt(localStorage.getItem("quiz_streak_count") || "0", 10);
-
-    if (lastQuizDate) {
-        const lastDate = new Date(lastQuizDate);
-        const currDate = new Date(today);
-        const diffDays = Math.floor((currDate - lastDate) / (1000 * 60 * 60 * 24));
-
-        if (diffDays === 1) {
-            streak += 1;
-        } else if (diffDays > 1) {
-            streak = 1;
-        }
-    } else {
-        streak = 1;
-    }
-
-    localStorage.setItem("last_quiz_completed_date", today);
-    localStorage.setItem("quiz_streak_count", streak);
+    cardElement.addEventListener('mousedown', handleTouchStart);
+    window.addEventListener('mousemove', handleTouchMove);
+    window.addEventListener('mouseup', handleTouchEnd);
 };

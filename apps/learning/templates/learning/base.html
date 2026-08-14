@@ -4,10 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}学習アプリ{% endblock %}</title>
+    <title>{% block title %}LearnAI Platform{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+JP:wght@300;400;500;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2">
     {% block extra_css %}{% endblock %}
 
-    <!-- ⚡️ 画面読み込み直前にテーマを適用（白チラつき防止） -->
+    <!-- Anti-flicker Dark Theme script -->
     <script>
         (function() {
             const savedTheme = localStorage.getItem("app_theme") || localStorage.getItem("theme");
@@ -18,55 +26,42 @@
     </script>
 
     <style>
-    /* 🌐 全ページ共通ダークモード設定 */
-    body {
-        background-color: #f8fafc;
-        color: #1e293b;
-        transition: background-color 0.2s ease, color 0.2s ease;
-        margin: 0;
-        padding: 0;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
-    html.dark-mode,
-    body.dark-mode {
-        background-color: #0f172a !important;
-        color: #f8fafc !important;
-    }
-
-    /* 背景の暗転＋ボカシ処理 (AI Loading) */
+    /* AI Loading Overlay Styling */
     .ai-loading-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100vw;
         height: 100vh;
-        background: rgba(15, 23, 42, 0.6);
-        backdrop-filter: blur(4px);
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
         z-index: 9999;
         display: flex;
         align-items: center;
         justify-content: center;
-        animation: fadeIn 0.2s ease-out;
+        animation: fadeIn 0.25s ease-out;
     }
     .ai-loading-card {
-        background: #ffffff;
-        padding: 32px 40px;
-        border-radius: 20px;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        background: var(--bg-surface, #ffffff);
+        padding: 36px 40px;
+        border-radius: 24px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         text-align: center;
-        max-width: 380px;
-        width: 85%;
+        max-width: 400px;
+        width: 86%;
+        border: 1px solid var(--border-light, #e2e8f0);
     }
     body.dark-mode .ai-loading-card {
-        background: #1e293b;
+        background: #131b2e;
         color: #f8fafc;
+        border-color: #1e293b;
     }
 
     .ai-spinner-container {
         position: relative;
-        width: 64px;
-        height: 64px;
+        width: 68px;
+        height: 68px;
         margin: 0 auto 20px auto;
         display: flex;
         align-items: center;
@@ -76,14 +71,14 @@
         position: absolute;
         width: 100%;
         height: 100%;
-        border: 4px solid #e2e8f0;
-        border-top: 4px solid #6366f1;
+        border: 4px solid var(--border-light, #e2e8f0);
+        border-top: 4px solid var(--primary, #6366f1);
         border-radius: 50%;
         animation: spin 1s linear infinite;
     }
 
     .ai-icon-sparkle {
-        font-size: 26px;
+        font-size: 28px;
         animation: pulse 1.4s ease-in-out infinite;
     }
 
@@ -104,64 +99,135 @@
 
     .ai-loading-title {
         font-size: 1.25rem;
-        font-weight: 700;
-        color: #0f172a;
+        font-weight: 800;
+        color: var(--text-main, #0f172a);
         margin: 0 0 8px 0;
     }
     body.dark-mode .ai-loading-title { color: #f8fafc; }
 
     .ai-loading-sub {
-        font-size: 0.875rem;
-        color: #64748b;
+        font-size: 0.88rem;
+        color: var(--text-muted, #64748b);
         margin: 0;
         line-height: 1.5;
     }
     body.dark-mode .ai-loading-sub { color: #94a3b8; }
 
-    /* 🌐 画面右下の言語切り替えフローティングボタン */
+    /* Language Switcher Floating Pill */
     .lang-switcher-float {
         position: fixed;
-        bottom: 20px;
-        right: 20px;
+        bottom: 24px;
+        right: 24px;
         z-index: 9990;
         display: flex;
-        gap: 6px;
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(8px);
-        padding: 6px 10px;
-        border-radius: 30px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-        border: 1px solid #e2e8f0;
+        gap: 4px;
+        background: var(--bg-glass, rgba(255, 255, 255, 0.85));
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 5px 8px;
+        border-radius: var(--radius-pill, 9999px);
+        box-shadow: var(--shadow-lg, 0 10px 25px rgba(0,0,0,0.12));
+        border: 1.5px solid var(--border-light, #e2e8f0);
     }
     body.dark-mode .lang-switcher-float {
-        background: rgba(30, 41, 59, 0.9);
-        border-color: #334155;
+        background: rgba(19, 27, 46, 0.85);
+        border-color: #1e293b;
     }
     .lang-btn {
         border: none;
         background: transparent;
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: #64748b;
+        padding: 6px 14px;
+        border-radius: var(--radius-pill, 9999px);
+        font-size: 0.82rem;
+        font-weight: 800;
+        color: var(--text-muted, #64748b);
         cursor: pointer;
-        transition: all 0.2s;
+        transition: var(--transition-fast, all 0.15s);
     }
     .lang-btn.active {
-        background: #6366f1;
+        background: var(--primary-gradient, linear-gradient(135deg, #6366f1, #4f46e5));
         color: #ffffff;
+        box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+    }
+    .app-top-nav {
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--border-light);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        padding: 12px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .app-brand {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-family: var(--font-heading);
+        font-weight: 800;
+        font-size: 1.25rem;
+        color: var(--text-main);
+        text-decoration: none;
+    }
+    .app-nav-links {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    .app-nav-link {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: var(--transition-fast);
+        padding: 6px 12px;
+        border-radius: var(--radius-sm);
+    }
+    .app-nav-link:hover, .app-nav-link.active {
+        color: var(--primary);
+        background: var(--primary-light);
+    }
+    .app-nav-cta {
+        background: var(--primary-gradient);
+        color: #ffffff;
+        padding: 8px 18px;
+        border-radius: var(--radius-pill);
+        font-weight: 800;
+        font-size: 0.85rem;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        transition: var(--transition-fast);
+    }
+    .app-nav-cta:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.45);
     }
     </style>
 </head>
 <body>
 
-    <main>
+    <header class="app-top-nav">
+        <a href="{% url 'learning:dashboard' %}" class="app-brand">
+            <span>✨</span> <span>LearnAI</span>
+        </a>
+        <nav class="app-nav-links">
+            <a href="{% url 'learning:dashboard' %}" class="app-nav-link" data-i18n="navDashboard">ホーム</a>
+            <a href="{% url 'learning:subject_select' %}" class="app-nav-link" data-i18n="navSubjects">教科一覧</a>
+            <a href="{% url 'learning:profile' %}" class="app-nav-link" data-i18n="navProfile">プロフィール</a>
+            <a href="{% url 'learning:dashboard' %}" class="app-nav-cta" data-i18n="continueBtn">学習を再開 →</a>
+        </nav>
+    </header>
+
+    <main class="page-fade-in">
         {% block content %}
         {% endblock %}
     </main>
 
-    <!-- AI Loading オーバーレイ -->
+
+    <!-- AI Loading Overlay -->
     <div id="ai-loading-overlay" class="ai-loading-overlay" style="display: none;">
         <div class="ai-loading-card">
             <div class="ai-spinner-container">
@@ -173,202 +239,20 @@
         </div>
     </div>
 
-    <!-- 🌐 言語切り替えボタン（全画面共通） -->
+    <!-- Language Switcher Floating Button -->
     <div class="lang-switcher-float">
         <button type="button" class="lang-btn" id="lang-btn-ja" onclick="applyGlobalLanguage('ja')">🇯🇵 JP</button>
         <button type="button" class="lang-btn" id="lang-btn-en" onclick="applyGlobalLanguage('en')">🇺🇸 EN</button>
         <button type="button" class="lang-btn" id="lang-btn-vi" onclick="applyGlobalLanguage('vi')">🇻🇳 VN</button>
     </div>
 
-    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/main.js' %}?v=2"></script>
     <script>
-    /* 🌐 全ページ共有の多言語辞書（日本語 / English / Tiếng Việt） */
-    window.i18nDictionary = {
-        ja: {
-            guestUser: "ゲストユーザー",
-            settings: "設定",
-            studentAccount: "学生アカウント",
-            earnedScore: "獲得スコア",
-            streakStudy: "連続学習",
-            preferences: "環境設定",
-            darkMode: "ダークモード",
-            language: "言語",
-            notificationSound: "通知音",
-            studySettings: "学習設定",
-            dailyGoal: "毎日の目標",
-            reminderTime: "リマインダー時間",
-            autoPlayAudio: "音声自動再生",
-            general: "一般",
-            about: "アプリについて",
-            helpSupport: "ヘルプ＆サポート",
-            rateApp: "アプリを評価する",
-            terms: "利用規約",
-            privacy: "プライバシーポリシー",
-            dangerZone: "危険エリア",
-            logOut: "ログアウト",
-            deleteAccount: "アカウント削除",
-            selectLanguage: "言語を選択",
-            close: "閉じる",
-            langDisplay: "日本語",
-            aiThinking: "AIが思考中...",
-            aiAnalyzing: "コンテンツを解析しています。少々お待ちください。",
-            home: "ホーム",
-            courses: "コース",
-            calendar: "カレンダー",
-            aiChat: "AIチャット",
-            profile: "プロフィール",
-            greeting: "こんにちは！ 👋",
-            recentHistory: "直近の学習履歴",
-            noHistory: "まだ作成されたファイル履歴はありません",
-            myCourses: "マイコース",
-            viewAll: "すべて見る",
-            math: "数学",
-            english: "英語",
-            history: "歴史",
-            science: "科学",
-            addSubject: "教科を追加",
-            addSubjectPlaceholder: "例: 物理",
-            add: "追加",
-            announcementsAndTips: "お知らせ＆ヒント",
-            aiTipTitle: "AIヒント: 漢字復習の間隔を空ける",
-            aiTipDesc: "就寝30分前にN3漢字カードを復習すると記憶が定着しやすくなります。",
-            midtermTitle: "中間試験期間",
-            midtermDesc: "来週月曜日から微積分と文学の試験が始まります。日程を確認してください。",
-            upcomingDeadlines: "今後の提出期限",
-            quizTitle: "N3 語彙ミニクイズ",
-            quizSub: "期限: 明日 23:59 • 日本語 N3",
-            daysLeft: "残り1日",
-            aiAssistantName: "タヌキ学習アシスタント",
-            aiAssistantMsg: "「今日はどんな学習をお手伝いしましょうか？」",
-            streakText: "日連続学習！",
-            goalPrefix: "目標: "
-        },
-        en: {
-            guestUser: "Guest User",
-            settings: "Settings",
-            studentAccount: "Student Account",
-            earnedScore: "Earned Score",
-            streakStudy: "Streak",
-            preferences: "PREFERENCES",
-            darkMode: "Dark Mode",
-            language: "Language",
-            notificationSound: "Notification Sound",
-            studySettings: "STUDY SETTINGS",
-            dailyGoal: "Daily Goal",
-            reminderTime: "Reminder Time",
-            autoPlayAudio: "Auto-play Audio",
-            general: "GENERAL",
-            about: "About",
-            helpSupport: "Help & Support",
-            rateApp: "Rate the App",
-            terms: "Terms of Service",
-            privacy: "Privacy Policy",
-            dangerZone: "DANGER ZONE",
-            logOut: "Log Out",
-            deleteAccount: "Delete Account",
-            selectLanguage: "Select Language",
-            close: "Close",
-            langDisplay: "English",
-            aiThinking: "AI is thinking...",
-            aiAnalyzing: "Analyzing content. Please wait a moment.",
-            home: "Home",
-            courses: "Courses",
-            calendar: "Calendar",
-            aiChat: "AI Chat",
-            profile: "Profile",
-            greeting: "Konnichiwa! 👋",
-            recentHistory: "Recent Activity",
-            noHistory: "No learning history yet",
-            myCourses: "My Courses",
-            viewAll: "View All",
-            math: "Mathematics",
-            english: "English",
-            history: "History",
-            science: "Science",
-            addSubject: "Add Course",
-            addSubjectPlaceholder: "e.g. Physics",
-            add: "Add",
-            announcementsAndTips: "Announcements & Tips",
-            aiTipTitle: "AI Tip: Space Out Your Kanji Review",
-            aiTipDesc: "Review N3 kanji cards 30 mins before sleeping to build stronger memory paths.",
-            midtermTitle: "Midterm Examination Week",
-            midtermDesc: "Calculus and Literature exams commence next Monday. Check schedule.",
-            upcomingDeadlines: "Upcoming Deadlines",
-            quizTitle: "N3 Vocabulary Mini-Quiz",
-            quizSub: "Due: Tomorrow, 11:59 PM • Japanese N3",
-            daysLeft: "1 day left",
-            aiAssistantName: "Tanuki Study Assistant",
-            aiAssistantMsg: "\"How can I help you study today?\"",
-            streakText: "-day streak!",
-            goalPrefix: "Goal: "
-        },
-        vi: {
-            guestUser: "Người dùng khách",
-            settings: "Cài đặt",
-            studentAccount: "Tài khoản học sinh",
-            earnedScore: "Điểm tích lũy",
-            streakStudy: "Chuỗi học tập",
-            preferences: "TÙY CHỌN",
-            darkMode: "Chế độ tối",
-            language: "Ngôn ngữ",
-            notificationSound: "Âm thanh thông báo",
-            studySettings: "CÀI ĐẶT HỌC TẬP",
-            dailyGoal: "Mục tiêu hàng ngày",
-            reminderTime: "Thời gian nhắc nhở",
-            autoPlayAudio: "Tự động phát âm thanh",
-            general: "CHUNG",
-            about: "Giới thiệu",
-            helpSupport: "Trợ giúp & Hỗ trợ",
-            rateApp: "Đánh giá ứng dụng",
-            terms: "Điều khoản dịch vụ",
-            privacy: "Chính sách bảo mật",
-            dangerZone: "VÙNG NGHĨA VỤ / NGUY HIỂM",
-            logOut: "Đăng xuất",
-            deleteAccount: "Xóa tài khoản",
-            selectLanguage: "Chọn ngôn ngữ",
-            close: "Đóng",
-            langDisplay: "Tiếng Việt",
-            aiThinking: "AI đang suy nghĩ...",
-            aiAnalyzing: "Đang phân tích nội dung. Vui lòng chờ trong giây lát.",
-            home: "Trang chủ",
-            courses: "Khóa học",
-            calendar: "Lịch",
-            aiChat: "Trò chuyện AI",
-            profile: "Hồ sơ",
-            greeting: "Xin chào! 👋",
-            recentHistory: "Lịch sử học tập gần đây",
-            noHistory: "Chưa có lịch sử học tập",
-            myCourses: "Khóa học của tôi",
-            viewAll: "Xem tất cả",
-            math: "Toán học",
-            english: "Tiếng Anh",
-            history: "Lịch sử",
-            science: "Khoa học",
-            addSubject: "Thêm môn học",
-            addSubjectPlaceholder: "Ví dụ: Vật lý",
-            add: "Thêm",
-            announcementsAndTips: "Thông báo & Gợi ý",
-            aiTipTitle: "Gợi ý AI: Dãn cách thời gian ôn tập Kanji",
-            aiTipDesc: "Ôn tập thẻ Kanji N3 30 phút trước khi ngủ để ghi nhớ tốt hơn.",
-            midtermTitle: "Tuần thi giữa kỳ",
-            midtermDesc: "Kỳ thi Giải tích và Ngữ văn bắt đầu vào Thứ Hai tới. Kiểm tra lịch trình.",
-            upcomingDeadlines: "Hạn chót sắp tới",
-            quizTitle: "Bài kiểm tra nhỏ từ vựng N3",
-            quizSub: "Hạn: Ngày mai, 23:59 • Tiếng Nhật N3",
-            daysLeft: "Còn 1 ngày",
-            aiAssistantName: "Trợ lý học tập Tanuki",
-            aiAssistantMsg: "\"Tôi có thể giúp gì cho bạn học hôm nay?\"",
-            streakText: " ngày liên tiếp!",
-            goalPrefix: "Mục tiêu: "
-        }
-    };
-
-    /* 🌐 全ページ共通のユーザー名同期機能 */
+    /* Global Username Apply */
     function applyGlobalUserName() {
         const savedName = localStorage.getItem("user_name");
         const lang = localStorage.getItem("app_language") || "ja";
         const dict = (window.i18nDictionary && window.i18nDictionary[lang]) ? window.i18nDictionary[lang] : { guestUser: "ゲストユーザー" };
-
         const displayName = (savedName && savedName.trim() !== "") ? savedName : dict.guestUser;
 
         document.querySelectorAll(".user-name-display").forEach(el => {
@@ -376,7 +260,7 @@
         });
     }
 
-    /* 🌐 全ページ共通の言語適用機能 */
+    /* Global Language Apply */
     function applyGlobalLanguage(lang) {
         const currentLang = lang || localStorage.getItem("app_language") || "ja";
         localStorage.setItem("app_language", currentLang);
@@ -413,7 +297,7 @@
         }
     }
 
-    /* 🌟 テーマ切り替え機能 */
+    /* Theme Switcher */
     function setTheme(theme) {
         if (theme === 'dark') {
             document.documentElement.classList.add('dark-mode');
@@ -425,6 +309,22 @@
             document.body.classList.remove('dark-mode');
             localStorage.setItem("app_theme", "light");
             localStorage.setItem("theme", "light");
+        }
+    }
+
+    function showAiLoading(title = "AIが思考中...", sub = "コンテンツを解析しています。少々お待ちください。") {
+        const overlay = document.getElementById('ai-loading-overlay');
+        if (overlay) {
+            document.getElementById('ai-loading-title').innerText = title;
+            document.getElementById('ai-loading-sub').innerText = sub;
+            overlay.style.display = 'flex';
+        }
+    }
+
+    function hideAiLoading() {
+        const overlay = document.getElementById('ai-loading-overlay');
+        if (overlay) {
+            overlay.style.display = 'none';
         }
     }
 

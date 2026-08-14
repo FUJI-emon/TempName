@@ -1,11 +1,10 @@
 {% extends 'learning/base.html' %}
 {% load static %}
 
-{% block title %}プロフィール{% endblock %}
+{% block title %}プロフィール | LearnAI Platform{% endblock %}
 
 {% block content %}
 <style>
-/* ☀️ プロフィール画面スタイル */
 .profile-container {
     max-width: 580px;
     margin: 40px auto;
@@ -23,65 +22,57 @@
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border-light);
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: var(--shadow-sm);
     font-size: 1.1rem;
-    color: #1e293b;
+    color: var(--text-main);
     text-decoration: none;
-    transition: all 0.2s ease;
-}
-
-body.dark-mode .top-bar-btn {
-    background: #1e293b;
-    border-color: #334155;
-    color: #f8fafc;
+    transition: var(--transition-fast);
 }
 
 .top-bar-btn:hover {
     transform: scale(1.05);
-    background: #f8fafc;
+    background: var(--bg-surface-elevated);
+    border-color: var(--primary);
+    color: var(--primary);
 }
 
 .profile-page-title {
     font-size: 1.4rem;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--text-main);
     margin: 0;
 }
-body.dark-mode .profile-page-title { color: #f8fafc; }
 
 .profile-card {
-    background: #ffffff;
-    border-radius: 28px;
-    padding: 36px 28px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-    border: 1px solid #f1f5f9;
+    background: var(--bg-surface);
+    border-radius: var(--radius-lg);
+    padding: 40px 32px;
+    box-shadow: var(--shadow-md);
+    border: 1.5px solid var(--border-light);
     text-align: center;
-    transition: background 0.3s, border-color 0.3s;
-}
-body.dark-mode .profile-card {
-    background: #1e293b;
-    border-color: #334155;
+    transition: var(--transition-normal);
 }
 
 .profile-avatar-wrapper {
-    width: 96px;
-    height: 96px;
+    width: 104px;
+    height: 104px;
     border-radius: 50%;
-    background: #fde68a;
-    margin: 0 auto 16px auto;
+    background: var(--accent-gradient);
+    margin: 0 auto 20px auto;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.8rem;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.06);
+    font-size: 3rem;
+    box-shadow: var(--shadow-indigo);
     position: relative;
     overflow: hidden;
+    color: #ffffff;
 }
 
 .profile-avatar-img {
@@ -93,53 +84,51 @@ body.dark-mode .profile-card {
 }
 
 .profile-user-name {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
     font-weight: 800;
-    color: #0f172a;
+    color: var(--text-main);
     margin: 0 0 6px 0;
 }
-body.dark-mode .profile-user-name { color: #f8fafc; }
 
 .profile-user-role {
     font-size: 0.95rem;
-    color: #64748b;
-    margin: 0 0 28px 0;
+    color: var(--text-muted);
+    margin: 0 0 32px 0;
     font-weight: 600;
 }
-body.dark-mode .profile-user-role { color: #94a3b8; }
 
 .profile-stats-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
+    gap: 18px;
 }
 
 .stat-box {
-    background: #f8fafc;
-    border-radius: 20px;
-    padding: 20px 16px;
+    background: var(--bg-app);
+    border-radius: var(--radius-md);
+    padding: 22px 18px;
     text-align: center;
-    border: 1px solid #e2e8f0;
-    transition: background 0.3s, border-color 0.3s;
+    border: 1.5px solid var(--border-light);
+    transition: var(--transition-fast);
 }
-body.dark-mode .stat-box {
-    background: #0f172a;
-    border-color: #334155;
+
+.stat-box:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
 }
 
 .stat-value {
-    font-size: 1.4rem;
+    font-size: 1.5rem;
     font-weight: 800;
-    color: #6366f1;
+    color: var(--primary);
     margin-bottom: 4px;
 }
 
 .stat-label {
     font-size: 0.85rem;
-    color: #64748b;
+    color: var(--text-muted);
     font-weight: 700;
 }
-body.dark-mode .stat-label { color: #94a3b8; }
 </style>
 
 <div class="profile-container">
@@ -155,7 +144,6 @@ body.dark-mode .stat-label { color: #94a3b8; }
             <img id="profileAvatarImg" class="profile-avatar-img" src="" alt="Profile Avatar" />
         </div>
 
-        <!-- 👤 全画面共有クラス `user-name-display` を付与（ログイン名と自動同期） -->
         <h2 class="profile-user-name user-name-display">ゲストユーザー</h2>
         <p class="profile-user-role" data-i18n="studentAccount">Student Account</p>
 

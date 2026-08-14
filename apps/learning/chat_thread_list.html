@@ -4,87 +4,94 @@
 {% block content %}
 <style>
 .thread-list-container {
-    max-width: 800px;
+    max-width: 860px;
     margin: 30px auto;
-    padding: 0 20px;
+    padding: 0 20px 80px 20px;
 }
 
 .thread-header {
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 25px;
+    gap: 16px;
+    margin-bottom: 28px;
 }
 
 .back-btn {
     text-decoration: none;
-    color: #475569;
-    font-weight: 600;
-    padding: 8px 16px;
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    background: #ffffff;
-    transition: background 0.2s;
+    color: var(--text-muted);
+    font-weight: 700;
+    padding: 10px 18px;
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-md);
+    background: var(--bg-surface);
+    transition: var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .back-btn:hover {
-    background: #f1f5f9;
+    background: var(--bg-surface-elevated);
+    border-color: var(--text-subtle);
+    color: var(--text-main);
 }
 
 .thread-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 18px 20px;
-    margin-bottom: 12px;
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 20px 24px;
+    margin-bottom: 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     text-decoration: none;
     color: inherit;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-fast);
 }
 
 .thread-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-    border-color: #cbd5e1;
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary);
 }
 
 .thread-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: #1e293b;
-    margin-bottom: 4px;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--text-main);
+    margin-bottom: 6px;
 }
 
 .thread-meta {
     font-size: 0.85rem;
-    color: #64748b;
+    color: var(--text-muted);
+    font-weight: 500;
 }
 
-/* 🌟 Empty State */
+/* Empty State */
 .empty-state {
     text-align: center;
-    padding: 60px 20px;
-    background: #f8fafc;
-    border: 2px dashed #cbd5e1;
-    border-radius: 16px;
-    color: #64748b;
+    padding: 70px 24px;
+    background: var(--bg-surface);
+    border: 2px dashed var(--border-light);
+    border-radius: var(--radius-lg);
+    color: var(--text-muted);
     margin-top: 20px;
 }
 
 .empty-icon {
-    font-size: 3.5rem;
-    margin-bottom: 12px;
+    font-size: 4rem;
+    margin-bottom: 16px;
 }
 </style>
 
 <div class="thread-list-container">
     <div class="thread-header">
         <a href="{% url 'learning:dashboard' %}" class="back-btn">‹ 戻る</a>
-        <h2 style="margin:0; font-size: 1.5rem; color:#0f172a; font-weight:700;">🤖 AI Assistant チャット履歴</h2>
+        <h2 style="margin:0; font-size: 1.6rem; color: var(--text-main); font-weight:800;">🤖 AI Assistant チャット履歴</h2>
     </div>
 
     {% if threads %}
@@ -95,16 +102,16 @@
                     <div class="thread-title">💬 {{ thread.title }}</div>
                     <div class="thread-meta">最終更新: {{ thread.updated_at|date:"Y/m/d H:i" }}</div>
                 </div>
-                <span style="color:#94a3b8; font-size:1.2rem; font-weight:bold;">›</span>
+                <span style="color: var(--text-subtle); font-size:1.3rem; font-weight:bold;">›</span>
             </a>
             {% endfor %}
         </div>
     {% else %}
-        <!-- 🌟 まだChatThreadがない場合の表示 -->
+        <!-- Empty State -->
         <div class="empty-state">
             <div class="empty-icon">💬</div>
-            <h3 style="margin: 0 0 8px 0; color:#334155; font-size:1.2rem;">まだ質問履歴がありません</h3>
-            <p style="margin:0; font-size: 0.9rem; color:#64748b;">
+            <h3 style="margin: 0 0 10px 0; color: var(--text-main); font-size: 1.3rem; font-weight: 800;">まだ質問履歴がありません</h3>
+            <p style="margin:0; font-size: 0.95rem; color: var(--text-muted); max-width: 480px; margin: 0 auto; line-height: 1.6;">
                 トピック詳細やロードマップの画面から AI Assistant に質問を開始できます。
             </p>
         </div>

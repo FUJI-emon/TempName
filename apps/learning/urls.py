@@ -18,10 +18,16 @@ urlpatterns = [
     path('topic/<int:topic_id>/upload/', views.document_upload, name='document_upload'),
     path('topic/<int:topic_id>/edit-title/', views.edit_topic_title, name='edit_topic_title'),
     path('topic/<int:topic_id>/delete/', views.delete_topic, name='delete_topic'),
+    path('document/<int:doc_id>/delete/', views.delete_document, name='delete_document'),
+
     path('topics/<str:subject>/batch-delete/', views.batch_delete_topics, name='batch_delete_topics'),
     path('topic/<int:topic_id>/save-understanding/', views.save_understanding, name='save_understanding'),
     path('topic/<int:topic_id>/path-map/', views.path_map_view, name='path_map'),
+    path('topic/<int:topic_id>/finaltest/', views.finaltest, name='finaltest_topic'),
+    path('topic/<int:topic_id>/finaltest/submit/', views.submit_final_test_api, name='submit_final_test_api'),
+    path('finaltest/submit/', views.submit_final_test_api, name='submit_final_test_api_default'),
     path('finaltest/', views.finaltest, name='finaltest'),
+
     path('chat/', views.chat_thread_list, name='chat_thread_list'),
     path('chat/<int:thread_id>/', views.chat_detail, name='chat_detail'),
     path('chat/<int:thread_id>/send/', views.send_chat_message, name='send_chat_message'),

@@ -3,16 +3,11 @@
 
 {% block content %}
 <style>
-body {
-    background-color: #0f0d23 !important;
-    color: #ffffff;
-}
-
 .upload-container {
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 20px 16px 40px 16px;
-    min-height: 100vh;
+    max-width: 580px;
+    margin: 36px auto;
+    padding: 20px 20px 60px 20px;
+    min-height: 80vh;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -21,123 +16,262 @@ body {
 .upload-header {
     display: flex;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
 }
 
 .back-btn-dark {
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border-light);
+    color: var(--text-main);
     display: flex;
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    font-size: 1.2rem;
-    transition: background 0.2s;
+    font-size: 1.3rem;
+    font-weight: 700;
+    transition: var(--transition-fast);
+    box-shadow: var(--shadow-sm);
 }
 
 .back-btn-dark:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--primary-light);
+    color: var(--primary);
+    transform: translateX(-2px);
 }
 
 .upload-title {
     flex: 1;
     text-align: center;
-    font-size: 1.1rem;
-    font-weight: 600;
+    font-size: 1.15rem;
+    font-weight: 800;
     margin: 0;
-    padding-right: 40px;
-    color: #f1f5f9;
+    padding-right: 42px;
+    color: var(--text-main);
 }
 
 .main-title {
-    font-size: 1.75rem;
-    font-weight: 700;
+    font-size: 2rem;
+    font-weight: 800;
     margin-bottom: 8px;
+    color: var(--text-main);
+    line-height: 1.3;
 }
 
 .sub-title {
-    font-size: 0.9rem;
-    color: #a5b4fc;
-    margin-bottom: 24px;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 28px;
 }
 
 .drop-zone {
-    border: 2px dashed rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
-    padding: 40px 20px;
+    border: 2px dashed var(--primary);
+    border-radius: var(--radius-lg);
+    padding: 48px 24px;
     text-align: center;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--bg-surface);
+    box-shadow: var(--shadow-md);
     cursor: pointer;
-    transition: all 0.2s;
+    transition: var(--transition-normal);
     margin-bottom: 24px;
 }
 
-.drop-zone:hover {
-    border-color: #6366f1;
-    background: rgba(99, 102, 241, 0.05);
+.drop-zone:hover, .drop-zone.drag-over {
+    border-color: var(--primary-hover);
+    background: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
 }
 
 .drop-icon {
-    font-size: 2.5rem;
-    margin-bottom: 12px;
+    font-size: 3.2rem;
+    margin-bottom: 14px;
 }
 
 .drop-text {
-    font-size: 0.95rem;
-    color: #cbd5e1;
-    margin-bottom: 16px;
+    font-size: 1.05rem;
+    color: var(--text-main);
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.6;
 }
 
 .select-file-btn {
-    display: inline-block;
-    padding: 10px 24px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 28px;
+    background: var(--primary-gradient);
+    border-radius: var(--radius-md);
     color: #ffffff;
-    font-weight: 600;
-    font-size: 0.9rem;
+    font-weight: 800;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-indigo);
+    transition: var(--transition-fast);
+}
+
+.select-file-btn:hover {
+    transform: translateY(-2px);
 }
 
 .file-input {
     display: none;
+}
+
+/* File Info Preview Card */
+.file-preview-card {
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+}
+
+.file-info-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.file-icon {
+    font-size: 1.8rem;
+}
+
+.file-name {
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--text-main);
+    margin: 0 0 2px 0;
+}
+
+.file-size {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.btn-upload-submit {
+    width: 100%;
+    padding: 18px;
+    border-radius: var(--radius-md);
+    background: var(--primary-gradient);
+    color: #ffffff;
+    font-size: 1.05rem;
+    font-weight: 800;
+    border: none;
+    cursor: pointer;
+    box-shadow: var(--shadow-indigo);
+    transition: var(--transition-fast);
+}
+
+.btn-upload-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(99, 102, 241, 0.45);
 }
 </style>
 
 <div class="upload-container">
     <div class="upload-header">
         <a href="{% if topic.id and topic.id != 0 %}/topic/{{ topic.id }}/{% else %}/topics/{{ subject|default:'math' }}/{% endif %}" class="back-btn-dark">‹</a>
-        <h1 class="upload-title" data-i18n="uploadDocument">Upload Document</h1>
+        <h1 class="upload-title" data-i18n="uploadDocument">学習資料のアップロード</h1>
     </div>
 
-    <h2 class="main-title" data-i18n="addLearningMaterial">Add Learning Material</h2>
-    <p class="sub-title" data-i18n="uploadSubTitle">PDFやテキストファイルをアップロードしてAI学習を開始しましょう</p>
+    <h2 class="main-title" data-i18n="addLearningMaterial">資料を追加してAI解析を開始</h2>
+    <p class="sub-title" data-i18n="uploadSubTitle">PDFやテキストファイルをアップロードして学習ロードマップを最適化します</p>
 
     <form method="POST" enctype="multipart/form-data" action="{% if topic.id and topic.id != 0 %}{% url 'learning:document_upload' topic.id %}{% else %}{% url 'learning:add_topic' subject|default:'math' %}{% endif %}" id="upload-form">
         {% csrf_token %}
-        <div class="drop-zone" onclick="document.getElementById('file-input').click()">
+
+        <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
             <div class="drop-icon">📁</div>
-            <div class="drop-text" id="file-name-display" data-i18n="dragAndDropText">ファイルをドラッグ＆ドロップ<br>またはクリックして選択</div>
+            <div class="drop-text" id="drop-text" data-i18n="dragAndDropText">ファイルをドラッグ＆ドロップ<br>またはクリックして選択</div>
             <span class="select-file-btn" data-i18n="selectFile">ファイルを選択</span>
-            <input type="file" name="file" id="file-input" class="file-input" onchange="handleFileSelect(this)">
+            <input type="file" name="file" id="file-input" class="file-input" onchange="handleFileSelected(this)">
         </div>
+
+        <div class="file-preview-card" id="file-preview" style="display: none;">
+            <div class="file-info-left">
+                <div class="file-icon">📄</div>
+                <div>
+                    <div class="file-name" id="preview-filename">document.pdf</div>
+                    <div class="file-size" id="preview-filesize">0 KB</div>
+                </div>
+            </div>
+            <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="resetFileSelection()">変更</button>
+        </div>
+
+        <button type="submit" class="btn-upload-submit" id="submit-upload-btn" style="display: none;">
+            アップロードして解析開始 →
+        </button>
     </form>
 </div>
 
 <script>
-function handleFileSelect(input) {
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+const filePreview = document.getElementById('file-preview');
+const submitBtn = document.getElementById('submit-upload-btn');
+const uploadForm = document.getElementById('upload-form');
+
+['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.add('drag-over');
+    }, false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropZone.classList.remove('drag-over');
+    }, false);
+});
+
+dropZone.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    if (files && files.length > 0) {
+        fileInput.files = files;
+        handleFileSelected(fileInput);
+    }
+});
+
+function handleFileSelected(input) {
     if (input.files && input.files[0]) {
-        const fileName = input.files[0].name;
-        document.getElementById('file-name-display').innerHTML = '選択中: <strong>' + fileName + '</strong>';
+        const file = input.files[0];
+        document.getElementById('preview-filename').textContent = file.name;
         
-        if (typeof showAiLoading === 'function') {
-            showAiLoading('資料を解析中...', 'AIがドキュメントの構成を分析しています。');
+        let sizeStr = file.size + ' B';
+        if (file.size >= 1024 * 1024) {
+            sizeStr = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+        } else if (file.size >= 1024) {
+            sizeStr = (file.size / 1024).toFixed(1) + ' KB';
         }
-        
-        document.getElementById('upload-form').submit();
+        document.getElementById('preview-filesize').textContent = sizeStr;
+
+        filePreview.style.display = 'flex';
+        submitBtn.style.display = 'block';
     }
 }
+
+function resetFileSelection() {
+    fileInput.value = '';
+    filePreview.style.display = 'none';
+    submitBtn.style.display = 'none';
+}
+
+uploadForm.addEventListener('submit', function() {
+    if (typeof showAiLoading === 'function') {
+        showAiLoading('資料を解析中...', 'AIがドキュメントの構成とキー概念を抽出しています。');
+    }
+});
 </script>
 {% endblock %}

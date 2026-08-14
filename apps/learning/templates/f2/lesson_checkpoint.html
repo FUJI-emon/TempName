@@ -5,21 +5,28 @@
 <style>
 .checkpoint-page-bg {
     min-height: calc(100vh - 80px);
-    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+    background: linear-gradient(135deg, #0b0f19 0%, #131b2e 50%, #1e1b4b 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 40px 20px;
+    padding: 30px 20px;
     box-sizing: border-box;
+
+    width: 100vw !important;
+    position: relative !important;
+    left: 50% !important;
+    right: 50% !important;
+    margin-left: -50vw !important;
+    margin-right: -50vw !important;
 }
 
 .checkpoint-container {
     width: 100%;
-    max-width: 720px;
+    max-width: 760px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
 }
 
 .checkpoint-header {
@@ -30,101 +37,122 @@
 }
 
 .back-btn-cp {
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(8px);
     color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     font-weight: bold;
-    transition: background 0.2s;
+    transition: var(--transition-fast);
 }
 
 .back-btn-cp:hover {
     background: rgba(255, 255, 255, 0.25);
+    transform: translateX(-2px);
+}
+
+.header-center-cp {
+    text-align: center;
 }
 
 .step-title-header {
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+
+.checkpoint-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(99, 102, 241, 0.25);
+    border: 1px solid rgba(165, 180, 252, 0.4);
+    color: #c7d2fe;
+    font-size: 0.78rem;
+    font-weight: 800;
+    padding: 3px 12px;
+    border-radius: var(--radius-pill);
+    margin-top: 4px;
 }
 
 .checkpoint-card {
     background: #ffffff;
-    border-radius: 24px;
-    padding: 36px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    border-radius: 28px;
+    padding: 40px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 22px;
 }
 
 .badge-question {
-    font-size: 0.8rem;
+    font-size: 0.82rem;
     font-weight: 800;
-    color: #6366f1;
+    color: var(--primary);
     letter-spacing: 1px;
     text-transform: uppercase;
 }
 
 .question-text {
-    font-size: 1.35rem;
+    font-size: 1.45rem;
     font-weight: 800;
     color: #0f172a;
-    line-height: 1.4;
+    line-height: 1.45;
     margin: 0;
 }
 
 .options-list {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
     margin-top: 10px;
 }
 
 .option-item {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 16px 20px;
+    gap: 16px;
+    padding: 18px 22px;
     border: 2px solid #e2e8f0;
-    border-radius: 16px;
+    border-radius: 18px;
     cursor: pointer;
     background: #ffffff;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
     user-select: none;
 }
 
 .option-item:hover {
     border-color: #a5b4fc;
     background: #f8fafc;
+    transform: translateY(-1px);
 }
 
 .option-item.selected {
-    border-color: #6366f1;
+    border-color: var(--primary);
     background: #eff6ff;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
 }
 
 .custom-radio {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     border: 2px solid #cbd5e1;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: var(--transition-fast);
     flex-shrink: 0;
 }
 
 .option-item.selected .custom-radio {
-    border-color: #6366f1;
-    background: #6366f1;
+    border-color: var(--primary);
+    background: var(--primary);
 }
 
 .custom-radio-inner {
@@ -141,8 +169,8 @@
 
 .option-label {
     font-size: 1.05rem;
-    font-weight: 600;
-    color: #334155;
+    font-weight: 700;
+    color: #1e293b;
 }
 
 .hint-toggle-btn {
@@ -151,26 +179,26 @@
     border: none;
     color: #e0e7ff;
     font-size: 0.95rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 8px 16px;
+    padding: 8px 18px;
     border-radius: 20px;
-    transition: background 0.2s;
+    transition: var(--transition-fast);
 }
 
 .hint-toggle-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.12);
 }
 
 .hint-box {
     background: rgba(255, 255, 255, 0.12);
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 16px;
-    padding: 16px 20px;
+    border-radius: 18px;
+    padding: 18px 22px;
     color: #ffffff;
     display: none;
     animation: fadeIn 0.3s ease;
@@ -180,17 +208,13 @@
     display: block;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
 .feedback-msg {
     display: none;
-    padding: 14px 18px;
-    border-radius: 12px;
-    font-weight: 700;
+    padding: 16px 20px;
+    border-radius: 14px;
+    font-weight: 800;
     text-align: center;
+    font-size: 1rem;
 }
 
 .feedback-msg.correct {
@@ -209,16 +233,16 @@
 
 .submit-btn {
     width: 100%;
-    padding: 18px;
+    padding: 20px;
     border: none;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    border-radius: 20px;
+    background: var(--primary-gradient);
     color: #ffffff;
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1.15rem;
+    font-weight: 800;
     cursor: pointer;
-    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
-    transition: transform 0.2s, opacity 0.2s;
+    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+    transition: var(--transition-fast);
     opacity: 0.6;
     pointer-events: none;
 }
@@ -230,25 +254,31 @@
 
 .submit-btn.active:hover {
     transform: translateY(-2px);
+    box-shadow: 0 14px 32px rgba(99, 102, 241, 0.55);
 }
 </style>
 
 <div class="checkpoint-page-bg">
     <div class="checkpoint-container">
 
-        <!-- ヘッダー -->
+        <!-- Header -->
         <div class="checkpoint-header">
             <a href="{% url 'learning:path_map' topic.id %}" class="back-btn-cp">‹</a>
-            <div class="step-title-header"><span data-i18n="step">ステップ</span> {{ step_num }}: {{ step_title }}</div>
-            <div style="width: 42px;"></div>
+            <div class="header-center-cp">
+                <div class="step-title-header"><span data-i18n="step">ステップ</span> {{ step_num }}: {{ step_title }}</div>
+                <div class="checkpoint-badge">
+                    <span>✍️</span> <span>理解度チェック問題</span>
+                </div>
+            </div>
+            <div style="width: 44px;"></div>
         </div>
 
-        <!-- クイズカード -->
+        <!-- Quiz Card -->
         <div class="checkpoint-card">
-            <div class="badge-question" data-i18n="understandingCheckQuestion">理解度チェック問題</div>
+            <div class="badge-question" data-i18n="understandingCheckQuestion">CHECKPOINT EVALUATION</div>
             <h2 class="question-text">{{ checkpoint.question }}</h2>
 
-            <!-- 選択肢 -->
+            <!-- Options -->
             <div class="options-list">
                 {% for opt in checkpoint.options %}
                 <div class="option-item" 
@@ -265,17 +295,28 @@
             <div id="feedback" class="feedback-msg"></div>
         </div>
 
-        <!-- ヒント表示アコーディオン -->
-        <button type="button" class="hint-toggle-btn" onclick="toggleHint()">
-            💡 <span data-i18n="viewHint">ヒントを見る</span> <span id="hint-arrow">▼</span>
-        </button>
+        <!-- Hint Accordion (3 Levels Progressive Hints) -->
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <div style="display: flex; gap: 8px;">
+                <button type="button" class="hint-toggle-btn" id="hint-btn-1" onclick="fetchOrToggleHint(1)">
+                    💡 ヒント 1/3 <span id="hint-arrow-1">▼</span>
+                </button>
+                <button type="button" class="hint-toggle-btn" id="hint-btn-2" onclick="fetchOrToggleHint(2)" style="opacity: 0.8;">
+                    💡 ヒント 2/3 <span id="hint-arrow-2">▼</span>
+                </button>
+                <button type="button" class="hint-toggle-btn" id="hint-btn-3" onclick="fetchOrToggleHint(3)" style="opacity: 0.8;">
+                    💡 ヒント 3/3 <span id="hint-arrow-3">▼</span>
+                </button>
+            </div>
 
-        <div class="hint-box" id="hint-box">
-            <div style="font-weight: 700; font-size: 0.85rem; color: #a5b4fc; margin-bottom: 4px;" data-i18n="hint">ヒント</div>
-            <div>{{ checkpoint.hint }}</div>
+            <div class="hint-box" id="hint-box" style="width: 100%; box-sizing: border-box;">
+                <div style="font-weight: 800; font-size: 0.85rem; color: #a5b4fc; margin-bottom: 4px;" id="hint-level-title">ヒント 1 / 3</div>
+                <div id="hint-text-content">{{ checkpoint.hint }}</div>
+            </div>
         </div>
 
-        <!-- 判定ボタン -->
+
+        <!-- Check Answer CTA -->
         <button type="button" class="submit-btn" id="submit-btn" onclick="checkAnswer()" data-i18n="checkAnswer">
             回答を確認する
         </button>
@@ -301,17 +342,40 @@ function selectOption(element) {
     submitBtn.classList.add('active');
 }
 
-function toggleHint() {
+let currentHintLevel = 0;
+const cachedHints = { 1: "{{ checkpoint.hint|escapejs }}" };
+
+function fetchOrToggleHint(level) {
     const hintBox = document.getElementById('hint-box');
-    const arrow = document.getElementById('hint-arrow');
-    if (hintBox.classList.contains('show')) {
+    const hintTitle = document.getElementById('hint-level-title');
+    const hintContent = document.getElementById('hint-text-content');
+
+    if (currentHintLevel === level && hintBox.classList.contains('show')) {
         hintBox.classList.remove('show');
-        arrow.textContent = '▼';
-    } else {
+        currentHintLevel = 0;
+        return;
+    }
+
+    currentHintLevel = level;
+    hintTitle.textContent = `ヒント ${level} / 3 (AI Level ${level})`;
+
+    if (cachedHints[level]) {
+        hintContent.textContent = cachedHints[level];
         hintBox.classList.add('show');
-        arrow.textContent = '▲';
+    } else {
+        hintContent.textContent = "ヒントを取得中...";
+        hintBox.classList.add('show');
+
+        const fallbackHints = {
+            2: "核心概念を思い出しましょう。用語の定義や基本ルールの整合性に注目してください。",
+            3: "正解の選択肢は定義に直接対応しています。不要・誤った前提の選択肢を除外しましょう。"
+        };
+
+        cachedHints[level] = fallbackHints[level] || "学習カードで強調されていた重要キーワードを振り返りましょう。";
+        hintContent.textContent = cachedHints[level];
     }
 }
+
 
 function checkAnswer() {
     const feedback = document.getElementById('feedback');
@@ -321,7 +385,7 @@ function checkAnswer() {
 
     if (selectedIsCorrect) {
         feedback.className = 'feedback-msg correct';
-        feedback.innerHTML = '🎉 正解です！ (+100 XP獲得)';
+        feedback.innerHTML = '🎉 正解です！ステップクリア！';
         submitBtn.textContent = '次へ進む →';
         
         submitBtn.onclick = function() {
