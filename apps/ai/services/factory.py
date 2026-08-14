@@ -4,7 +4,10 @@ from .interface import LLMService
 
 
 def get_llm_service() -> LLMService:
-    provider = os.getenv("LLM_PROVIDER", "fake")
+    provider = os.getenv("LLM_PROVIDER", "fake").lower()
     if provider == "fake":
         return FakeLLMService()
-    raise ValueError(f"Unknown LLM_PROVIDER: {provider}")
+    elif provider == "openrouter":
+        from .adapters.openrouter import OpenRouterAdapter
+        return OpenRouterAdapter()
+    raise ValueError(f"Unknown LLM_PROVIDER: {provider}")

@@ -4,37 +4,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}AIとともに学習するクイズアプリ{% endblock %}</title>
+    <title>{% block title %}WebApp Title{% endblock %}</title>
+    
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <!-- あなたの共通CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=1">
+    
     {% block extra_head %}{% endblock %}
+    {% block extra_css %}{% endblock %}
+
+    <!-- ▼ チームメイトのAIローディング用CSSを統合 ▼ -->
+    <style>
+    /* 背景の暗転＋ボカシ処理 */
+    .ai-loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: fadeIn 0.2s ease-out;
+    }
+    .ai-loading-card {
+        background: #FFFFFF;
+        padding: 32px 40px;
+        border-radius: 20px;
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        text-align: center;
+        max-width: 380px;
+        width: 85%;
+    }
+    .ai-spinner-container {
+        position: relative;
+        width: 64px;
+        height: 64px;
+        margin: 0 auto 20px auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .spinner-ring {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border: 4px solid #E2E8F0;
+        border-top: 4px solid #6366F1;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    .ai-icon-sparkle {
+        font-size: 26px;
+        animation: pulse 1.4s ease-in-out infinite;
+    }
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    @keyframes pulse {
+        0%, 100% { transform: scale(0.9); opacity: 0.7; }
+        50% { transform: scale(1.2); opacity: 1; }
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    .ai-loading-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: #0F172A;
+        margin: 0 0 8px 0;
+    }
+    .ai-loading-sub {
+        font-size: 0.875rem;
+        color: #64748B;
+        margin: 0;
+        line-height: 1.5;
+    }
+    </style>
 </head>
 <body>
+    <!-- ▼ あなたのレイアウト：ヘッダー（page_titleの中央配置含む） ▼ -->
     <header class="app-header">
-        <div class="header-container">
+        <div class="header-container" style="position: relative;">
             <a href="{% url 'learning:index' %}" class="logo">
                 <span class="logo-icon">💡</span>
-                <span class="logo-text">AI Adaptive Learn</span>
+                <span class="logo-text">WebApp Title</span>
             </a>
-            <div class="header-badge">Phase 1: Project Foundation</div>
+
+            <!-- 画面のど真ん中に文字を配置するブロック -->
+            <div style="position: absolute; left: 50%; transform: translateX(-50%); font-size: 24px; font-weight: normal; color: #333;">
+                {% block page_title %}{% endblock %}
+            </div>
+
+            <button class="header-badge" id="nameEditBtn">
+                {% if request.COOKIES.user_name %}
+                  こんにちは、{{request.COOKIES.user_name }}さん
+                {% else %}
+                  Guest--名前が未登録です--
+                {% endif %}
+            </button>
         </div>
     </header>
 
+    <!-- メインコンテンツ（各ページの中身） -->
     <main class="main-content">
         {% block content %}{% endblock %}
     </main>
 
+    <!-- ▼ あなたのレイアウト：ユーザー名変更モーダル ▼ -->
+    <div id="nameModalOverlay" class="modal-overlay hidden">
+        <div class="name-edit-modal card">
+            <h3 style="margin-bottom: 16px; font-size: 16px; color: #111827;">ユーザー名の変更</h3>
+            <input type="text" id="nameInput" placeholder="新しい名前を入力" class="name-input-field">
+            <div class="modal-actions">
+                <button class="btn-secondary" id="cancelNameBtn" style="padding: 6px 16px; font-size: 12px;">キャンセル</button>
+                <button class="btn-primary" id="saveNameBtn" style="padding: 6px 16px; font-size: 12px;">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ▼ チームメイトの機能：AIローディング画面 ▼ -->
+    <div id="ai-loading-overlay" class="ai-loading-overlay" style="display: none;">
+        <div class="ai-loading-card">
+            <div class="ai-spinner-container">
+                <div class="spinner-ring"></div>
+                <div class="ai-icon-sparkle"></div>
+            </div>
+            <h3 id="ai-loading-title" class="ai-loading-title">AIが思考中...</h3>
+            <p id="ai-loading-sub" class="ai-loading-sub">コンテンツを解析しています。少々お待ちください。</p>
+        </div>
+    </div>
+
+    <!-- ▼ あなたのレイアウト：フッター ▼ -->
     <footer class="app-footer">
         <div class="footer-container">
-            <p>&copy; 2026 AIとともに学習するクイズアプリ — Progressive Educational Platform</p>
-            <p class="footer-subtext">「生徒が、先生が望む成果を出せるようになること」を目指す適応型学習システム</p>
+            <p>&copy; WebApp Title name ー FUJI-emon</p>
+            <p class="footer-subtext">学習状況・習熟度を管理して、AI先生がサポートしてくれる学習アプリ</p>
         </div>
     </footer>
 
-    <script src="{% static 'js/main.js' %}"></script>
+    <!-- スクリプトの読み込み -->
+    <script src="{% static 'js/main.js' %}?v=1"></script>
+    
+    <!-- ▼ チームメイトの機能：AIローディング＆XP管理スクリプト ▼ -->
+    <script>
+    /* --- AI Loading 表示制御 --- */
+    function showAiLoading(title = "AIが思考中...", sub = "コンテンツを解析しています。少々お待ちください。") {
+        const overlay = document.getElementById('ai-loading-overlay');
+        if (overlay) {
+            document.getElementById('ai-loading-title').innerText = title;
+            document.getElementById('ai-loading-sub').innerText = sub;
+            overlay.style.display = 'flex';
+        }
+    }
+
+    function hideAiLoading() {
+        const overlay = document.getElementById('ai-loading-overlay');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+    }
+
+    /* --- XP管理機能 --- */
+    document.addEventListener("DOMContentLoaded", function() {
+        updateXpDisplay();
+    });
+
+    function updateXpDisplay() {
+        const currentXp = parseInt(localStorage.getItem('user_xp') || '0', 10);
+        const xpElements = document.querySelectorAll('#user-xp, .xp-badge-value');
+        xpElements.forEach(el => {
+            el.textContent = currentXp + " XP";
+        });
+    }
+
+    function addXp(amount) {
+        let currentXp = parseInt(localStorage.getItem('user_xp') || '0', 10);
+        currentXp += amount;
+        localStorage.setItem('user_xp', currentXp);
+        updateXpDisplay();
+    }
+    </script>
+
     {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -1,0 +1,113 @@
+{% extends 'learning/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+.thread-list-container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.thread-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.back-btn {
+    text-decoration: none;
+    color: #475569;
+    font-weight: 600;
+    padding: 8px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #ffffff;
+    transition: background 0.2s;
+}
+
+.back-btn:hover {
+    background: #f1f5f9;
+}
+
+.thread-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.thread-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    border-color: #cbd5e1;
+}
+
+.thread-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.thread-meta {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+/* 🌟 Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8fafc;
+    border: 2px dashed #cbd5e1;
+    border-radius: 16px;
+    color: #64748b;
+    margin-top: 20px;
+}
+
+.empty-icon {
+    font-size: 3.5rem;
+    margin-bottom: 12px;
+}
+</style>
+
+<div class="thread-list-container">
+    <div class="thread-header">
+        <a href="{% url 'learning:dashboard' %}" class="back-btn">‹ 戻る</a>
+        <h2 style="margin:0; font-size: 1.5rem; color:#0f172a; font-weight:700;">🤖 AI Assistant チャット履歴</h2>
+    </div>
+
+    {% if threads %}
+        <div class="thread-list">
+            {% for thread in threads %}
+            <a href="{% url 'learning:chat_detail' thread.id %}" class="thread-card">
+                <div>
+                    <div class="thread-title">💬 {{ thread.title }}</div>
+                    <div class="thread-meta">最終更新: {{ thread.updated_at|date:"Y/m/d H:i" }}</div>
+                </div>
+                <span style="color:#94a3b8; font-size:1.2rem; font-weight:bold;">›</span>
+            </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- 🌟 まだChatThreadがない場合の表示 -->
+        <div class="empty-state">
+            <div class="empty-icon">💬</div>
+            <h3 style="margin: 0 0 8px 0; color:#334155; font-size:1.2rem;">まだ質問履歴がありません</h3>
+            <p style="margin:0; font-size: 0.9rem; color:#64748b;">
+                トピック詳細やロードマップの画面から AI Assistant に質問を開始できます。
+            </p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

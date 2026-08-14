@@ -1,0 +1,89 @@
+{% extends 'learning/base.html' %}
+
+{% block content %}
+<style>
+.form-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="file"] {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.btn-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
+}
+
+.btn-cancel {
+    padding: 10px 20px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #475569;
+    font-weight: 600;
+}
+
+.btn-submit {
+    padding: 10px 20px;
+    background-color: #6366f1;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-submit:hover {
+    background-color: #4f46e5;
+}
+</style>
+
+<div class="form-container">
+    <h2 style="margin-top:0; margin-bottom: 20px; font-size: 1.3rem; color: #0f172a;" data-i18n="addFile">ファイルを追加</h2>
+
+    <!-- 🌟 送信時（onsubmit）に AIロード画面を呼び出します -->
+    <form method="POST" enctype="multipart/form-data" onsubmit="showAiLoading('授業ファイルを解析中...', 'AIがファイルを読み込んで教材を準備しています。');">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="title" data-i18n="title">タイトル</label>
+            <input type="text" id="title" name="title" required placeholder="例: 第1回 微分積分">
+        </div>
+
+        <div class="form-group">
+            <label for="document" data-i18n="lessonFile">授業ファイル (PDFなど)</label>
+            <input type="file" id="document" name="document" required>
+        </div>
+
+        <div class="btn-group">
+            <a href="{% url 'learning:topic_list' subject %}" class="btn-cancel" data-i18n="cancel">キャンセル</a>
+            <button type="submit" class="btn-submit" data-i18n="addAndStartAnalysis">追加して解析開始</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
