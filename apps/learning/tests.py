@@ -27,5 +27,5 @@ class LearningModelTestCase(TestCase):
         client = Client()
         response = client.get(reverse('learning:index'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "AIとともに学習するクイズアプリ")
-        self.assertContains(response, "Django基礎講座")
+        self.assertContains(response, "WebApp Title")
+

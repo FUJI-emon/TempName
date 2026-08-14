@@ -4,10 +4,14 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 
-# 🟢 Topic モデル
+# =====================================================================
+# 0. TOPIC & UPLOADED DOCUMENTS (Frontend UI Models)
+# =====================================================================
+
+
 class Topic(models.Model):
     title = models.CharField(max_length=200, verbose_name="トピック名")
-    subject = models.CharField(max_length=20, verbose_name="教科", default='math')
+    subject = models.CharField(max_length=20, verbose_name="教科", default="math")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="作成日時")
 
     class Meta:
@@ -16,6 +20,24 @@ class Topic(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class UserStepProgress(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    topic_id = models.IntegerField()
+    step_num = models.IntegerField()
+
+    # ステータス: 0=ロック, 1=解放中(挑戦可能), 2=完了
+    status = models.IntegerField(default=0)
+
+    # AIへのインプット用ログデータ
+    mistake_count = models.IntegerField(default=0)
+    time_taken_seconds = models.IntegerField(default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ("user", "topic_id", "step_num")
+
 
 # =====================================================================
 # 1. USERS
@@ -32,6 +54,9 @@ class UsersUser(models.Model):
     class Meta:
         db_table = "users_user"
 
+    def __str__(self):
+        return self.display_name or self.username
+
 
 # =====================================================================
 # 2. LEARNING
@@ -40,11 +65,13 @@ class UsersUser(models.Model):
 
 class LearningMaterial(models.Model):
     SUBJECT_CHOICES = [
-        ('math', 'Math'),
-        ('english', 'English'),
+        ("math", "Math"),
+        ("english", "English"),
     ]
 
-    subject = models.CharField(max_length=20, choices=SUBJECT_CHOICES, default='math', verbose_name="教科")
+    subject = models.CharField(
+        max_length=20, choices=SUBJECT_CHOICES, default="math", verbose_name="教科"
+    )
     title = models.CharField(max_length=200, verbose_name="タイトル")
     content = models.TextField(verbose_name="学習教材本文 / 課題内容")
     progress = models.IntegerField(default=0, verbose_name="進捗率(%)")
@@ -53,9 +80,13 @@ class LearningMaterial(models.Model):
     last_used_at = models.DateTimeField(default=timezone.now, verbose_name="最終利用日時")
 
     class Meta:
+        db_table = "learning_material"
         verbose_name = "学習教材"
         verbose_name_plural = "学習教材一覧"
-        ordering = ['-last_used_at']
+        ordering = ["-last_used_at"]
+
+    def __str__(self):
+        return self.title
 
     def days_ago(self):
         """最後に使った日から何日経過したかを自動計算"""
@@ -63,16 +94,6 @@ class LearningMaterial(models.Model):
             return 0
         delta = timezone.now() - self.last_used_at
         return max(0, delta.days)
-    title = models.CharField(max_length=200, null=False)
-    content = models.TextField(null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.title
-
-    class Meta:
-        db_table = "learning_material"
 
 
 class LearningGoal(models.Model):
@@ -80,13 +101,14 @@ class LearningGoal(models.Model):
         LearningMaterial, on_delete=models.CASCADE, related_name="goals", null=False
     )
     title = models.CharField(max_length=200, verbose_name="学習目標")
-    description = models.TextField(blank=True, verbose_name="目標の詳細・達成基準")
+    description = models.TextField(blank=True, default="", verbose_name="目標の詳細・達成基準")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="作成日時")
 
     class Meta:
+        db_table = "learning_goal"
         verbose_name = "学習目標"
         verbose_name_plural = "学習目標一覧"
-        ordering = ['-created_at']
+        ordering = ["-created_at"]
 
     def __str__(self):
         return f"{self.material.title} -> {self.title}"
@@ -96,9 +118,9 @@ class UploadedDocument(models.Model):
     learning_material = models.ForeignKey(
         LearningMaterial,
         on_delete=models.CASCADE,
-        related_name='documents'
+        related_name="documents",
     )
-    file = models.FileField(upload_to='documents/', verbose_name="ファイル")
+    file = models.FileField(upload_to="documents/", verbose_name="ファイル")
     name = models.CharField(max_length=255, verbose_name="ファイル名")
     size = models.BigIntegerField(default=0, verbose_name="ファイルサイズ(Byte)")
     uploaded_at = models.DateTimeField(auto_now_add=True, verbose_name="アップロード日時")
@@ -113,77 +135,6 @@ class UploadedDocument(models.Model):
 
     def __str__(self):
         return self.name
-
-
-class ChatThread(models.Model):
-    """チャットスレッド（対話の単位）"""
-    learning_material = models.ForeignKey(
-        'LearningMaterial', 
-        on_delete=models.CASCADE, 
-        related_name='chat_threads',
-        null=True, 
-        blank=True
-    )
-    title = models.CharField("スレッドタイトル", max_length=255, default="新しいチャット")
-    created_at = models.DateTimeField("作成日時", default=timezone.now)
-    updated_at = models.DateTimeField("更新日時", auto_now=True)
-
-    class Meta:
-        ordering = ['-updated_at']
-
-    def __str__(self):
-        return self.title
-
-
-class ChatMessage(models.Model):
-    """スレッド内の各メッセージ"""
-    SENDER_CHOICES = (
-        ('user', 'ユーザー'),
-        ('ai', 'AIアシスタント'),
-    )
-
-    thread = models.ForeignKey(
-        ChatThread, 
-        on_delete=models.CASCADE, 
-        related_name='messages'
-    )
-    sender = models.CharField("送信者", max_length=10, choices=SENDER_CHOICES)
-    content = models.TextField("メッセージ内容")
-    created_at = models.DateTimeField("送信日時", default=timezone.now)
-
-    class Meta:
-        ordering = ['created_at']
-
-    def __str__(self):
-        return f"[{self.sender}] {self.content[:20]}"
-
-
-# 🌟 ChatMessage から独立した正しく配置されたクラス
-class UserStepProgress(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    topic_id = models.IntegerField()
-    step_num = models.IntegerField()
-    
-    # ステータス: 0=ロック, 1=解放中(挑戦可能), 2=完了
-    status = models.IntegerField(default=0)
-    
-    # AIへのインプット用ログデータ
-    mistake_count = models.IntegerField(default=0)       # 間違えた回数
-    time_taken_seconds = models.IntegerField(default=0)  # 解答にかかった時間(秒)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        unique_together = ('user', 'topic_id', 'step_num')
-    title = models.CharField(max_length=200, null=False)
-    description = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"{self.title} ({self.material.title})"
-
-    class Meta:
-        db_table = "learning_goal"
-
 
 
 # =====================================================================
@@ -453,14 +404,27 @@ class ChatThread(models.Model):
         CHECKPOINT_QUESTION = "checkpoint_question", "Checkpoint Question"
 
     student = models.ForeignKey(UsersUser, on_delete=models.CASCADE, null=False)
-    scope_type = models.CharField(
-        max_length=30, choices=ScopeType.choices, null=False
+    learning_material = models.ForeignKey(
+        LearningMaterial,
+        on_delete=models.CASCADE,
+        related_name="chat_threads",
+        null=True,
+        blank=True,
     )
-    scope_id = models.IntegerField(null=False)  # Application-level FK
-    created_at = models.DateTimeField(auto_now_add=True)
+    title = models.CharField("スレッドタイトル", max_length=255, default="新しいチャット")
+    scope_type = models.CharField(
+        max_length=30, choices=ScopeType.choices, default=ScopeType.MATERIAL, null=False
+    )
+    scope_id = models.IntegerField(default=0, null=False)
+    created_at = models.DateTimeField("作成日時", default=timezone.now)
+    updated_at = models.DateTimeField("更新日時", auto_now=True)
 
     class Meta:
         db_table = "chat_thread"
+        ordering = ["-updated_at"]
+
+    def __str__(self):
+        return self.title
 
 
 class ChatMessage(models.Model):
@@ -468,10 +432,22 @@ class ChatMessage(models.Model):
         STUDENT = "student", "Student"
         AI = "ai", "AI"
 
-    thread = models.ForeignKey(ChatThread, on_delete=models.CASCADE, null=False)
-    role = models.CharField(max_length=10, choices=Role.choices, null=False)
-    content = models.TextField(null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
+    SENDER_CHOICES = (
+        ("user", "ユーザー"),
+        ("ai", "AIアシスタント"),
+    )
+
+    thread = models.ForeignKey(
+        ChatThread, on_delete=models.CASCADE, related_name="messages", null=False
+    )
+    role = models.CharField(max_length=10, choices=Role.choices, default=Role.STUDENT, null=False)
+    sender = models.CharField("送信者", max_length=10, choices=SENDER_CHOICES, default="user")
+    content = models.TextField("メッセージ内容", null=False)
+    created_at = models.DateTimeField("送信日時", default=timezone.now)
 
     class Meta:
         db_table = "chat_message"
+        ordering = ["created_at"]
+
+    def __str__(self):
+        return f"[{self.role or self.sender}] {self.content[:20]}"
