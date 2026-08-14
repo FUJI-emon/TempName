@@ -57,3 +57,13 @@ def assert_no_leak(hint_text: str, question: QuestionDTO) -> None:
         raise LLMInvalidResponseError(
             f"Hint bị nghi leak đáp án (trùng nội dung với: {leaked!r})"
         )
+
+
+def assert_no_leak_chat(reply_text: str, question: QuestionDTO = None) -> None:
+    """Guardrail riêng cho chat_reply trong scope QUIZ để đảm bảo không bị lộ đáp án."""
+    if question:
+        leaked = find_leaked_answer(reply_text, question)
+        if leaked:
+            raise LLMInvalidResponseError(
+                f"Chat reply bị nghi leak đáp án quiz (trùng nội dung với: {leaked!r})"
+            )
