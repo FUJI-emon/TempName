@@ -1,0 +1,234 @@
+{% extends 'base.html' %}
+
+{% block title %}テスト結果 | WebApp Title{% endblock %}
+
+{% block page_title %}result{% endblock %}
+
+{% block content %}
+<style>
+    /* 結果画面のレイアウト */
+    .result-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px;
+    }
+    .result-card {
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        max-width: 600px;
+        padding: 60px 40px;
+        text-align: center;
+    }
+
+    /* 円形プログレスバー */
+    .circle-wrap {
+        width: 200px;
+        height: 200px;
+        background: #e0e7ff; 
+        border-radius: 50%;
+        margin: 0 auto 36px auto;
+        position: relative;
+    }
+    .circle-fill {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: conic-gradient(#4f46e5 0%, transparent 0);
+        transition: background 1s ease-out;
+    }
+    .circle-inner {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        width: 170px;
+        height: 170px;
+        background: #ffffff;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    .circle-percent {
+        font-size: 56px;
+        font-weight: 700;
+        color: #1e1b4b;
+        line-height: 1;
+    }
+    .circle-label {
+        font-size: 16px;
+        color: #6b7280;
+        margin-top: 4px;
+        font-weight: 500;
+    }
+
+    /* ステータスバッジ（Pass/Fail） */
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 24px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 16px;
+        margin-bottom: 32px;
+    }
+    .status-badge.pass { background: #dcfce7; color: #166534; }
+    .status-badge.fail { background: #fee2e2; color: #991b1b; }
+
+    /* スコアと時間の表示エリア */
+    .stats-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 32px;
+        padding-bottom: 32px;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+        color: #4b5563;
+        font-weight: 600;
+    }
+    .stat-divider {
+        width: 1px;
+        height: 24px;
+        background: #e5e7eb;
+    }
+
+    /* メッセージ */
+    .result-message {
+        color: #6b7280;
+        font-size: 16px;
+        margin-bottom: 40px;
+        line-height: 1.5;
+    }
+    
+    /* ボタンデザイン */
+    .btn-continue, .btn-try-again {
+        display: block;
+        width: 100%;
+        padding: 18px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 18px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: opacity 0.2s, background 0.2s;
+    }
+    .btn-continue {
+        background: #4f46e5;
+        color: white;
+        border: none;
+    }
+    .btn-continue:hover { opacity: 0.9; }
+    
+    .btn-try-again {
+        background: transparent;
+        color: #4f46e5;
+        border: 2px solid #4f46e5;
+    }
+    .btn-try-again:hover { background: #e0e7ff; }
+
+    /* 初期状態は両方非表示 */
+    #pass-section, #fail-section { display: none; }
+</style>
+
+<div class="result-container">
+    <div class="result-card">
+        
+        <!-- 円形プログレス -->
+        <div class="circle-wrap">
+            <div class="circle-fill" id="circleFill"></div>
+            <div class="circle-inner">
+                <div class="circle-percent" id="scoreText">0%</div>
+                <div class="circle-label">正答率</div>
+            </div>
+        </div>
+
+        <!-- 合否バッジ -->
+        <div id="statusBadge" class="status-badge">
+            判定中...
+        </div>
+
+        <!-- スコアと時間 -->
+        <div class="stats-row">
+            <div class="stat-item">
+                <span>✅</span> <span id="correctCountText">正解数 0/10 問</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+                <span>⏱️</span> <span id="timeText">かかった時間: 0:00</span>
+            </div>
+        </div>
+
+        <div class="result-message" id="resultMessage">
+            計算中...
+        </div>
+
+        <!-- 合格時のボタン -->
+        <div id="pass-section">
+            <a href="{% url 'learning:index' %}" class="btn-continue">次へ進む</a>
+        </div>
+
+        <!-- 不合格時のボタン -->
+        <div id="fail-section">
+            <a href="javascript:history.back()" class="btn-try-again">もう一度挑戦する</a>
+        </div>
+
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    // localStorageからテスト結果を受け取る
+    const testScore = parseInt(localStorage.getItem('test_score')) || 0;
+    const testTotal = parseInt(localStorage.getItem('test_total')) || 10;
+    const testTime = localStorage.getItem('test_time') || "00:00";
+    
+    // パーセンテージを計算
+    const percentage = Math.round((testScore / testTotal) * 100);
+    
+    // UIにデータを反映
+    document.getElementById('scoreText').textContent = percentage + '%';
+    // ここが円グラフの長さを決める魔法のCSS
+    document.getElementById('circleFill').style.background = `conic-gradient(#4f46e5 ${percentage}%, transparent 0)`;
+    
+    // ★ここを日本語に変更しました！
+    document.getElementById('correctCountText').textContent = `正解数: ${testScore}/${testTotal} 問`;
+    document.getElementById('timeText').textContent = `かかった時間: ${testTime}`;
+
+    const statusBadge = document.getElementById('statusBadge');
+    const passSection = document.getElementById('pass-section');
+    const failSection = document.getElementById('fail-section');
+    const resultMessage = document.getElementById('resultMessage');
+
+    // 80%以上で合格
+    if (percentage >= 80) {
+        statusBadge.className = 'status-badge pass';
+        // ★ここを日本語に変更しました！
+        statusBadge.innerHTML = '✅ 合格 – 次のトピックへ進めます！';
+        resultMessage.textContent = '素晴らしい成績です！見事にクリアしました。';
+        passSection.style.display = 'block';
+        
+        // （おまけ）チームメイトのXPシステムと連携！
+        if (typeof addXp === 'function') {
+            addXp(100); 
+        }
+    } else {
+        statusBadge.className = 'status-badge fail';
+        // ★ここを日本語に変更しました！
+        statusBadge.innerHTML = '❌ 不合格 – クリアには80%以上必要です';
+        resultMessage.innerHTML = '惜しい！あと少しで合格です。<br>「もう一度挑戦する」を押して再トライしましょう！';
+        failSection.style.display = 'block';
+    }
+});
+</script>
+{% endblock %}

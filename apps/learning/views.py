@@ -264,3 +264,8 @@ def path_map_view(request, topic_id):
 def finaltest(request):
     # templates/learning/ フォルダの中の finaltest.html を表示する
     return render(request, 'learning/finaltest.html')
+
+# apps/learning/views.py の一番下に追加します
+
+def result(request):
+    return render(request, 'learning/ft_result.html')
