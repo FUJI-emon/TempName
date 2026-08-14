@@ -22,4 +22,15 @@ urlpatterns = [
     path('topic/<int:topic_id>/save-understanding/', views.save_understanding, name='save_understanding'),
     path('topic/<int:topic_id>/path-map/', views.path_map_view, name='path_map'),
     path('finaltest/', views.finaltest, name='finaltest'),
-]
+    path('chat/', views.chat_thread_list, name='chat_thread_list'),
+    path('chat/<int:thread_id>/', views.chat_detail, name='chat_detail'),
+    path('chat/<int:thread_id>/send/', views.send_chat_message, name='send_chat_message'),
+    path('chat/create/<int:topic_id>/', views.create_chat_thread, name='create_chat_thread'),
+    path('topic/<int:topic_id>/step/<int:step_num>/', views.lesson_card_view, name='lesson_card'),
+    path('topic/<int:topic_id>/step/<int:step_num>/checkpoint/', views.lesson_checkpoint_view, name='lesson_checkpoint'),
+    path('topic/<int:topic_id>/step/<int:step_num>/complete/', views.complete_step_api, name='complete_step_api'),
+    path('api/topic/<int:topic_id>/step/<int:step_num>/complete/', views.complete_step_api, name='complete_step_api'),
+    path('settings/update/', views.update_settings, name='update_settings'),
+    path('settings/', views.settings_view, name='settings'),
+    path('profile/', views.profile_view, name='profile'),
+    ]

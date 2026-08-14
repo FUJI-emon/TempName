@@ -191,7 +191,7 @@ body {
 
 <div class="path-container">
     <div class="path-header">
-        <a href="/topics/{{ topic.subject }}/" class="back-btn">‹ Topicsに戻る</a>
+        <a href="/topics/{{ topic.subject }}/" class="back-btn"><span data-i18n="backToTopics">‹ Topicsに戻る</span></a>
         
         <form method="POST" action="{% url 'learning:edit_topic_title' topic.id %}" class="path-title-form">
             {% csrf_token %}
@@ -203,16 +203,18 @@ body {
                    onkeydown="if(event.key === 'Enter') { this.blur(); }">
         </form>
 
-        <span class="step-badge">Step {{ current_step_num|default:"1" }} / Adaptive</span>
+        <span class="step-badge"><span data-i18n="step">Step</span> {{ current_step_num|default:"1" }} / Adaptive</span>
     </div>
 
     <div class="path-tree">
         {% for step in steps %}
             <div class="step-node {% cycle 'align-left' 'align-right' %} status-{{ step.status }}">
                 <div class="node-card">
-                    <h3 class="node-title">Step {{ step.number }}: {{ step.title }}</h3>
+                    <h3 class="node-title"><span data-i18n="step">Step</span> {{ step.number }}: {{ step.title }}</h3>
                     {% if step.status == 'locked' %}
-                        <p style="font-size: 0.85rem; color: #94a3b8; font-style: italic;">Step {{ step.number|add:"-1" }} の学習結果からAIが生成します</p>
+                        <p style="font-size: 0.85rem; color: #94a3b8; font-style: italic;">
+                            <span data-i18n="step">Step</span> {{ step.number|add:"-1" }} <span data-i18n="generatedByAiNote">の学習結果からAIが生成します</span>
+                        </p>
                     {% else %}
                         <p class="node-desc">{{ step.card_count }} Flashcards + Quiz</p>
                         <span class="xp-reward-badge">⚡ +{{ step.xp_reward }} XP</span>
@@ -231,7 +233,7 @@ body {
            class="continue-btn" 
            data-xp="{{ current_step_xp|default:100 }}"
            onclick="handleContinue(this)">
-            Continue Learning (+{{ current_step_xp|default:100 }} XP)
+            <span data-i18n="continueLearning">Continue Learning</span> (+{{ current_step_xp|default:100 }} XP)
         </a>
     </div>
 </div>

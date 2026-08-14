@@ -1,8 +1,9 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 
-# 🟢 Topic モデルを追加
+# 🟢 Topic モデル
 class Topic(models.Model):
     title = models.CharField(max_length=200, verbose_name="トピック名")
     subject = models.CharField(max_length=20, verbose_name="教科", default='math')
@@ -87,3 +88,64 @@ class UploadedDocument(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class ChatThread(models.Model):
+    """チャットスレッド（対話の単位）"""
+    learning_material = models.ForeignKey(
+        'LearningMaterial', 
+        on_delete=models.CASCADE, 
+        related_name='chat_threads',
+        null=True, 
+        blank=True
+    )
+    title = models.CharField("スレッドタイトル", max_length=255, default="新しいチャット")
+    created_at = models.DateTimeField("作成日時", default=timezone.now)
+    updated_at = models.DateTimeField("更新日時", auto_now=True)
+
+    class Meta:
+        ordering = ['-updated_at']
+
+    def __str__(self):
+        return self.title
+
+
+class ChatMessage(models.Model):
+    """スレッド内の各メッセージ"""
+    SENDER_CHOICES = (
+        ('user', 'ユーザー'),
+        ('ai', 'AIアシスタント'),
+    )
+
+    thread = models.ForeignKey(
+        ChatThread, 
+        on_delete=models.CASCADE, 
+        related_name='messages'
+    )
+    sender = models.CharField("送信者", max_length=10, choices=SENDER_CHOICES)
+    content = models.TextField("メッセージ内容")
+    created_at = models.DateTimeField("送信日時", default=timezone.now)
+
+    class Meta:
+        ordering = ['created_at']
+
+    def __str__(self):
+        return f"[{self.sender}] {self.content[:20]}"
+
+
+# 🌟 ChatMessage から独立した正しく配置されたクラス
+class UserStepProgress(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    topic_id = models.IntegerField()
+    step_num = models.IntegerField()
+    
+    # ステータス: 0=ロック, 1=解放中(挑戦可能), 2=完了
+    status = models.IntegerField(default=0)
+    
+    # AIへのインプット用ログデータ
+    mistake_count = models.IntegerField(default=0)       # 間違えた回数
+    time_taken_seconds = models.IntegerField(default=0)  # 解答にかかった時間(秒)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'topic_id', 'step_num')

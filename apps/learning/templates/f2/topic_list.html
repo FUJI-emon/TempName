@@ -95,7 +95,6 @@
     box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-/* 🌟 上部アクションバー（ペンボタンとチェックボックスの並列配置） */
 .card-top-bar {
     display: flex;
     align-items: center;
@@ -133,7 +132,6 @@
     margin: 0;
 }
 
-/* 中央：インライン編集可能なタイトル入力欄 */
 .card-title-input {
     width: 100%;
     font-size: 1rem;
@@ -160,7 +158,6 @@
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
-/* 下部：詳細リンク */
 .card-link {
     display: block;
     text-align: center;
@@ -207,13 +204,12 @@
 
         <div class="topic-header">
             <div class="header-left">
-                <!-- 👈 戻るボタンの遷移先を dashboard に変更しました -->
-                <a href="{% url 'learning:dashboard' %}" class="back-link">‹ 戻る</a>
+                <a href="{% url 'learning:dashboard' %}" class="back-link"><span data-i18n="back">‹ 戻る</span></a>
                 <h2 style="margin: 0; font-size: 1.5rem; color: #0f172a; font-weight: 700;">{{ subject_name }} Topics</h2>
             </div>
             
             <button type="submit" id="batch-delete-btn" class="batch-delete-btn" disabled onclick="return confirm('選択した項目をまとめて削除しますか？');">
-                🗑️ 選択した項目を削除 (<span id="selected-count">0</span>)
+                🗑️ <span data-i18n="deleteSelected">選択した項目を削除</span> (<span id="selected-count">0</span>)
             </button>
         </div>
 
@@ -222,14 +218,13 @@
             <div class="topic-card add-card">
                 <a href="{% url 'learning:add_topic' subject %}" class="card-link" style="color: #64748b;">
                     <div class="add-icon">+</div>
-                    <div class="add-text">ファイルを追加</div>
+                    <div class="add-text" data-i18n="addFile">ファイルを追加</div>
                 </a>
             </div>
 
             <!-- 登録済みトピック一覧 -->
             {% for topic in topics %}
             <div class="topic-card">
-                <!-- 上部アクションバー（ペンボタンとチェックボックス） -->
                 <div class="card-top-bar">
                     <button type="button" 
                             class="card-action-btn" 
@@ -249,7 +244,6 @@
                            onchange="updateBatchDeleteBtn();">
                 </div>
 
-                <!-- タイトル入力部分 -->
                 <input type="text" 
                        id="input-{{ topic.id }}"
                        value="{{ topic.title }}" 
@@ -258,12 +252,11 @@
                        onblur="handleTitleBlur(this, '{{ topic.id }}', '{{ topic.title|escapejs }}')"
                        onkeydown="if(event.key === 'Enter') { this.blur(); }">
 
-                <!-- 進捗リンク -->
                 <a href="{% url 'learning:topic_detail' topic.id %}" 
                    class="card-link topic-card-link"
                    data-id="{{ topic.id }}"
                    data-title="{{ topic.title }}">
-                    進捗: {{ topic.progress }}%
+                    <span data-i18n="progress">進捗</span>: {{ topic.progress }}%
                 </a>
             </div>
             {% endfor %}
@@ -273,7 +266,6 @@
 
 <script src="{% static 'js/main.js' %}"></script>
 <script>
-// タイトル入力欄にフォーカスを当てる
 function focusTitleInput(inputId) {
     const input = document.getElementById(inputId);
     if (input) {
@@ -282,7 +274,6 @@ function focusTitleInput(inputId) {
     }
 }
 
-// 確定時に動的にフォームを生成して送信（ネスト防止対策）
 function handleTitleBlur(inputElem, topicId, originalTitle) {
     const newTitle = inputElem.value.trim();
     if (newTitle && newTitle !== originalTitle) {

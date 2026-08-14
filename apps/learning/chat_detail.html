@@ -1,0 +1,339 @@
+{% extends 'learning/base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/chat.css' %}">
+{% endblock %}
+
+{% block content %}
+<style>
+/* CSSの補強（chat.cssがない場合でも崩れない設計） */
+.chat-container {
+    max-width: 800px;
+    margin: 20px auto;
+    height: calc(100vh - 120px);
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.chat-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8fafc;
+}
+
+.back-btn-circle {
+    text-decoration: none;
+    color: #475569;
+    font-size: 1.2rem;
+    font-weight: bold;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    background: #f8fafc;
+}
+
+/* メッセージの共通スタイル */
+.message-row {
+    display: flex;
+    gap: 12px;
+    max-width: 80%;
+}
+
+.message-row.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.message-row.ai {
+    align-self: flex-start;
+}
+
+.ai-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #6366f1;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.chat-bubble {
+    padding: 12px 16px;
+    border-radius: 16px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.message-row.user .chat-bubble {
+    background: #6366f1;
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+}
+
+.message-row.ai .chat-bubble {
+    background: #ffffff;
+    color: #1e293b;
+    border: 1px solid #e2e8f0;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.chat-time {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+/* 入力エリア */
+.chat-input-area {
+    padding: 16px 20px;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+}
+
+.input-box-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f1f5f9;
+    padding: 8px 12px;
+    border-radius: 24px;
+}
+
+.chat-input {
+    flex-grow: 1;
+    border: none;
+    background: transparent;
+    padding: 8px;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+.send-btn {
+    border: none;
+    background: #6366f1;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.send-btn:hover {
+    background: #4f46e5;
+}
+
+/* Loadingアニメーション */
+.loading-bubble {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 18px;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background: #94a3b8;
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.dot:nth-child(1) { animation-delay: -0.32s; }
+.dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1.0); }
+}
+</style>
+
+<div class="chat-container">
+    <!-- ヘッダー -->
+    <div class="chat-header">
+        <a href="{% url 'learning:chat_thread_list' %}" class="back-btn-circle">‹</a>
+        <h1 class="chat-title">{{ thread.title }}</h1>
+        <div style="width: 36px;"></div>
+    </div>
+
+    <!-- チャットメッセージ表示エリア -->
+    <div class="chat-messages" id="chat-messages">
+        {% for msg in chat_messages %}
+            {% if msg.sender == 'user' %}
+                <div class="message-row user">
+                    <div>
+                        <div class="chat-bubble">{{ msg.content }}</div>
+                        <div class="chat-time" style="text-align: right;">{{ msg.created_at|date:"H:i" }}</div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="message-row ai">
+                    <div class="ai-avatar">🤖</div>
+                    <div>
+                        <div class="chat-bubble">{{ msg.content }}</div>
+                        <div class="chat-time">{{ msg.created_at|date:"H:i" }}</div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- 入力フォームエリア -->
+    <div class="chat-input-area">
+        <form id="chat-form" class="input-box-wrapper">
+            {% csrf_token %}
+            <input type="text" id="chat-input" class="chat-input" placeholder="質問を入力してください..." required autocomplete="off" />
+            
+            <button type="submit" class="send-btn" id="send-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const messagesContainer = document.getElementById('chat-messages');
+    const chatForm = document.getElementById('chat-form');
+    const chatInput = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('send-btn');
+
+    // 画面の一番下までスクロール
+    function scrollToBottom() {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+    scrollToBottom();
+
+    // メッセージ送信処理
+    chatForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const content = chatInput.value.trim();
+        if (!content) return;
+
+        // 1. ユーザーのメッセージを画面にすぐ表示
+        const now = new Date();
+        const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+        
+        const userRow = document.createElement('div');
+        userRow.className = 'message-row user';
+        userRow.innerHTML = `
+            <div>
+                <div class="chat-bubble">${escapeHtml(content)}</div>
+                <div class="chat-time" style="text-align: right;">${timeStr}</div>
+            </div>
+        `;
+        messagesContainer.appendChild(userRow);
+
+        // 入力欄リセット＆スクロール
+        chatInput.value = '';
+        chatInput.disabled = true;
+        sendBtn.disabled = true;
+        scrollToBottom();
+
+        // 2. Loading表示を追加
+        const loadingRow = document.createElement('div');
+        loadingRow.className = 'message-row ai';
+        loadingRow.id = 'loading-row';
+        loadingRow.innerHTML = `
+            <div class="ai-avatar">🤖</div>
+            <div class="chat-bubble loading-bubble">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        `;
+        messagesContainer.appendChild(loadingRow);
+        scrollToBottom();
+
+        // 3. サーバーへメッセージ送信（Fetch API）
+        try {
+            const response = await fetch("{% url 'learning:send_chat_message' thread.id %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ content: content })
+            });
+
+            const data = await response.json();
+
+            // Loading削除
+            document.getElementById('loading-row')?.remove();
+
+            if (data.status === 'success') {
+                // 4. AIの応答を追加
+                const aiRow = document.createElement('div');
+                aiRow.className = 'message-row ai';
+                aiRow.innerHTML = `
+                    <div class="ai-avatar">🤖</div>
+                    <div>
+                        <div class="chat-bubble">${escapeHtml(data.ai_message.content)}</div>
+                        <div class="chat-time">${data.ai_message.created_at}</div>
+                    </div>
+                `;
+                messagesContainer.appendChild(aiRow);
+            } else {
+                alert('エラーが発生しました: ' + (data.message || '送信に失敗しました'));
+            }
+        } catch (error) {
+            document.getElementById('loading-row')?.remove();
+            alert('通信エラーが発生しました');
+        } finally {
+            chatInput.disabled = false;
+            sendBtn.disabled = false;
+            chatInput.focus();
+            scrollToBottom();
+        }
+    });
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+});
+</script>
+{% endblock %}

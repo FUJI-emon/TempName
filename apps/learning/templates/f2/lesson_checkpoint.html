@@ -1,0 +1,403 @@
+{% extends 'learning/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+.checkpoint-page-bg {
+    min-height: calc(100vh - 80px);
+    background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    box-sizing: border-box;
+}
+
+.checkpoint-container {
+    width: 100%;
+    max-width: 720px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.checkpoint-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #ffffff;
+}
+
+.back-btn-cp {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.back-btn-cp:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.step-title-header {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.checkpoint-card {
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 36px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.badge-question {
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #6366f1;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.question-text {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.option-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 16px;
+    cursor: pointer;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.option-item:hover {
+    border-color: #a5b4fc;
+    background: #f8fafc;
+}
+
+.option-item.selected {
+    border-color: #6366f1;
+    background: #eff6ff;
+}
+
+.custom-radio {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #cbd5e1;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.option-item.selected .custom-radio {
+    border-color: #6366f1;
+    background: #6366f1;
+}
+
+.custom-radio-inner {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: none;
+}
+
+.option-item.selected .custom-radio-inner {
+    display: block;
+}
+
+.option-label {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #334155;
+}
+
+.hint-toggle-btn {
+    align-self: center;
+    background: transparent;
+    border: none;
+    color: #e0e7ff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: background 0.2s;
+}
+
+.hint-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.hint-box {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 16px 20px;
+    color: #ffffff;
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.hint-box.show {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.feedback-msg {
+    display: none;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.feedback-msg.correct {
+    display: block;
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #86efac;
+}
+
+.feedback-msg.incorrect {
+    display: block;
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 18px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    transition: transform 0.2s, opacity 0.2s;
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.submit-btn.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.submit-btn.active:hover {
+    transform: translateY(-2px);
+}
+</style>
+
+<div class="checkpoint-page-bg">
+    <div class="checkpoint-container">
+
+        <!-- ヘッダー -->
+        <div class="checkpoint-header">
+            <a href="{% url 'learning:path_map' topic.id %}" class="back-btn-cp">‹</a>
+            <div class="step-title-header"><span data-i18n="step">ステップ</span> {{ step_num }}: {{ step_title }}</div>
+            <div style="width: 42px;"></div>
+        </div>
+
+        <!-- クイズカード -->
+        <div class="checkpoint-card">
+            <div class="badge-question" data-i18n="understandingCheckQuestion">理解度チェック問題</div>
+            <h2 class="question-text">{{ checkpoint.question }}</h2>
+
+            <!-- 選択肢 -->
+            <div class="options-list">
+                {% for opt in checkpoint.options %}
+                <div class="option-item" 
+                     data-is-correct="{{ opt.is_correct|yesno:'true,false' }}" 
+                     onclick="selectOption(this)">
+                    <div class="custom-radio">
+                        <div class="custom-radio-inner"></div>
+                    </div>
+                    <span class="option-label">{{ opt.text }}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div id="feedback" class="feedback-msg"></div>
+        </div>
+
+        <!-- ヒント表示アコーディオン -->
+        <button type="button" class="hint-toggle-btn" onclick="toggleHint()">
+            💡 <span data-i18n="viewHint">ヒントを見る</span> <span id="hint-arrow">▼</span>
+        </button>
+
+        <div class="hint-box" id="hint-box">
+            <div style="font-weight: 700; font-size: 0.85rem; color: #a5b4fc; margin-bottom: 4px;" data-i18n="hint">ヒント</div>
+            <div>{{ checkpoint.hint }}</div>
+        </div>
+
+        <!-- 判定ボタン -->
+        <button type="button" class="submit-btn" id="submit-btn" onclick="checkAnswer()" data-i18n="checkAnswer">
+            回答を確認する
+        </button>
+
+    </div>
+</div>
+
+<script>
+let selectedIsCorrect = false;
+let isAnswered = false;
+let mistakeCount = 0;
+let startTime = Date.now();
+
+function selectOption(element) {
+    if (isAnswered) return;
+
+    document.querySelectorAll('.option-item').forEach(el => el.classList.remove('selected'));
+    element.classList.add('selected');
+    
+    selectedIsCorrect = element.dataset.isCorrect === 'true';
+
+    const submitBtn = document.getElementById('submit-btn');
+    submitBtn.classList.add('active');
+}
+
+function toggleHint() {
+    const hintBox = document.getElementById('hint-box');
+    const arrow = document.getElementById('hint-arrow');
+    if (hintBox.classList.contains('show')) {
+        hintBox.classList.remove('show');
+        arrow.textContent = '▼';
+    } else {
+        hintBox.classList.add('show');
+        arrow.textContent = '▲';
+    }
+}
+
+function checkAnswer() {
+    const feedback = document.getElementById('feedback');
+    const submitBtn = document.getElementById('submit-btn');
+
+    isAnswered = true;
+
+    if (selectedIsCorrect) {
+        feedback.className = 'feedback-msg correct';
+        feedback.innerHTML = '🎉 正解です！ (+100 XP獲得)';
+        submitBtn.textContent = '次へ進む →';
+        
+        submitBtn.onclick = function() {
+            completeStep();
+        };
+    } else {
+        mistakeCount++;
+        feedback.className = 'feedback-msg incorrect';
+        feedback.innerHTML = '❌ 残念！もう一度ヒントを見て考えてみましょう。';
+        submitBtn.textContent = 'もう一度挑戦する';
+        submitBtn.onclick = function() {
+            location.reload();
+        };
+    }
+}
+
+function getCsrfToken() {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, 10) === ('csrftoken=')) {
+                cookieValue = decodeURIComponent(cookie.substring(10));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function completeStep() {
+    const timeTaken = Math.floor((Date.now() - startTime) / 1000);
+    const submitBtn = document.getElementById('submit-btn');
+    
+    submitBtn.style.pointerEvents = 'none';
+    submitBtn.textContent = '保存中...';
+
+    const apiUrl = "{% url 'learning:complete_step_api' topic.id step_num %}";
+
+    fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCsrfToken()
+        },
+        body: JSON.stringify({
+            mistakes: mistakeCount,
+            time_taken: timeTaken
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            if (data.redirect_url) {
+                window.location.href = data.redirect_url;
+            } else {
+                window.location.href = "{% url 'learning:path_map' topic.id %}";
+            }
+        } else {
+            alert('保存に失敗しました: ' + (data.message || '不明なエラー'));
+            submitBtn.style.pointerEvents = 'auto';
+            submitBtn.textContent = '次へ進む →';
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('クリア情報の保存中にエラーが発生しました:\n' + error.message);
+        submitBtn.style.pointerEvents = 'auto';
+        submitBtn.textContent = '次へ進む →';
+    });
+}
+</script>
+{% endblock %}

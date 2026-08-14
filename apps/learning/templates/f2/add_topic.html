@@ -64,25 +64,25 @@
 </style>
 
 <div class="form-container">
-    <h2 style="margin-top:0; margin-bottom: 20px; font-size: 1.3rem; color: #0f172a;">ファイルを追加</h2>
+    <h2 style="margin-top:0; margin-bottom: 20px; font-size: 1.3rem; color: #0f172a;" data-i18n="addFile">ファイルを追加</h2>
 
     <!-- 🌟 送信時（onsubmit）に AIロード画面を呼び出します -->
     <form method="POST" enctype="multipart/form-data" onsubmit="showAiLoading('授業ファイルを解析中...', 'AIがファイルを読み込んで教材を準備しています。');">
         {% csrf_token %}
 
         <div class="form-group">
-            <label for="title">タイトル</label>
+            <label for="title" data-i18n="title">タイトル</label>
             <input type="text" id="title" name="title" required placeholder="例: 第1回 微分積分">
         </div>
 
         <div class="form-group">
-            <label for="document">授業ファイル (PDFなど)</label>
+            <label for="document" data-i18n="lessonFile">授業ファイル (PDFなど)</label>
             <input type="file" id="document" name="document" required>
         </div>
 
         <div class="btn-group">
-            <a href="{% url 'learning:topic_list' subject %}" class="btn-cancel">キャンセル</a>
-            <button type="submit" class="btn-submit">追加して解析開始</button>
+            <a href="{% url 'learning:topic_list' subject %}" class="btn-cancel" data-i18n="cancel">キャンセル</a>
+            <button type="submit" class="btn-submit" data-i18n="addAndStartAnalysis">追加して解析開始</button>
         </div>
     </form>
 </div>

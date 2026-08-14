@@ -1,0 +1,597 @@
+{% extends 'learning/base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+/* 🎨 全体スタイル */
+.settings-container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 20px 16px 80px 16px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ヘッダー */
+.settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.back-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1e293b;
+    text-decoration: none;
+    font-size: 1.1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    transition: all 0.2s;
+}
+
+body.dark-mode .back-btn {
+    background: #1e293b;
+    border-color: #334155;
+    color: #f8fafc;
+}
+
+.back-btn:hover {
+    transform: translateX(-2px);
+}
+
+.settings-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+body.dark-mode .settings-title { color: #f8fafc; }
+
+/* セクション共通 */
+.section-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #64748b;
+    letter-spacing: 0.5px;
+    margin: 20px 0 8px 8px;
+    text-transform: uppercase;
+}
+body.dark-mode .section-label { color: #94a3b8; }
+
+.section-label.danger {
+    color: #ef4444;
+}
+
+/* カード形式のグループ */
+.settings-card {
+    background: #ffffff;
+    border-radius: 20px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+    overflow: hidden;
+}
+body.dark-mode .settings-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+/* ユーザープロフィールカード */
+.user-profile-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.2s;
+}
+
+.user-profile-card:hover {
+    background: #f8fafc;
+}
+body.dark-mode .user-profile-card:hover {
+    background: #334155;
+}
+
+.user-profile-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #fed7aa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    overflow: hidden;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-name-text {
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: #0f172a;
+    margin: 0 0 2px 0;
+}
+body.dark-mode .user-name-text { color: #f8fafc; }
+
+.user-role-text {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    margin: 0;
+}
+
+/* 各設定行 */
+.settings-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid #f8fafc;
+    text-decoration: none;
+    color: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    background: transparent;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    width: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s;
+}
+
+body.dark-mode .settings-item {
+    border-bottom-color: #334155;
+}
+
+.settings-item:last-child {
+    border-bottom: none;
+}
+
+.settings-item.clickable:hover {
+    background: #f8fafc;
+}
+body.dark-mode .settings-item.clickable:hover {
+    background: #334155;
+}
+
+.item-left {
+    color: #1e293b;
+}
+body.dark-mode .item-left { color: #f8fafc; }
+
+.item-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #94a3b8;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.chevron {
+    font-size: 1rem;
+    color: #cbd5e1;
+}
+
+/* トグルスイッチ */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #e2e8f0;
+    transition: .3s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+input:checked + .slider {
+    background-color: #6366f1;
+}
+
+input:checked + .slider:before {
+    transform: translateX(22px);
+}
+
+.danger-item { color: #ef4444 !important; }
+.danger-item-soft { color: #fca5a5 !important; }
+
+/* 🌐 言語選択モーダル */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background: #ffffff;
+    width: 85%;
+    max-width: 360px;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+body.dark-mode .modal-content {
+    background: #1e293b;
+    color: #f8fafc;
+}
+
+.modal-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.lang-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+body.dark-mode .lang-option {
+    background: #0f172a;
+    border-color: #334155;
+}
+
+.lang-option:hover {
+    border-color: #6366f1;
+    background: #eef2ff;
+}
+body.dark-mode .lang-option:hover {
+    background: #1e1b4b;
+}
+
+.modal-close-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    border: none;
+    background: #e2e8f0;
+    color: #475569;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+body.dark-mode .modal-close-btn {
+    background: #334155;
+    color: #cbd5e1;
+}
+</style>
+
+<div class="settings-container">
+    <!-- ヘッダー -->
+    <div class="settings-header">
+        <a href="{% url 'learning:dashboard' %}" class="back-btn" title="戻る">‹</a>
+        <h1 class="settings-title" data-i18n="settings">設定</h1>
+    </div>
+
+    <!-- プロフィールリンク（初期値：ゲストユーザー） -->
+    <div class="settings-card">
+        <a href="{% url 'learning:profile' %}" class="user-profile-card">
+            <div class="user-profile-info">
+                <div class="user-avatar" id="settingsAvatarContainer">
+                    <span id="settingsAvatarEmoji">👤</span>
+                    <img id="settingsAvatarImg" src="" style="display: none;" alt="User Avatar">
+                </div>
+                <div>
+                    <h3 class="user-name-text">
+                        {% if request.user.is_authenticated and request.user.username %}
+                            {{ request.user.username }}
+                        {% else %}
+                            <span data-i18n="guestUser">ゲストユーザー</span>
+                        {% endif %}
+                    </h3>
+                    <p class="user-role-text" data-i18n="studentAccount">学生アカウント</p>
+                </div>
+            </div>
+            <span class="chevron">›</span>
+        </a>
+    </div>
+
+    <!-- PREFERENCES（環境設定） -->
+    <div class="section-label" data-i18n="preferences">環境設定</div>
+    <div class="settings-card">
+        <!-- ダークモード -->
+        <div class="settings-item">
+            <span class="item-left" data-i18n="darkMode">ダークモード</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <!-- 言語変更 -->
+        <button type="button" class="settings-item clickable" onclick="openLanguageModal()">
+            <span class="item-left" data-i18n="language">言語</span>
+            <div class="item-right">
+                <span id="currentLanguageText">日本語</span>
+                <span class="chevron">›</span>
+            </div>
+        </button>
+
+        <!-- 通知音 -->
+        <div class="settings-item">
+            <span class="item-left" data-i18n="notificationSound">通知音</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="notificationSoundToggle" onchange="toggleNotificationSound(this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <!-- STUDY SETTINGS（学習設定） -->
+    <div class="section-label" data-i18n="studySettings">学習設定</div>
+    <div class="settings-card">
+        <!-- 毎日の目標 -->
+        <button type="button" class="settings-item clickable" onclick="changeDailyGoal()">
+            <span class="item-left" data-i18n="dailyGoal">毎日の目標</span>
+            <div class="item-right">
+                <span id="dailyGoalText">30分</span>
+                <span class="chevron">›</span>
+            </div>
+        </button>
+
+        <!-- リマインダー時間 -->
+        <button type="button" class="settings-item clickable" onclick="changeReminderTime()">
+            <span class="item-left" data-i18n="reminderTime">リマインダー時間</span>
+            <div class="item-right">
+                <span id="reminderTimeText">8:00 AM</span>
+                <span class="chevron">›</span>
+            </div>
+        </button>
+
+        <!-- 音声自動再生 -->
+        <div class="settings-item">
+            <span class="item-left" data-i18n="autoPlayAudio">音声自動再生</span>
+            <label class="toggle-switch">
+                <input type="checkbox" id="autoPlayAudioToggle" onchange="toggleAutoPlayAudio(this.checked)">
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <!-- GENERAL（一般） -->
+    <div class="section-label" data-i18n="general">一般</div>
+    <div class="settings-card">
+        <button type="button" class="settings-item clickable" onclick="showInfo('about')">
+            <span class="item-left" data-i18n="about">アプリについて</span>
+            <span class="chevron">›</span>
+        </button>
+
+        <button type="button" class="settings-item clickable" onclick="showInfo('helpSupport')">
+            <span class="item-left" data-i18n="helpSupport">ヘルプ＆サポート</span>
+            <span class="chevron">›</span>
+        </button>
+
+        <button type="button" class="settings-item clickable" onclick="rateApp()">
+            <span class="item-left" data-i18n="rateApp">アプリを評価する</span>
+            <span class="chevron">›</span>
+        </button>
+
+        <button type="button" class="settings-item clickable" onclick="showInfo('terms')">
+            <span class="item-left" data-i18n="terms">利用規約</span>
+            <span class="chevron">›</span>
+        </button>
+
+        <button type="button" class="settings-item clickable" onclick="showInfo('privacy')">
+            <span class="item-left" data-i18n="privacy">プライバシーポリシー</span>
+            <span class="chevron">›</span>
+        </button>
+    </div>
+
+    <!-- DANGER ZONE（危険エリア） -->
+    <div class="section-label danger" data-i18n="dangerZone">危険エリア</div>
+    <div class="settings-card">
+        <button type="button" class="settings-item clickable" onclick="handleLogout()">
+            <span class="item-left danger-item" data-i18n="logOut">ログアウト</span>
+        </button>
+
+        <button type="button" class="settings-item clickable" onclick="handleDeleteAccount()">
+            <span class="item-left danger-item-soft" data-i18n="deleteAccount">アカウント削除</span>
+        </button>
+    </div>
+</div>
+
+<!-- 🌐 言語選択モーダル -->
+<div class="modal-overlay" id="langModal">
+    <div class="modal-content">
+        <div class="modal-title" data-i18n="selectLanguage">言語を選択</div>
+        <div class="lang-option" onclick="selectLanguage('ja')">
+            <span>🇯🇵 日本語</span>
+            <span id="check-ja">✓</span>
+        </div>
+        <div class="lang-option" onclick="selectLanguage('en')">
+            <span>🇺🇸 English</span>
+            <span id="check-en" style="display:none;">✓</span>
+        </div>
+        <div class="lang-option" onclick="selectLanguage('vi')">
+            <span>🇻🇳 Tiếng Việt</span>
+            <span id="check-vi" style="display:none;">✓</span>
+        </div>
+        <button type="button" class="modal-close-btn" onclick="closeLanguageModal()" data-i18n="close">閉じる</button>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // 1. プロフィール画像の初期化
+    const savedAvatar = localStorage.getItem("dash_user_avatar");
+    if (savedAvatar) {
+        document.getElementById("settingsAvatarEmoji").style.display = "none";
+        const img = document.getElementById("settingsAvatarImg");
+        img.src = savedAvatar;
+        img.style.display = "block";
+    }
+
+    // 2. ダークモードスイッチ状態の設定
+    const currentTheme = localStorage.getItem("app_theme") || localStorage.getItem("theme") || "light";
+    const darkToggle = document.getElementById("darkModeToggle");
+    if (darkToggle) {
+        darkToggle.checked = (currentTheme === "dark");
+    }
+
+    // 3. スイッチ類の初期化
+    document.getElementById("notificationSoundToggle").checked = localStorage.getItem("setting_notification_sound") !== "false";
+    document.getElementById("autoPlayAudioToggle").checked = localStorage.getItem("setting_autoplay_audio") === "true";
+    
+    // 4. 設定テキストの初期化
+    document.getElementById("dailyGoalText").textContent = localStorage.getItem("setting_daily_goal") || "30分";
+    document.getElementById("reminderTimeText").textContent = localStorage.getItem("setting_reminder_time") || "8:00 AM";
+
+    // 5. 言語の適用（base.html のグローバル関数を実行）
+    const currentLang = localStorage.getItem("app_language") || "ja";
+    updateLanguageUI(currentLang);
+});
+
+/* 🌐 言語モーダル制御 */
+function openLanguageModal() {
+    document.getElementById("langModal").style.display = "flex";
+}
+
+function closeLanguageModal() {
+    document.getElementById("langModal").style.display = "none";
+}
+
+function selectLanguage(lang) {
+    if (typeof applyGlobalLanguage === "function") {
+        applyGlobalLanguage(lang);
+    }
+    updateLanguageUI(lang);
+    closeLanguageModal();
+}
+
+function updateLanguageUI(lang) {
+    const dict = (window.i18nDictionary && window.i18nDictionary[lang]) ? window.i18nDictionary[lang] : {};
+    if (dict.langDisplay) {
+        document.getElementById("currentLanguageText").textContent = dict.langDisplay;
+    }
+    document.getElementById("check-ja").style.display = lang === "ja" ? "inline" : "none";
+    document.getElementById("check-en").style.display = lang === "en" ? "inline" : "none";
+    document.getElementById("check-vi").style.display = lang === "vi" ? "inline" : "none";
+}
+
+/* 🌙 ダークモード切替 */
+function toggleDarkMode(isDark) {
+    if (typeof setTheme === 'function') {
+        setTheme(isDark ? 'dark' : 'light');
+    }
+}
+
+function toggleNotificationSound(enabled) {
+    localStorage.setItem("setting_notification_sound", enabled);
+}
+
+function toggleAutoPlayAudio(enabled) {
+    localStorage.setItem("setting_autoplay_audio", enabled);
+}
+
+function changeDailyGoal() {
+    const current = localStorage.getItem("setting_daily_goal") || "30分";
+    const input = prompt("目標学習時間を入力してください:", current);
+    if (input !== null && input.trim() !== "") {
+        localStorage.setItem("setting_daily_goal", input.trim());
+        document.getElementById("dailyGoalText").textContent = input.trim();
+    }
+}
+
+function changeReminderTime() {
+    const current = localStorage.getItem("setting_reminder_time") || "8:00 AM";
+    const input = prompt("リマインダー時間を入力してください:", current);
+    if (input !== null && input.trim() !== "") {
+        localStorage.setItem("setting_reminder_time", input.trim());
+        document.getElementById("reminderTimeText").textContent = input.trim();
+    }
+}
+
+function showInfo(key) {
+    const lang = localStorage.getItem("app_language") || "ja";
+    const dict = window.i18nDictionary ? window.i18nDictionary[lang] : {};
+    alert(`【${dict[key] || key}】`);
+}
+
+function rateApp() {
+    alert("ストアの評価ページを開きます。");
+}
+
+function handleLogout() {
+    const lang = localStorage.getItem("app_language") || "ja";
+    const msg = lang === "en" ? "Are you sure you want to log out?" :
+                lang === "vi" ? "Bạn có chắc chắn muốn đăng xuất không?" :
+                "ログアウトしてもよろしいですか？";
+    if (confirm(msg)) {
+        window.location.href = "/";
+    }
+}
+
+function handleDeleteAccount() {
+    const lang = localStorage.getItem("app_language") || "ja";
+    const msg = lang === "en" ? "Are you sure you want to delete your account?" :
+                lang === "vi" ? "Bạn có chắc chắn muốn xóa tài khoản không?" :
+                "【警告】アカウントを削除しますか？";
+    if (confirm(msg)) {
+        window.location.href = "/";
+    }
+}
+</script>
+{% endblock %}

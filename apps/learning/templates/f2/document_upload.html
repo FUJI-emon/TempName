@@ -107,22 +107,20 @@ body {
 </style>
 
 <div class="upload-container">
-    <!-- 🌟 topic.idが0の時は安全にトピック一覧画面(/topics/subject/)へ戻る -->
     <div class="upload-header">
         <a href="{% if topic.id and topic.id != 0 %}/topic/{{ topic.id }}/{% else %}/topics/{{ subject|default:'math' }}/{% endif %}" class="back-btn-dark">‹</a>
-        <h1 class="upload-title">Upload Document</h1>
+        <h1 class="upload-title" data-i18n="uploadDocument">Upload Document</h1>
     </div>
 
-    <h2 class="main-title">Add Learning Material</h2>
-    <p class="sub-title">PDFやテキストファイルをアップロードしてAI学習を開始しましょう</p>
+    <h2 class="main-title" data-i18n="addLearningMaterial">Add Learning Material</h2>
+    <p class="sub-title" data-i18n="uploadSubTitle">PDFやテキストファイルをアップロードしてAI学習を開始しましょう</p>
 
-    <!-- 🌟 action内の add_topic に learning: を追加 -->
     <form method="POST" enctype="multipart/form-data" action="{% if topic.id and topic.id != 0 %}{% url 'learning:document_upload' topic.id %}{% else %}{% url 'learning:add_topic' subject|default:'math' %}{% endif %}" id="upload-form">
         {% csrf_token %}
         <div class="drop-zone" onclick="document.getElementById('file-input').click()">
             <div class="drop-icon">📁</div>
-            <div class="drop-text" id="file-name-display">ファイルをドラッグ＆ドロップ<br>またはクリックして選択</div>
-            <span class="select-file-btn">ファイルを選択</span>
+            <div class="drop-text" id="file-name-display" data-i18n="dragAndDropText">ファイルをドラッグ＆ドロップ<br>またはクリックして選択</div>
+            <span class="select-file-btn" data-i18n="selectFile">ファイルを選択</span>
             <input type="file" name="file" id="file-input" class="file-input" onchange="handleFileSelect(this)">
         </div>
     </form>

@@ -3,31 +3,34 @@
 
 {% block content %}
 <style>
-body {
-    background-color: #0f0d23 !important;
+.review-page-bg {
+    min-height: calc(100vh - 80px);
+    background: #0b0f19;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+    box-sizing: border-box;
     color: #ffffff;
 }
 
 .review-container {
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 20px 16px 40px 16px;
-    min-height: 100vh;
-    box-sizing: border-box;
+    width: 100%;
+    max-width: 540px;
     display: flex;
     flex-direction: column;
+    gap: 24px;
 }
 
 .review-header {
     display: flex;
     align-items: center;
-    position: relative;
-    margin-bottom: 24px;
+    justify-content: space-between;
 }
 
-.back-btn-dark {
-    width: 40px;
-    height: 40px;
+.back-btn {
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.1);
     color: #ffffff;
@@ -35,242 +38,183 @@ body {
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    font-size: 1.2rem;
-    transition: background 0.2s;
-}
-
-.back-btn-dark:hover {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-.review-title {
-    flex: 1;
-    text-align: center;
     font-size: 1.1rem;
-    font-weight: 600;
-    margin: 0;
-    padding-right: 40px;
-    color: #f1f5f9;
 }
 
-.main-title {
-    font-size: 1.75rem;
+.page-title {
+    font-size: 1.1rem;
     font-weight: 700;
-    line-height: 1.25;
-    margin-bottom: 12px;
-    color: #ffffff;
 }
 
-.sub-title {
-    font-size: 0.9rem;
-    color: #a5b4fc;
-    line-height: 1.4;
-    margin-bottom: 24px;
-}
-
-.review-card {
-    background: #ffffff;
-    border-radius: 28px;
-    padding: 20px;
-    color: #1e293b;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-    margin-bottom: 30px;
-}
-
-.doc-file-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 16px;
-}
-
-.doc-name-input {
-    width: 100%;
-    font-size: 1rem;
-    font-weight: 700;
-    color: #6366f1;
-    background: #f1f5f9;
-    border: 1.5px solid #cbd5e1;
-    border-radius: 12px;
-    padding: 10px 14px;
-    box-sizing: border-box;
-    transition: all 0.2s;
-}
-
-.doc-name-input:focus {
-    outline: none;
-    border-color: #6366f1;
-    background: #ffffff;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-}
-
-.section-list {
+.title-section {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
+.main-heading {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1.3;
+    margin: 0;
+}
+
+.sub-heading {
+    color: #818cf8;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.card-box {
+    background: #ffffff;
+    border-radius: 28px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.doc-name-badge {
+    background: #f1f5f9;
+    color: #6366f1;
+    font-weight: 700;
+    padding: 14px 20px;
+    border-radius: 16px;
+    font-size: 1rem;
+    word-break: break-all;
+}
+
 .section-item {
-    display: block;
-    position: relative;
-    cursor: pointer;
-}
-
-.section-item input[type="checkbox"] {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-}
-
-.section-box {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 14px 16px;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 16px;
-    background-color: #ffffff;
-    transition: all 0.2s ease;
+    gap: 16px;
+    padding: 18px 20px;
+    border: 1.5 solid #e2e8f0;
+    border-radius: 20px;
+    background: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
 }
 
-.section-text {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #334155;
-    line-height: 1.3;
+.section-item:hover {
+    border-color: #a5b4fc;
+    background: #f8fafc;
 }
 
-.custom-checkbox {
+.section-item.checked {
+    border-color: #6366f1;
+    background: #eff6ff;
+}
+
+.checkbox-circle {
     width: 24px;
     height: 24px;
-    border-radius: 50%;
     border: 2px solid #cbd5e1;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: all 0.2s ease;
+    transition: all 0.2s;
 }
 
-.custom-checkbox svg {
-    display: none;
-    width: 14px;
-    height: 14px;
-    stroke: #ffffff;
-    stroke-width: 3;
-}
-
-.section-item input[type="checkbox"]:checked + .section-box {
-    background-color: #f0f2fe;
-    border-color: #818cf8;
-}
-
-.section-item input[type="checkbox"]:checked + .section-box .custom-checkbox {
-    background-color: #6366f1;
+.section-item.checked .checkbox-circle {
     border-color: #6366f1;
+    background: #6366f1;
 }
 
-.section-item input[type="checkbox"]:checked + .section-box .custom-checkbox svg {
+.checkbox-circle::after {
+    content: "✓";
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    display: none;
+}
+
+.section-item.checked .checkbox-circle::after {
     display: block;
 }
 
-.action-area {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    margin-top: auto;
+.section-title-text {
+    color: #1e293b;
+    font-size: 1rem;
+    font-weight: 700;
 }
 
 .submit-btn {
     width: 100%;
-    padding: 16px;
-    background-color: #6366f1;
-    color: white;
+    padding: 18px;
     border: none;
-    border-radius: 18px;
-    font-size: 1rem;
-    font-weight: 600;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: background 0.2s;
-    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    margin-top: 10px;
 }
 
 .submit-btn:hover {
-    background-color: #4f46e5;
-}
-
-.skip-btn {
-    background: none;
-    border: none;
-    color: #c084fc;
-    font-size: 0.9rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: opacity 0.2s;
-    padding: 4px;
-}
-
-.skip-btn:hover {
-    opacity: 0.8;
+    opacity: 0.95;
 }
 </style>
 
-<div class="review-container">
-    <div class="review-header">
-        <a href="{% if topic.id and topic.id != 0 %}/topic/{{ topic.id }}/upload/{% else %}/topics/{{ subject|default:'math' }}/{% endif %}" class="back-btn-dark">‹</a>
-        <h1 class="review-title">Review Document</h1>
-    </div>
+<div class="review-page-bg">
+    <div class="review-container">
 
-    <h2 class="main-title">Which parts have you understood?</h2>
-    <p class="sub-title">Mark the sections you already know so AI can focus on what you need to learn</p>
+        <!-- ヘッダー -->
+        <div class="review-header">
+            <a href="javascript:history.back()" class="back-btn">‹</a>
+            <div class="page-title" data-i18n="reviewDocument">資料の確認</div>
+            <div style="width: 38px;"></div>
+        </div>
 
-    <form method="POST" action="{% url 'learning:save_understanding' topic.id|default:0 %}" id="review-form">
-        {% csrf_token %}
-        
-        <input type="hidden" name="subject" value="{% if topic.subject %}{{ topic.subject }}{% else %}{{ subject|default:'math' }}{% endif %}">
+        <!-- タイトルセクション -->
+        <div class="title-section">
+            <h1 class="main-heading" data-i18n="whichPartsUnderstood">理解できている部分は<br>どこですか？</h1>
+            <p class="sub-heading" data-i18n="markSectionsDesc">すでに知っている部分にチェックを入れると、AIが重点的に学ぶべき内容を最適化します。</p>
+        </div>
 
-        <div class="review-card">
-            <div class="doc-file-indicator">
-                <input type="text" name="document_name" value="{{ document_name|default:'DOCUMENT.PDF' }}" class="doc-name-input" placeholder="トピック名を入力...">
-            </div>
+        <form method="POST" action="{% url 'learning:save_understanding' topic.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="document_name" value="{{ document_name }}">
+            <input type="hidden" name="subject" value="{{ subject }}">
 
-            <div class="section-list">
-                {% for section in sections %}
-                <label class="section-item">
-                    <input type="checkbox" name="understood_sections" value="{{ section.id }}" {% if section.is_understood %}checked{% endif %}>
-                    <div class="section-box">
-                        <div class="custom-checkbox">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                        </div>
-                        <span class="section-text">{{ section.title }}</span>
-                    </div>
-                </label>
-                {% empty %}
-                <label class="section-item">
-                    <input type="checkbox" name="understood_sections" value="1">
-                    <div class="section-box">
-                        <div class="custom-checkbox">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                        </div>
-                        <span class="section-text">Introduction to Firmware Architecture</span>
-                    </div>
-                </label>
+            <!-- カードエリア -->
+            <div class="card-box">
+                <div class="doc-name-badge">{{ document_name }}</div>
+
+                {% for sec in sections %}
+                <div class="section-item" onclick="toggleSection(this)">
+                    <input type="checkbox" name="understood_sections" value="{{ sec.id }}" style="display: none;">
+                    <div class="checkbox-circle"></div>
+                    <span class="section-title-text">{{ sec.title }}</span>
+                </div>
                 {% endfor %}
             </div>
-        </div>
 
-        <div class="action-area">
-            <button type="submit" class="submit-btn" onclick="if(typeof showAiLoading === 'function') { showAiLoading('学習プランを構成中...', 'あなたの理解度に合わせてStep 1を作成しています。'); }">
-                Submit and Learn
+            <!-- 次へ進むボタン -->
+            <button type="submit" class="submit-btn" data-i18n="nextStep">
+                次へ進む →
             </button>
+        </form>
 
-            <button type="submit" class="skip-btn" onclick="if(typeof showAiLoading === 'function') { showAiLoading('学習プランを構成中...', 'Path Mapを作成しています。'); }">
-                Skip, show everything
-            </button>
-        </div>
-    </form>
+    </div>
 </div>
+
+<script>
+function toggleSection(element) {
+    const checkbox = element.querySelector('input[type="checkbox"]');
+    checkbox.checked = !checkbox.checked;
+    
+    if (checkbox.checked) {
+        element.classList.add('checked');
+    } else {
+        element.classList.remove('checked');
+    }
+}
+</script>
 {% endblock %}

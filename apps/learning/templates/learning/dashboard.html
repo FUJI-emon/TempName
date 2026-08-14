@@ -3,13 +3,20 @@
 
 {% block content %}
 <style>
+/* ☀️ ライトモード（デフォルト） */
 body {
     background-color: #f8fafc !important;
     color: #1e293b;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* PC用ダッシュボードコンテナ */
+/* 🌙 ダークモード */
+body.dark-mode {
+    background-color: #0f172a !important;
+    color: #f8fafc;
+}
+
 .dashboard-container {
     max-width: 860px;
     margin: 40px auto;
@@ -64,6 +71,7 @@ body {
     color: #64748b;
     margin: 0 0 2px 0;
 }
+body.dark-mode .user-greeting { color: #94a3b8; }
 
 .user-name {
     font-size: 1.3rem;
@@ -72,8 +80,15 @@ body {
     margin: 0;
     line-height: 1.2;
 }
+body.dark-mode .user-name { color: #f8fafc; }
 
-.notification-btn {
+.header-right-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.notification-btn, .settings-btn {
     width: 44px;
     height: 44px;
     border-radius: 50%;
@@ -84,6 +99,23 @@ body {
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+    color: #0f172a;
+    text-decoration: none;
+}
+
+body.dark-mode .notification-btn,
+body.dark-mode .settings-btn {
+    background: #1e293b;
+    border-color: #334155;
+    color: #f8fafc;
+}
+
+.settings-btn:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: rotate(30deg);
 }
 
 /* 2. 学習ストリーク */
@@ -97,11 +129,14 @@ body {
     box-shadow: 0 4px 20px rgba(0,0,0,0.03);
     margin-bottom: 24px;
     border: 1px solid #f1f5f9;
+    transition: background 0.3s, border-color 0.3s;
+}
+body.dark-mode .streak-card {
+    background: #1e293b;
+    border-color: #334155;
 }
 
-.streak-info {
-    flex: 1;
-}
+.streak-info { flex: 1; }
 
 .streak-title {
     display: flex;
@@ -112,6 +147,7 @@ body {
     color: #0f172a;
     margin-bottom: 10px;
 }
+body.dark-mode .streak-title { color: #f8fafc; }
 
 .xp-bar-container {
     width: 80%;
@@ -121,6 +157,7 @@ body {
     overflow: hidden;
     margin-top: 6px;
 }
+body.dark-mode .xp-bar-container { background: #334155; }
 
 .xp-bar-fill {
     width: 0%;
@@ -139,6 +176,7 @@ body {
     margin-top: 6px;
     font-weight: 600;
 }
+body.dark-mode .streak-stats { color: #94a3b8; }
 
 .goal-circle {
     width: 76px;
@@ -153,9 +191,7 @@ body {
     transition: transform 0.2s;
 }
 
-.goal-circle:hover {
-    transform: scale(1.04);
-}
+.goal-circle:hover { transform: scale(1.04); }
 
 .goal-circle-inner {
     width: 62px;
@@ -170,6 +206,11 @@ body {
     font-size: 0.95rem;
     color: #0f172a;
     line-height: 1.1;
+    transition: background 0.3s, color 0.3s;
+}
+body.dark-mode .goal-circle-inner {
+    background: #1e293b;
+    color: #f8fafc;
 }
 
 .goal-sub {
@@ -178,6 +219,7 @@ body {
     font-weight: 600;
     margin-top: 2px;
 }
+body.dark-mode .goal-sub { color: #94a3b8; }
 
 /* 3. 直近の学習履歴 */
 .history-section-card {
@@ -187,20 +229,22 @@ body {
     box-shadow: 0 4px 20px rgba(0,0,0,0.03);
     margin-bottom: 32px;
     border: 1px solid #f1f5f9;
+    transition: background 0.3s, border-color 0.3s;
+}
+body.dark-mode .history-section-card {
+    background: #1e293b;
+    border-color: #334155;
 }
 
-.history-header-center {
-    text-align: center;
-    margin-bottom: 20px;
-}
+.history-header-center { text-align: center; margin-bottom: 20px; }
 
 .history-main-title {
     font-size: 1.25rem;
     font-weight: 800;
     color: #0f172a;
     margin: 0;
-    letter-spacing: -0.2px;
 }
+body.dark-mode .history-main-title { color: #f8fafc; }
 
 .history-grid-container {
     display: flex;
@@ -270,8 +314,9 @@ body {
     text-align: center;
     word-break: break-all;
 }
+body.dark-mode .history-item-label { color: #cbd5e1; }
 
-/* 4. セクションタイトル共通 */
+/* 4. セクションタイトル */
 .section-header {
     display: flex;
     align-items: center;
@@ -285,6 +330,7 @@ body {
     color: #0f172a;
     margin: 0;
 }
+body.dark-mode .section-title { color: #f8fafc; }
 
 .view-all-link {
     color: #6366f1;
@@ -293,7 +339,7 @@ body {
     font-size: 0.9rem;
 }
 
-/* 5. MY COURSES グリッド */
+/* 5. MY COURSES */
 .courses-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -313,6 +359,10 @@ body {
     flex-direction: column;
     box-shadow: 0 4px 12px rgba(0,0,0,0.02);
     position: relative;
+}
+body.dark-mode .course-card {
+    background: #1e293b;
+    border-color: #334155;
 }
 
 .course-card:hover {
@@ -341,16 +391,9 @@ body {
     opacity: 0;
     z-index: 10;
 }
+body.dark-mode .delete-subject-btn { background: #334155; color: #94a3b8; }
 
-.course-card:hover .delete-subject-btn {
-    opacity: 1;
-}
-
-.delete-subject-btn:hover {
-    background: #ffe4e6;
-    color: #e11d48;
-    transform: scale(1.1);
-}
+.course-card:hover .delete-subject-btn { opacity: 1; }
 
 .course-icon {
     width: 44px;
@@ -369,7 +412,6 @@ body {
 .course-icon.science { background: #dcfce7; color: #16a34a; }
 .course-icon.default { background: #e2e8f0; color: #475569; }
 
-/* 教科追加カード */
 .course-card.add-card {
     border: 2px dashed #cbd5e1;
     background: #f8fafc;
@@ -378,18 +420,10 @@ body {
     color: #64748b;
     cursor: pointer;
 }
-
-.course-card.add-card:hover {
-    border-color: #6366f1;
-    background: #f1f5f9;
-    color: #6366f1;
-}
-
-.course-card.add-card .course-icon {
-    background: transparent;
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 2px;
+body.dark-mode .course-card.add-card {
+    background: #0f172a;
+    border-color: #334155;
+    color: #94a3b8;
 }
 
 .course-card.add-card.input-mode {
@@ -412,16 +446,7 @@ body {
     color: #0f172a;
 }
 
-.new-subject-input:focus {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
-}
-
-.add-card-btns {
-    display: flex;
-    gap: 6px;
-    width: 100%;
-}
+.add-card-btns { display: flex; gap: 6px; width: 100%; }
 
 .add-sub-btn {
     flex: 1;
@@ -431,26 +456,9 @@ body {
     font-size: 0.8rem;
     font-weight: 800;
     cursor: pointer;
-    transition: all 0.2s;
 }
-
-.add-sub-btn.confirm {
-    background: #6366f1;
-    color: #ffffff;
-}
-
-.add-sub-btn.confirm:hover {
-    background: #4f46e5;
-}
-
-.add-sub-btn.cancel {
-    background: #f1f5f9;
-    color: #64748b;
-}
-
-.add-sub-btn.cancel:hover {
-    background: #e2e8f0;
-}
+.add-sub-btn.confirm { background: #6366f1; color: #ffffff; }
+.add-sub-btn.cancel { background: #f1f5f9; color: #64748b; }
 
 .course-name {
     font-size: 1rem;
@@ -458,14 +466,10 @@ body {
     color: #0f172a;
     margin: 0;
 }
+body.dark-mode .course-name { color: #f8fafc; }
 
 /* 6. ANNOUNCEMENTS & TIPS */
-.info-card-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 32px;
-}
+.info-card-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 32px; }
 
 .info-card {
     background: #f8fafc;
@@ -475,6 +479,10 @@ body {
     align-items: flex-start;
     gap: 16px;
     border: 1px solid #e2e8f0;
+}
+body.dark-mode .info-card {
+    background: #1e293b;
+    border-color: #334155;
 }
 
 .info-icon {
@@ -487,7 +495,6 @@ body {
     justify-content: center;
     font-size: 1.1rem;
     flex-shrink: 0;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
 .info-title {
@@ -496,6 +503,7 @@ body {
     color: #0f172a;
     margin: 0 0 4px 0;
 }
+body.dark-mode .info-title { color: #f8fafc; }
 
 .info-desc {
     font-size: 0.85rem;
@@ -516,12 +524,12 @@ body {
     box-shadow: 0 4px 12px rgba(0,0,0,0.02);
     margin-bottom: 32px;
 }
-
-.deadline-left {
-    display: flex;
-    align-items: center;
-    gap: 16px;
+body.dark-mode .deadline-card {
+    background: #1e293b;
+    border-color: #334155;
 }
+
+.deadline-left { display: flex; align-items: center; gap: 16px; }
 
 .deadline-icon {
     width: 44px;
@@ -541,12 +549,9 @@ body {
     color: #0f172a;
     margin: 0 0 4px 0;
 }
+body.dark-mode .deadline-title { color: #f8fafc; }
 
-.deadline-sub {
-    font-size: 0.8rem;
-    color: #64748b;
-    margin: 0;
-}
+.deadline-sub { font-size: 0.8rem; color: #64748b; margin: 0; }
 
 .deadline-badge {
     background: #ffe4e6;
@@ -569,11 +574,7 @@ body {
     box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
 }
 
-.ai-profile {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-}
+.ai-profile { display: flex; align-items: center; gap: 14px; }
 
 .ai-avatar {
     width: 48px;
@@ -586,17 +587,8 @@ body {
     font-size: 1.5rem;
 }
 
-.ai-name {
-    font-weight: 800;
-    font-size: 1.05rem;
-    margin: 0 0 2px 0;
-}
-
-.ai-msg {
-    font-size: 0.85rem;
-    opacity: 0.9;
-    margin: 0;
-}
+.ai-name { font-weight: 800; font-size: 1.05rem; margin: 0 0 2px 0; }
+.ai-msg { font-size: 0.85rem; opacity: 0.9; margin: 0; }
 
 .chat-bubble-icon {
     width: 40px;
@@ -621,18 +613,23 @@ body {
             <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="handleAvatarChange(event)">
 
             <div>
-                <p class="user-greeting">Konnichiwa! 👋</p>
-                <h2 class="user-name">ゲストユーザー</h2>
+                <p class="user-greeting" data-i18n="greeting">こんにちは！ 👋</p>
+                <!-- 🌟 全画面共有クラス `user-name-display` を付与 -->
+                <h2 class="user-name user-name-display">ゲストユーザー</h2>
             </div>
         </div>
-        <div class="notification-btn">🔔</div>
+
+        <div class="header-right-actions">
+            <div class="notification-btn">🔔</div>
+            <a href="{% url 'learning:settings' %}" class="settings-btn" title="設定">⚙️</a>
+        </div>
     </div>
 
     <!-- 2. 学習ストリーク -->
     <div class="streak-card">
         <div class="streak-info">
             <div class="streak-title">
-                <span>🔥</span> <span id="streakCountText">1-day streak!</span>
+                <span>🔥</span> <span id="streakCountText">0日連続学習！</span>
             </div>
             <div class="xp-bar-container">
                 <div class="xp-bar-fill" id="xpBarFill"></div>
@@ -646,7 +643,8 @@ body {
         <div class="goal-circle" id="goalCircle" onclick="editGoal()" title="クリックして目標時間を変更">
             <div class="goal-circle-inner">
                 <span id="usageTimeText">0m</span>
-                <span class="goal-sub" id="goalText">Goal: 15h</span>
+                <!-- 🌟 初期表示を「目標: 30分」に修正 -->
+                <span class="goal-sub daily-goal-display" id="goalText">目標: 30分</span>
             </div>
         </div>
     </div>
@@ -654,7 +652,7 @@ body {
     <!-- 3. 直近の学習履歴 -->
     <div class="history-section-card">
         <div class="history-header-center">
-            <h2 class="history-main-title">直近の学習履歴</h2>
+            <h2 class="history-main-title" data-i18n="recentHistory">直近の学習履歴</h2>
         </div>
 
         <div class="history-grid-container" id="historyGridContainer">
@@ -671,75 +669,60 @@ body {
                 </a>
                 {% endfor %}
             {% else %}
-                <div class="empty-history-text">まだ作成されたファイル履歴はありません</div>
+                <div class="empty-history-text" data-i18n="noHistory">まだ作成されたファイル履歴はありません</div>
             {% endif %}
         </div>
     </div>
 
-    <!-- 4. MY COURSES（教科選択エリア） -->
+    <!-- 4. MY COURSES -->
     <div class="section-header">
-        <h2 class="section-title">My Courses</h2>
-        <a href="#" class="view-all-link">View All</a>
+        <h2 class="section-title" data-i18n="myCourses">マイコース</h2>
+        <a href="#" class="view-all-link" data-i18n="viewAll">すべて見る</a>
     </div>
 
     <div class="courses-grid">
-        <!-- 1. Mathematics -->
         <a href="{% url 'learning:topic_list' 'math' %}" class="course-card" data-subject-slug="math">
             <button class="delete-subject-btn" onclick="deleteSubject(event, 'math', 'Mathematics')">✕</button>
             <div class="course-icon math">🧮</div>
-            <h3 class="course-name">Mathematics</h3>
+            <h3 class="course-name" data-i18n="math">数学</h3>
         </a>
 
-        <!-- 2. English -->
         <a href="{% url 'learning:topic_list' 'english' %}" class="course-card" data-subject-slug="english">
             <button class="delete-subject-btn" onclick="deleteSubject(event, 'english', 'English')">✕</button>
             <div class="course-icon english">📕</div>
-            <h3 class="course-name">English</h3>
+            <h3 class="course-name" data-i18n="english">英語</h3>
         </a>
 
-        <!-- 3. History -->
         <a href="{% url 'learning:topic_list' 'history' %}" class="course-card" data-subject-slug="history">
             <button class="delete-subject-btn" onclick="deleteSubject(event, 'history', 'History')">✕</button>
             <div class="course-icon history">🧭</div>
-            <h3 class="course-name">History</h3>
+            <h3 class="course-name" data-i18n="history">歴史</h3>
         </a>
 
-        <!-- 4. Science -->
         <a href="{% url 'learning:topic_list' 'science' %}" class="course-card" data-subject-slug="science">
             <button class="delete-subject-btn" onclick="deleteSubject(event, 'science', 'Science')">✕</button>
             <div class="course-icon science">🧪</div>
-            <h3 class="course-name">Science</h3>
+            <h3 class="course-name" data-i18n="science">科学</h3>
         </a>
 
-        <!-- 5. ユーザー追加教科（DB連動時） -->
-        {% if custom_subjects %}
-            {% for subject in custom_subjects %}
-            <a href="{% url 'learning:topic_list' subject.slug %}" class="course-card custom-subject-card" data-subject-slug="{{ subject.slug }}">
-                <button class="delete-subject-btn" onclick="deleteSubject(event, '{{ subject.slug }}', '{{ subject.name }}')">✕</button>
-                <div class="course-icon default">📚</div>
-                <h3 class="course-name">{{ subject.name }}</h3>
-            </a>
-            {% endfor %}
-        {% endif %}
-
-        <!-- 6. ➕ 教科を追加ボタン -->
         <div class="course-card add-card" id="addSubjectCard" onclick="showSubjectInput()">
             <div id="addSubjectDefaultContent">
                 <div class="course-icon">+</div>
-                <h3 class="course-name">教科を追加</h3>
+                <h3 class="course-name" data-i18n="addSubject">教科を追加</h3>
             </div>
             
             <div id="addSubjectInputForm" style="display: none; width: 100%;">
                 <input type="text" 
                        id="newSubjectInput" 
                        class="new-subject-input" 
-                       placeholder="例: Physics" 
+                       placeholder="例: 物理" 
+                       data-i18n-placeholder="addSubjectPlaceholder"
                        maxlength="15"
                        onclick="event.stopPropagation();"
                        onkeydown="handleNewSubjectKeydown(event)">
                 <div class="add-card-btns" onclick="event.stopPropagation();">
-                    <button type="button" class="add-sub-btn confirm" onclick="submitNewSubject()">追加</button>
-                    <button type="button" class="add-sub-btn cancel" onclick="resetAddSubjectCard(event)">キャンセル</button>
+                    <button type="button" class="add-sub-btn confirm" onclick="submitNewSubject()" data-i18n="add">追加</button>
+                    <button type="button" class="add-sub-btn cancel" onclick="resetAddSubjectCard(event)" data-i18n="cancel">キャンセル</button>
                 </div>
             </div>
         </div>
@@ -747,40 +730,40 @@ body {
 
     <!-- 5. ANNOUNCEMENTS & TIPS -->
     <div class="section-header">
-        <h2 class="section-title">Announcements & Tips</h2>
+        <h2 class="section-title" data-i18n="announcementsAndTips">お知らせ＆ヒント</h2>
     </div>
 
     <div class="info-card-list">
         <div class="info-card">
             <div class="info-icon">💡</div>
             <div>
-                <h4 class="info-title">AI Tip: Space Out Your Kanji Review</h4>
-                <p class="info-desc">Review N3 kanji cards 30 mins before sleeping to build stronger memory paths.</p>
+                <h4 class="info-title" data-i18n="aiTipTitle">AIヒント: 漢字復習の間隔を空ける</h4>
+                <p class="info-desc" data-i18n="aiTipDesc">就寝30分前にN3漢字カードを復習すると記憶が定着しやすくなります。</p>
             </div>
         </div>
         <div class="info-card">
             <div class="info-icon">📅</div>
             <div>
-                <h4 class="info-title">Midterm Examination Week</h4>
-                <p class="info-desc">Calculus and Literature exams commence next Monday. Check schedule.</p>
+                <h4 class="info-title" data-i18n="midtermTitle">中間試験期間</h4>
+                <p class="info-desc" data-i18n="midtermDesc">来週月曜日から微積分と文学の試験が始まります。日程を確認してください。</p>
             </div>
         </div>
     </div>
 
     <!-- 6. UPCOMING DEADLINES -->
     <div class="section-header">
-        <h2 class="section-title">Upcoming Deadlines</h2>
+        <h2 class="section-title" data-i18n="upcomingDeadlines">今後の提出期限</h2>
     </div>
 
     <div class="deadline-card">
         <div class="deadline-left">
             <div class="deadline-icon">⏰</div>
             <div>
-                <h4 class="deadline-title">N3 Vocabulary Mini-Quiz</h4>
-                <p class="deadline-sub">Due: Tomorrow, 11:59 PM • Japanese N3</p>
+                <h4 class="deadline-title" data-i18n="quizTitle">N3 語彙ミニクイズ</h4>
+                <p class="deadline-sub" data-i18n="quizSub">期限: 明日 23:59 • 日本語 N3</p>
             </div>
         </div>
-        <span class="deadline-badge">1 day left</span>
+        <span class="deadline-badge" data-i18n="daysLeft">残り1日</span>
     </div>
 
     <!-- 7. TANUKI AI ASSISTANT -->
@@ -788,8 +771,8 @@ body {
         <div class="ai-profile">
             <div class="ai-avatar">🦝</div>
             <div>
-                <h3 class="ai-name">Tanuki Study Assistant</h3>
-                <p class="ai-msg">"How can I help you study today?"</p>
+                <h3 class="ai-name" data-i18n="aiAssistantName">タヌキ学習アシスタント</h3>
+                <p class="ai-msg" data-i18n="aiAssistantMsg">「今日はどんな学習をお手伝いしましょうか？」</p>
             </div>
         </div>
         <div class="chat-bubble-icon">💬</div>
@@ -801,7 +784,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const savedAvatar = localStorage.getItem("dash_user_avatar");
     if (savedAvatar) applyAvatarImage(savedAvatar);
 
-    checkAndStreak();
+    checkQuizStreak();
     initUsageTracker();
     updateXpAndLevel();
     updateGoalDisplay();
@@ -810,7 +793,18 @@ document.addEventListener("DOMContentLoaded", function() {
     applyHiddenDefaultSubjects();
 });
 
-/* 教科追加テキストボックスの表示制御 */
+window.onLanguageChanged = function(lang) {
+    checkQuizStreak();
+    updateGoalDisplay();
+};
+
+function checkQuizStreak() {
+    const streak = parseInt(localStorage.getItem('quiz_streak_count') || '0', 10);
+    const lang = localStorage.getItem("app_language") || "ja";
+    const dict = (window.i18nDictionary && window.i18nDictionary[lang]) ? window.i18nDictionary[lang] : { streakText: "日連続学習！" };
+    document.getElementById("streakCountText").textContent = `${streak}${dict.streakText || '日連続学習！'}`;
+}
+
 function showSubjectInput() {
     const card = document.getElementById("addSubjectCard");
     const defaultContent = document.getElementById("addSubjectDefaultContent");
@@ -857,7 +851,6 @@ function submitNewSubject() {
 
     let customSubjects = JSON.parse(localStorage.getItem("user_custom_subjects") || "[]");
     let hiddenDefault = JSON.parse(localStorage.getItem("user_hidden_default_subjects") || "[]");
-
     const slug = name.toLowerCase().replace(/\s+/g, '-');
 
     if (hiddenDefault.includes(slug)) {
@@ -878,26 +871,19 @@ function submitNewSubject() {
     }
 }
 
-/* 🌟 教科削除処理 (即時DOM取り除き & 自動判定対応) */
 function deleteSubject(event, slug, name) {
     event.preventDefault();
     event.stopPropagation();
-
-    // クリックされた削除ボタンが属するカードを取得
     const card = event.currentTarget.closest('.course-card');
 
     if (confirm(`「${name}」をMy Coursesから削除しますか？`)) {
         let customSubjects = JSON.parse(localStorage.getItem("user_custom_subjects") || "[]");
-        
-        // カスタム教科かどうかを判定
         const isCustom = customSubjects.some(s => s.slug === slug) || (card && card.classList.contains('custom-subject-card'));
 
         if (isCustom) {
-            // LocalStorageの追加教科から削除
-            customSubjects = customSubjects.filter(s => s !== slug && s.slug !== slug);
+            customSubjects = customSubjects.filter(s => s.slug !== slug);
             localStorage.setItem("user_custom_subjects", JSON.stringify(customSubjects));
         } else {
-            // デフォルト教科の非表示リストに追加
             let hiddenDefault = JSON.parse(localStorage.getItem("user_hidden_default_subjects") || "[]");
             if (!hiddenDefault.includes(slug)) {
                 hiddenDefault.push(slug);
@@ -905,10 +891,7 @@ function deleteSubject(event, slug, name) {
             }
         }
 
-        // 🌟 画面上から直接カードを取り除く
-        if (card) {
-            card.remove();
-        }
+        if (card) card.remove();
     }
 }
 
@@ -924,7 +907,6 @@ function applyHiddenDefaultSubjects() {
 
 function renderCustomSubjects() {
     document.querySelectorAll('.custom-subject-card').forEach(el => el.remove());
-
     const grid = document.querySelector('.courses-grid');
     const addCard = document.getElementById('addSubjectCard');
     if (!grid || !addCard) return;
@@ -945,31 +927,6 @@ function renderCustomSubjects() {
     });
 }
 
-function checkAndStreak() {
-    const today = new Date().toISOString().split('T')[0];
-    const lastLogin = localStorage.getItem("dash_last_login_date");
-    let streak = parseInt(localStorage.getItem("dash_streak_count") || "1", 10);
-
-    if (lastLogin) {
-        const lastDate = new Date(lastLogin);
-        const currDate = new Date(today);
-        const diffDays = Math.floor((currDate - lastDate) / (1000 * 60 * 60 * 24));
-
-        if (diffDays === 1) {
-            streak += 1;
-            localStorage.setItem("dash_streak_count", streak);
-        } else if (diffDays > 1) {
-            streak = 1;
-            localStorage.setItem("dash_streak_count", streak);
-        }
-    } else {
-        localStorage.setItem("dash_streak_count", 1);
-    }
-
-    localStorage.setItem("dash_last_login_date", today);
-    document.getElementById("streakCountText").textContent = `${streak}-day streak!`;
-}
-
 let activeSeconds = 0;
 function initUsageTracker() {
     const today = new Date().toISOString().split('T')[0];
@@ -984,15 +941,9 @@ function initUsageTracker() {
     }
 
     renderUsageTime();
-
     setInterval(() => {
         activeSeconds += 1;
         localStorage.setItem("dash_active_seconds", activeSeconds);
-
-        if (activeSeconds % 6 === 0) {
-            addXp(1);
-        }
-
         renderUsageTime();
         updateGoalProgressRing();
     }, 1000);
@@ -1001,7 +952,6 @@ function initUsageTracker() {
 function renderUsageTime() {
     const timeEl = document.getElementById("usageTimeText");
     const hours = (activeSeconds / 3600);
-
     if (hours < 1) {
         const mins = Math.floor(activeSeconds / 60);
         timeEl.textContent = `${mins}m`;
@@ -1011,10 +961,8 @@ function renderUsageTime() {
 }
 
 const XP_PER_LEVEL = 200;
-
 function updateXpAndLevel() {
-    const xp = parseInt(localStorage.getItem("dash_user_xp") || "0", 10);
-
+    const xp = parseInt(localStorage.getItem("user_xp") || localStorage.getItem("dash_user_xp") || "0", 10);
     const level = Math.floor(xp / XP_PER_LEVEL) + 1;
     const currentLevelXp = xp % XP_PER_LEVEL;
     const progressPercent = (currentLevelXp / XP_PER_LEVEL) * 100;
@@ -1024,41 +972,49 @@ function updateXpAndLevel() {
     document.getElementById("xpBarFill").style.width = `${progressPercent}%`;
 }
 
-function addXp(amount) {
-    let currentXp = parseInt(localStorage.getItem("dash_user_xp") || "0", 10);
-    currentXp += amount;
-    localStorage.setItem("dash_user_xp", currentXp);
-    updateXpAndLevel();
-}
-
+// ⏱️ 目標時間編集モーダル（設定画面のキー 'daily_study_goal' / 分単位 に完全連動）
 function editGoal() {
-    const currentGoal = localStorage.getItem("dash_user_goal_hours") || "15";
-    const newGoal = prompt("1日の目標学習時間（時間）を入力してください:", currentGoal);
+    const currentGoal = localStorage.getItem("daily_study_goal") || "30";
+    const newGoal = prompt("1日の目標学習時間（分）を入力してください:", currentGoal);
 
     if (newGoal !== null) {
         const val = parseFloat(newGoal);
         if (!isNaN(val) && val > 0) {
-            localStorage.setItem("dash_user_goal_hours", val);
-            updateGoalDisplay();
+            localStorage.setItem("daily_study_goal", String(val));
+            if (typeof window.applyGlobalDailyStudyGoal === "function") {
+                window.applyGlobalDailyStudyGoal();
+            } else {
+                updateGoalDisplay();
+            }
         }
     }
 }
 
+// ⏱️ 設定画面の目標（分）を取得して「目標: ○○分」と反映
 function updateGoalDisplay() {
-    const goalVal = localStorage.getItem("dash_user_goal_hours") || "15";
-    document.getElementById("goalText").textContent = `Goal: ${goalVal}h`;
+    const goalVal = localStorage.getItem("daily_study_goal") || "30";
+    const lang = localStorage.getItem("app_language") || "ja";
+    const dict = (window.i18nDictionary && window.i18nDictionary[lang]) ? window.i18nDictionary[lang] : {};
+    const prefix = dict.goalPrefix || "目標: ";
+
+    const goalEl = document.getElementById("goalText");
+    if (goalEl) {
+        goalEl.textContent = `${prefix}${goalVal}分`;
+    }
     updateGoalProgressRing();
 }
 
+// ⏱️ 進捗リングのパーセンテージ計算を「分単位」へ同期修正
 function updateGoalProgressRing() {
-    const goalHours = parseFloat(localStorage.getItem("dash_user_goal_hours") || "15");
-    const currentHours = activeSeconds / 3600;
-
-    let percent = Math.min(currentHours / goalHours, 1);
+    const goalMinutes = parseFloat(localStorage.getItem("daily_study_goal") || "30");
+    const currentMinutes = activeSeconds / 60;
+    let percent = Math.min(currentMinutes / goalMinutes, 1);
     let degrees = percent * 360;
 
     const ring = document.getElementById("goalCircle");
-    ring.style.background = `conic-gradient(#4f46e5 ${degrees}deg, #e0e7ff ${degrees}deg)`;
+    if (ring) {
+        ring.style.background = `conic-gradient(#4f46e5 ${degrees}deg, #e0e7ff ${degrees}deg)`;
+    }
 }
 
 function handleAvatarChange(event) {
