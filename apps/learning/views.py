@@ -257,3 +257,10 @@ def path_map_view(request, topic_id):
         'current_step_xp': current_step_xp,
     }
     return render(request, "f2/path_map.html", context)
+    return render(request, 'learning/index.html', context)
+
+# views.py の末尾に追記
+
+def finaltest(request):
+    # templates/learning/ フォルダの中の finaltest.html を表示する
+    return render(request, 'learning/finaltest.html')

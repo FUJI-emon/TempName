@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}トップページ | WebApp Name{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    
+    <!-- 中央のタイトルロゴ部分 -->
+    <div class="hero-logo">
+        <div style="color: #d1d5db; font-size: 24px; font-weight: bold;">WebApp<br>Icon</div>
+        <h1>WebApp Title</h1>
+    </div>
+
+    <!-- キャッチコピー -->
+    <p class="hero-description">
+        学習状況・習熟度を管理してくれるAI先生が皆さんの学習をサポートしてくれます！<br>
+        授業資料や課題の解説、身に着けたいスキルをAI先生とチャットしましょう！
+    </p>
+
+    <!-- メインボタン -->
+    <button class="btn-primary hero-btn-large">はじめる</button>
+    <p class="terms-text">
+        "WebApp Title"では、クッキー（Cookie）の同意を強く推奨します。<br>
+        同意することで、あなたの学習履歴が自動で保存され、次回学習時に続きから学習を行うことができます。
+    </p>
+
+</div>
+
+<!-- クッキー同意カード (画面下部に固定) -->
+<div class="cookie-banner-wrapper" id="cookieBanner">
+    <div class="card">
+        <div class="cookie-header">
+            <span class="cookie-icon">🍪</span>
+            <h2>クッキー（Cookie）の使用について</h2>
+            <span class="badge-pill">プライバシー設定</span>
+        </div>
+        <p class="cookie-text">
+            "WebApp Titile"では、クッキー（Cookie）を保存して、ユーザの学習履歴を自動で復元します。同意することで、快適な利用体験を提供します。
+        </p>
+        <div class="cookie-actions">
+            <div class="cookie-buttons">
+                <!-- 共通コンポーネントのテスト用ボタン -->
+                <button class="btn-secondary" id="rejectCookieBtn">拒否する</button>
+                <button class="btn-primary" id="acceptCookieBtn">同意する</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

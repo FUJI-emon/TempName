@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    # もともとあったトップページの設定
     path('', views.index, name='index'),
     path('subjects/', views.subject_select, name='subject_select'),
     path('topics/<str:subject>/', views.topic_list, name='topic_list'),
@@ -15,4 +16,7 @@ urlpatterns = [
     # 🌟 以下の2行を追加することでエラーが解消されます
     path('topic/<int:topic_id>/save-understanding/', views.save_understanding, name='save_understanding'),
     path('topic/<int:topic_id>/path-map/', views.path_map_view, name='path_map'),
+    
+    # 今回新しく追加したFinal Testの設定
+    path('finaltest/', views.finaltest, name='finaltest'),
 ]

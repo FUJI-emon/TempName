@@ -1,0 +1,322 @@
+/* =========================================
+   Global Design Tokens (Light Theme)
+========================================= */
+:root {
+    --font-family: 'Inter', 'Noto Sans JP', -apple-system, BlinkMacSystemFont, sans-serif;
+    --bg-main: #fffaf0; /* 全体の薄いグレー背景 */
+    --bg-card: #ffffff; /* カードの白背景 */
+    --border-color: #e5e7eb;
+    --text-primary: #111827; /* 濃い文字色 */
+    --text-secondary: #4b5563; /* 薄い文字色 */
+    --accent-primary: #5c4dff; /* ボタンの青紫色 */
+    --accent-primary-hover: #4a3be0;
+    --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* =========================================
+   ヘッダー・フッター・枠組み (base.html用)
+========================================= */
+.app-header {
+    background: #faebd7;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.header-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+.logo-icon {
+    font-size: 1.5rem;
+}
+.header-badge {
+    background: var(--accent-primary);
+    color: #fffaf0;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 9999px;
+    border: none;
+    cursor: pointer;
+    transition: opacity 0.2s;
+
+    width: 260px;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.header-badge:hover{
+    opacity: 0.8;
+}
+
+/* メインコンテンツの枠組み */
+.main-content {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* フッター */
+.app-footer {
+    border-top: 1px solid var(--border-color);
+    padding: 2rem 1.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    background-color: transparent;
+    margin-top: auto;
+}
+.footer-subtext {
+    font-size: 0.8rem;
+    margin-top: 0.35rem;
+    color: #9ca3af;
+}
+
+/* =========================================
+   共通コンポーネント (Phase 1 担当分)
+========================================= */
+.card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    padding: 24px;
+}
+.btn-primary {
+    background-color: var(--accent-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-align: center;
+    display: inline-block;
+}
+.btn-primary:hover {
+    background-color: var(--accent-primary-hover);
+}
+.btn-secondary {
+    background-color: #ffffff;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 10px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-align: center;
+    display: inline-block;
+}
+.btn-secondary:hover {
+    background-color: #f3f4f6;
+}
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: var(--border-color);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.progress-bar-fill {
+    height: 100%;
+    background-color: var(--accent-primary);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+.badge-pill {
+    background-color: #f3f4f6;
+    color: var(--text-secondary);
+    padding: 4px 12px;
+    border-radius: 9999px;
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-block;
+}
+
+/* =========================================
+   トップページ専用レイアウト (index.html用)
+========================================= */
+.hero-section {
+    text-align: center;
+    padding: 16px 20px 180px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+.hero-logo {
+    margin-bottom: 24px;
+    color: #d1d5db;
+    font-size: 24px;
+    font-weight: bold;
+}
+.hero-logo h1 {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 10px 0;
+}
+.hero-description {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.6;
+    margin-bottom: 24px;
+}
+.hero-btn-large {
+    width: 100%;
+    max-width: 600px;
+    padding: 16px;
+    font-size: 16px;
+    margin-bottom: 12px;
+}
+.terms-text {
+    font-size: 12px;
+    color: #9ca3af;
+}
+.terms-text a {
+    color: #9ca3af;
+    text-decoration: underline;
+}
+
+/* =========================================
+   クッキー同意カード用レイアウト
+========================================= */
+/* =========================================
+   クッキー同意カード用レイアウト
+========================================= */
+.cookie-banner-wrapper {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    /* 横幅の最大値を1000pxから700pxに縮小 */
+    max-width: 700px; 
+    z-index: 1000;
+}
+
+/* クッキーカード内の余白を専用に狭くする */
+.cookie-banner-wrapper .card {
+    padding: 16px 24px; 
+}
+
+.cookie-header {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* アイコンと文字の隙間を縮小 */
+    margin-bottom: 8px; /* 下の余白を縮小 */
+}
+.cookie-header h2 {
+    font-size: 15px; /* タイトルを少し小さく */
+    margin: 0;
+}
+.cookie-icon {
+    font-size: 16px; /* アイコンを小さく */
+    color: var(--accent-primary);
+    background: #eef2ff;
+    padding: 6px;
+    border-radius: 8px;
+}
+.cookie-text {
+    font-size: 13px; /* テキストを少し小さく */
+    color: var(--text-secondary);
+    line-height: 1.4;
+    margin-bottom: 16px; /* ボタンエリアとの隙間を縮小 */
+}
+.cookie-text a {
+    color: var(--accent-primary);
+    text-decoration: underline;
+}
+.cookie-actions {
+    display: flex;
+    justify-content: flex-end; 
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 12px; /* 線とボタンの隙間を縮小 */
+}
+.cookie-buttons {
+    display: flex;
+    gap: 12px;
+}
+/* =========================================
+   モーダル（ポップアップ）用スタイル
+========================================= */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.4); /* 背景を少し暗くする */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+}
+.modal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none; /* 隠れている時はクリック判定を無くす */
+}
+.name-edit-modal {
+    width: 320px;
+    text-align: center;
+    padding: 24px;
+    transform: translateY(0);
+    transition: transform 0.2s ease;
+}
+.modal-overlay.hidden .name-edit-modal {
+    transform: translateY(-20px); /* 開くときに少し上から降りてくるアニメーション */
+}
+.name-input-field {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+}
+.name-input-field:focus {
+    border-color: var(--accent-primary); /* 入力中に枠を青紫にする */
+}
+.modal-actions {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+}
