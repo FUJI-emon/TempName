@@ -76,9 +76,9 @@ ASGI_APPLICATION = 'config.asgi.application'
 DATABASES = { 
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "postgres",
+        "NAME": "TempName",
         "USER": "postgres",
-        "PASSWORD": "password",
+        "PASSWORD": "12345678",
         "HOST": "localhost",
         "PORT": "5432",
     }
