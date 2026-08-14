@@ -90,6 +90,7 @@
 
     <main>
         {% block content %}
+        <!-- 各子画面（index.htmlなど）の中身がここにはめ込まれます -->
         {% endblock %}
     </main>
 
@@ -122,23 +123,19 @@
         }
     }
 
-    /* --- XP管理機能（タイマー自動増量は完全にカット） --- */
+    /* --- XP管理機能 --- */
     document.addEventListener("DOMContentLoaded", function() {
         updateXpDisplay();
     });
 
-    // 画面上のXP表示要素をすべて更新する
     function updateXpDisplay() {
         const currentXp = parseInt(localStorage.getItem('user_xp') || '0', 10);
-        
-        // id="user-xp" や class="xp-badge-value" を持つ要素を自動で書き換えます
         const xpElements = document.querySelectorAll('#user-xp, .xp-badge-value');
         xpElements.forEach(el => {
             el.textContent = currentXp + " XP";
         });
     }
 
-    // 学習完了・難易度達成時など、明示的に呼ばれたときだけXPを加算する関数
     function addXp(amount) {
         let currentXp = parseInt(localStorage.getItem('user_xp') || '0', 10);
         currentXp += amount;
