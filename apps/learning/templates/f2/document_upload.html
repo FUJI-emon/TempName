@@ -116,7 +116,8 @@ body {
     <h2 class="main-title">Add Learning Material</h2>
     <p class="sub-title">PDFやテキストファイルをアップロードしてAI学習を開始しましょう</p>
 
-    <form method="POST" enctype="multipart/form-data" action="{% if topic.id and topic.id != 0 %}{% url 'document_upload' topic.id %}{% else %}{% url 'add_topic' subject|default:'math' %}{% endif %}" id="upload-form">
+    <!-- 🌟 action内の add_topic に learning: を追加 -->
+    <form method="POST" enctype="multipart/form-data" action="{% if topic.id and topic.id != 0 %}{% url 'learning:document_upload' topic.id %}{% else %}{% url 'learning:add_topic' subject|default:'math' %}{% endif %}" id="upload-form">
         {% csrf_token %}
         <div class="drop-zone" onclick="document.getElementById('file-input').click()">
             <div class="drop-icon">📁</div>

@@ -225,7 +225,7 @@ body {
     <h2 class="main-title">Which parts have you understood?</h2>
     <p class="sub-title">Mark the sections you already know so AI can focus on what you need to learn</p>
 
-    <form method="POST" action="{% url 'save_understanding' topic.id|default:0 %}" id="review-form">
+    <form method="POST" action="{% url 'learning:save_understanding' topic.id|default:0 %}" id="review-form">
         {% csrf_token %}
         
         <input type="hidden" name="subject" value="{% if topic.subject %}{{ topic.subject }}{% else %}{{ subject|default:'math' }}{% endif %}">

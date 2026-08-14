@@ -193,7 +193,7 @@ body {
     <div class="path-header">
         <a href="/topics/{{ topic.subject }}/" class="back-btn">‹ Topicsに戻る</a>
         
-        <form method="POST" action="{% url 'edit_topic_title' topic.id %}" class="path-title-form">
+        <form method="POST" action="{% url 'learning:edit_topic_title' topic.id %}" class="path-title-form">
             {% csrf_token %}
             <input type="text" 
                    name="title" 

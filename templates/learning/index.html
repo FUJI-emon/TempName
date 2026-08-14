@@ -17,8 +17,8 @@
         授業資料や課題の解説、身に着けたいスキルをAI先生とチャットしましょう！
     </p>
 
-    <!-- メインボタン -->
-    <button class="btn-primary hero-btn-large">はじめる</button>
+    <!-- メインボタン (「はじめる」を押したらダッシュボードへ移動) -->
+    <a href="{% url 'learning:dashboard' %}" class="btn-primary hero-btn-large" style="display: inline-block; text-decoration: none; text-align: center;">はじめる</a>
     <p class="terms-text">
         "WebApp Title"では、クッキー（Cookie）の同意を強く推奨します。<br>
         同意することで、あなたの学習履歴が自動で保存され、次回学習時に続きから学習を行うことができます。

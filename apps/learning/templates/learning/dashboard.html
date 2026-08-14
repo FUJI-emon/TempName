@@ -660,7 +660,7 @@ body {
         <div class="history-grid-container" id="historyGridContainer">
             {% if recent_materials %}
                 {% for item in recent_materials %}
-                <a href="{% url 'topic_detail' item.id %}" class="history-card-item">
+                <a href="{% url 'learning:topic_detail' item.id %}" class="history-card-item">
                     <div class="history-thumb blue">
                         <div class="history-dates">
                             <span>Made: {{ item.created_at|date:"d/m"|default:"--" }}</span>
@@ -684,28 +684,28 @@ body {
 
     <div class="courses-grid">
         <!-- 1. Mathematics -->
-        <a href="{% url 'topic_list' 'math' %}" class="course-card" data-subject-slug="math">
+        <a href="{% url 'learning:topic_list' 'math' %}" class="course-card" data-subject-slug="math">
             <button class="delete-subject-btn" onclick="deleteSubject(event, 'math', 'Mathematics')">✕</button>
             <div class="course-icon math">🧮</div>
             <h3 class="course-name">Mathematics</h3>
         </a>
 
         <!-- 2. English -->
-        <a href="{% url 'topic_list' 'english' %}" class="course-card" data-subject-slug="english">
+        <a href="{% url 'learning:topic_list' 'english' %}" class="course-card" data-subject-slug="english">
             <button class="delete-subject-btn" onclick="deleteSubject(event, 'english', 'English')">✕</button>
             <div class="course-icon english">📕</div>
             <h3 class="course-name">English</h3>
         </a>
 
         <!-- 3. History -->
-        <a href="{% url 'topic_list' 'history' %}" class="course-card" data-subject-slug="history">
+        <a href="{% url 'learning:topic_list' 'history' %}" class="course-card" data-subject-slug="history">
             <button class="delete-subject-btn" onclick="deleteSubject(event, 'history', 'History')">✕</button>
             <div class="course-icon history">🧭</div>
             <h3 class="course-name">History</h3>
         </a>
 
         <!-- 4. Science -->
-        <a href="{% url 'topic_list' 'science' %}" class="course-card" data-subject-slug="science">
+        <a href="{% url 'learning:topic_list' 'science' %}" class="course-card" data-subject-slug="science">
             <button class="delete-subject-btn" onclick="deleteSubject(event, 'science', 'Science')">✕</button>
             <div class="course-icon science">🧪</div>
             <h3 class="course-name">Science</h3>
@@ -714,7 +714,7 @@ body {
         <!-- 5. ユーザー追加教科（DB連動時） -->
         {% if custom_subjects %}
             {% for subject in custom_subjects %}
-            <a href="{% url 'topic_list' subject.slug %}" class="course-card custom-subject-card" data-subject-slug="{{ subject.slug }}">
+            <a href="{% url 'learning:topic_list' subject.slug %}" class="course-card custom-subject-card" data-subject-slug="{{ subject.slug }}">
                 <button class="delete-subject-btn" onclick="deleteSubject(event, '{{ subject.slug }}', '{{ subject.name }}')">✕</button>
                 <div class="course-icon default">📚</div>
                 <h3 class="course-name">{{ subject.name }}</h3>

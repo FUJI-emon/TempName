@@ -116,3 +116,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# 🔑 ログイン成功後にダッシュボードへジャンプ！
+LOGIN_REDIRECT_URL = 'learning:dashboard'
+LOGOUT_REDIRECT_URL = 'learning:index'

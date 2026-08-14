@@ -202,12 +202,13 @@
 </style>
 
 <div class="topic-grid-container">
-    <form id="batch-delete-form" action="{% url 'batch_delete_topics' subject %}" method="POST" style="display: flex; flex-direction: column; flex-grow: 1;">
+    <form id="batch-delete-form" action="{% url 'learning:batch_delete_topics' subject %}" method="POST" style="display: flex; flex-direction: column; flex-grow: 1;">
         {% csrf_token %}
 
         <div class="topic-header">
             <div class="header-left">
-                <a href="{% url 'subject_select' %}" class="back-link">‹ 戻る</a>
+                <!-- 👈 戻るボタンの遷移先を dashboard に変更しました -->
+                <a href="{% url 'learning:dashboard' %}" class="back-link">‹ 戻る</a>
                 <h2 style="margin: 0; font-size: 1.5rem; color: #0f172a; font-weight: 700;">{{ subject_name }} Topics</h2>
             </div>
             
@@ -219,7 +220,7 @@
         <div class="topic-grid" id="topic-grid">
             <!-- ➕ 新規追加カード -->
             <div class="topic-card add-card">
-                <a href="{% url 'add_topic' subject %}" class="card-link" style="color: #64748b;">
+                <a href="{% url 'learning:add_topic' subject %}" class="card-link" style="color: #64748b;">
                     <div class="add-icon">+</div>
                     <div class="add-text">ファイルを追加</div>
                 </a>
@@ -258,7 +259,7 @@
                        onkeydown="if(event.key === 'Enter') { this.blur(); }">
 
                 <!-- 進捗リンク -->
-                <a href="{% url 'topic_detail' topic.id %}" 
+                <a href="{% url 'learning:topic_detail' topic.id %}" 
                    class="card-link topic-card-link"
                    data-id="{{ topic.id }}"
                    data-title="{{ topic.title }}">

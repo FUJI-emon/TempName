@@ -6,8 +6,12 @@ from .models import LearningMaterial, UploadedDocument
 
 
 def index(request):
-    """ホームページ / ダッシュボード：直近の学習履歴も含めて表示"""
-    # 🌟 最後に使った日時（last_used_at）、またはIDの新しい順で最新5件を取得
+    """トップページ（ログイン前の案内画面 / LP）"""
+    return render(request, "learning/index.html")
+
+
+def dashboard(request):
+    """ログイン後のダッシュボード画面：直近の学習履歴も含めて表示"""
     recent_list = LearningMaterial.objects.all().order_by("-last_used_at", "-id")[:5]
     
     try:
@@ -22,12 +26,12 @@ def index(request):
         "recent_topics": recent_list,
         "recent_history": recent_list,
     }
-    return render(request, "learning/index.html", context)
+    return render(request, "learning/dashboard.html", context)  # 👈 dashboard.html を指定
 
 
 def subject_select(request):
     """教科選択画面：indexへリダイレクトして確実にデータを渡す"""
-    return redirect('index')
+    return redirect('learning:index')  # 👈 learning: を追加
 
 
 def topic_list(request, subject):
@@ -84,7 +88,7 @@ def topic_detail(request, topic_id):
     material.last_used_at = timezone.now()
     material.save()
 
-    return redirect('path_map', topic_id=topic_id)
+    return redirect('learning:path_map', topic_id=topic_id)  # 👈 learning: を追加
 
 
 def ai_chat_start(request):
@@ -95,7 +99,7 @@ def document_upload(request, topic_id):
     """既存トピックに対するドキュメント追加画面"""
     if topic_id == 0:
         subject = request.GET.get('subject') or 'math'
-        return redirect('add_topic', subject=subject)
+        return redirect('learning:add_topic', subject=subject)  # 👈 learning: を追加
 
     material = get_object_or_404(LearningMaterial, id=topic_id)
 
@@ -150,7 +154,7 @@ def edit_topic_title(request, topic_id):
             
     if referer:
         return redirect(referer)
-    return redirect('topic_list', subject=material.subject)
+    return redirect('learning:topic_list', subject=material.subject)  # 👈 learning: を追加
 
 
 @require_POST
@@ -167,7 +171,7 @@ def delete_topic(request, topic_id):
     # DBからの完全削除（履歴からも消えます）
     material.delete()
 
-    return redirect('topic_list', subject=subject)
+    return redirect('learning:topic_list', subject=subject)  # 👈 learning: を追加
 
 
 @require_POST
@@ -193,7 +197,7 @@ def batch_delete_topics(request, subject):
             request.session['recent_topics'] = updated_recent
             request.session.modified = True
 
-    return redirect('topic_list', subject=subject)
+    return redirect('learning:topic_list', subject=subject)  # 👈 learning: を追加
 
 
 def save_understanding(request, topic_id):
@@ -216,7 +220,7 @@ def save_understanding(request, topic_id):
             material.title = doc_name
         material.save()
 
-    return redirect('path_map', topic_id=topic_id)
+    return redirect('learning:path_map', topic_id=topic_id)  # 👈 learning: を追加
 
 
 def path_map_view(request, topic_id):
@@ -257,9 +261,7 @@ def path_map_view(request, topic_id):
         'current_step_xp': current_step_xp,
     }
     return render(request, "f2/path_map.html", context)
-    return render(request, 'learning/index.html', context)
 
-# views.py の末尾に追記
 
 def finaltest(request):
     # templates/learning/ フォルダの中の finaltest.html を表示する
