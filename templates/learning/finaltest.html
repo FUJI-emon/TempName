@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+
+{% block title %}Final Test | WebApp Title{% endblock %}
+
+{% block page_title %}Final Test{% endblock %}
+
+{% block content %}
+<style>
+    .test-container {
+        max-width: 900px;
+        margin: 0 auto;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 12px; /* 全体の間隔を少しコンパクトに調整 */
+    }
+
+    /* プログレスバー */
+    .progress-section {
+        background-color: #99b2c2;
+        padding: 8px 16px;
+        border-radius: 8px;
+    }
+    .progress-label {
+        text-align: center;
+        font-size: 13px;
+        margin-bottom: 6px;
+        font-weight: bold;
+    }
+    .progress-bar-container {
+        display: flex;
+        height: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .progress-fill {
+        width: 10%;
+        background-color: #1b6383;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 10px;
+        color: white;
+        font-size: 13px;
+        font-weight: bold;
+        transition: width 0.3s ease;
+    }
+
+    /* 問題エリア */
+    .question-box {
+        background-color: #f5b79d;
+        padding: 24px 16px; /* 高さを抑えるためにパディングを調整 */
+        border-radius: 8px;
+        text-align: center;
+        min-height: 100px; /* 最小高さをすっきりさせる */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    /* 選択肢ボタンエリア */
+    .options-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px; /* 選択肢同士の間隔を少し縮める */
+    }
+    .option-btn {
+        background-color: #ffffff;
+        border: 2px solid #e86a33;
+        padding: 12px 16px; /* ボタンの大きさを小さく調整 */
+        text-align: left;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.2s, color 0.2s;
+    }
+    .option-btn:hover {
+        background-color: #fdf2ed;
+    }
+    .option-btn.selected {
+        background-color: #e86a33;
+        color: #ffffff;
+        border-color: #e86a33;
+    }
+
+    /* コントロールパネル（ボタンとタイマー） */
+    .control-panel {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 5px;
+    }
+
+    .btn-test {
+        background-color: #1b6383;
+        color: #ffffff;
+        padding: 10px 24px; /* 前へ・次へボタンもすっきりさせる */
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .btn-test:hover {
+        opacity: 0.9;
+    }
+
+    /* タイマー */
+    .timer-container {
+        background-color: #cda0c9;
+        padding: 8px 16px;
+        border-radius: 8px;
+        display: flex;
+        gap: 16px;
+    }
+    .timer-block {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .timer-label {
+        font-size: 11px;
+        margin-bottom: 2px;
+    }
+    .timer-value {
+        background-color: #ffffff;
+        padding: 2px 12px;
+        border-radius: 4px;
+        font-size: 18px;
+        font-weight: bold;
+        font-family: monospace;
+    }
+</style>
+
+<div class="test-container">
+
+    <!-- プログレスバー -->
+    <div class="progress-section">
+        <div class="progress-label">進捗度 (1/10問目)</div>
+        <div class="progress-bar-container">
+            <div class="progress-fill">あと 9 問!!</div>
+        </div>
+    </div>
+
+    <!-- メインコンテンツ：問題文 -->
+    <div class="question-box" id="questionText">
+        ここに問題文が表示されます
+    </div>
+    
+    <!-- 選択肢を表示するコンテナ -->
+    <div class="options-container" id="optionsContainer">
+        <!-- JavaScriptによって選択肢ボタンがここに動的に生成されます -->
+    </div>
+
+    <!-- コントロールパネル -->
+    <div class="control-panel">
+        <button class="btn-test" id="btnPrev">← 前の問題</button>
+        
+        <div class="timer-container">
+            <div class="timer-block">
+                <div class="timer-label">この問題の経過時間</div>
+                <div class="timer-value" id="currentTimer">00:00</div>
+            </div>
+            <div class="timer-block">
+                <div class="timer-label">合計経過時間</div>
+                <div class="timer-value" id="totalTimer">00:00</div>
+            </div>
+        </div>
+
+        <button class="btn-test" id="btnNext">次の問題 →</button>
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const questions = [
+        {
+            text: "JavaScriptで変数を宣言するキーワードではないものはどれ？",
+            options: ["let", "const", "var", "make"],
+            userAnswer: null,
+            timeSpent: 0
+        },
+        {
+            text: "Pythonで関数を定義するときに使用するキーワードはどれ？",
+            options: ["def", "func", "function", "lambda"],
+            userAnswer: null,
+            timeSpent: 0
+        },
+        {
+            text: "HTMLの構造を表すタグとして正しいものはどれ？",
+            options: ["<style>", "<div>", "<script>", "<p>"],
+            userAnswer: null,
+            timeSpent: 0
+        },
+        {
+            text: "CSSで文字の色を変更するプロパティはどれ？",
+            options: ["font-size", "color", "background-color", "text-align"],
+            userAnswer: null,
+            timeSpent: 0
+        },
+        {
+            text: "Gitでローカルの変更をステージングエリアに追加するコマンドはどれ？",
+            options: ["git push", "git commit", "git add", "git pull"],
+            userAnswer: null,
+            timeSpent: 0
+        },
+        {
+            text: "Djangoは何の言語のWebフレームワーク？",
+            options: ["Python", "JavaScript", "Ruby", "PHP"],
+            userAnswer: null,
+            timeSpent: 0
+        },
+        {
+            text: "配列の末尾に要素を追加するJavaScriptのメソッドはどれ？",
+            options: ["pop()", "push()", "shift()", "unshift()"],
+            userAnswer: null,
+            timeSpent: 0
+        },
+        {
+            text: "次のうち真偽値（ブール値）ではないものはどれ？",
+            options: ["true", "false", "null", "undefined"],
+            userAnswer: null,
+            timeSpent: 0
+        },
+        {
+            text: "Webページでスタイルを適用するための言語はどれ？",
+            options: ["HTML", "CSS", "Python", "SQL"],
+            userAnswer: null,
+            timeSpent: 0
+        },
+        {
+            text: "プログラムの処理を一定回数繰り返す制御構文はどれ？",
+            options: ["if文", "for文", "switch文", "while文"],
+            userAnswer: null,
+            timeSpent: 0
+        }
+    ];
+
+    let currentIndex = 0; 
+    let totalSeconds = 0; 
+    
+    const questionTextEl = document.getElementById("questionText");
+    const optionsContainerEl = document.getElementById("optionsContainer");
+    const progressLabelEl = document.querySelector(".progress-label");
+    const progressFillEl = document.querySelector(".progress-fill");
+    const btnPrev = document.getElementById("btnPrev");
+    const btnNext = document.getElementById("btnNext");
+    const currentTimerEl = document.getElementById("currentTimer");
+    const totalTimerEl = document.getElementById("totalTimer");
+
+    function render() {
+        const currentQ = questions[currentIndex];
+        
+        questionTextEl.textContent = currentQ.text;
+        
+        optionsContainerEl.innerHTML = "";
+        currentQ.options.forEach((optionText, index) => {
+            const btn = document.createElement("button");
+            btn.className = "option-btn";
+            btn.textContent = `${index + 1}. ${optionText}`;
+            
+            if (currentQ.userAnswer === index) {
+                btn.classList.add("selected");
+            }
+            
+            btn.addEventListener("click", () => {
+                currentQ.userAnswer = index;
+                const allBtns = optionsContainerEl.querySelectorAll(".option-btn");
+                allBtns.forEach(b => b.classList.remove("selected"));
+                btn.classList.add("selected");
+            });
+            
+            optionsContainerEl.appendChild(btn);
+        });
+        
+        const questionNumber = currentIndex + 1;
+        progressLabelEl.textContent = `進捗度 (${questionNumber}/10問目)`;
+        progressFillEl.style.width = `${(questionNumber / 10) * 100}%`;
+        progressFillEl.textContent = `あと ${10 - questionNumber} 問!!`;
+
+        btnPrev.style.visibility = currentIndex === 0 ? "hidden" : "visible";
+        btnNext.textContent = currentIndex === 9 ? "テスト終了" : "次の問題 →";
+    }
+
+    function formatTime(seconds) {
+        const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+        const s = (seconds % 60).toString().padStart(2, "0");
+        return `${m}:${s}`;
+    }
+
+    setInterval(() => {
+        totalSeconds++;
+        questions[currentIndex].timeSpent++;
+        
+        totalTimerEl.textContent = formatTime(totalSeconds);
+        currentTimerEl.textContent = formatTime(questions[currentIndex].timeSpent);
+    }, 1000);
+
+    btnNext.addEventListener("click", () => {
+        if (currentIndex < questions.length - 1) {
+            currentIndex++;
+            render();
+        } else {
+            alert("テスト終了！お疲れ様でした。");
+        }
+    });
+
+    btnPrev.addEventListener("click", () => {
+        if (currentIndex > 0) {
+            currentIndex--;
+            render();
+        }
+    });
+
+    render();
+});
+</script>
+{% endblock %}

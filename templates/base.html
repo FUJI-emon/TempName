@@ -13,12 +13,17 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body>
-    <header class="app-header">
+    <header class="app-header" style="position: relative;">
         <div class="header-container">
             <a href="{% url 'learning:index' %}" class="logo"> <!--ここでヘッダを押したときの行先のURLを書き換える-->
                 <span class="logo-icon">💡</span>
                 <span class="logo-text">WebApp Title</span>
             </a>
+
+            <div style="position: absolute; left: 50%; transform: translateX(-50%); font-size: 24px; font-weight: normal; color: #333;">
+                {% block page_title %}{% endblock %}
+            </div>
+            
             <button class="header-badge" id="nameEditBtn">
                 {% if request.COOKIES.user_name %}
                   こんにちは、{{request.COOKIES.user_name }}さん

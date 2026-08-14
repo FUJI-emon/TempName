@@ -13,3 +13,9 @@ def index(request):
         'materials': materials,
     }
     return render(request, 'learning/index.html', context)
+
+# views.py の末尾に追記
+
+def finaltest(request):
+    # templates/learning/ フォルダの中の finaltest.html を表示する
+    return render(request, 'learning/finaltest.html')
