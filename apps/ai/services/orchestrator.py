@@ -2,16 +2,23 @@ from dataclasses import dataclass
 from typing import List, Optional
 
 from .dto import (
-    AnswerEvaluationResult, ConceptDTO, LessonDTO, NextAction,
-    NextActionResult, QuestionPurpose,
+    AnswerEvaluationResult,
+    ConceptDTO,
+    LessonDTO,
+    NextAction,
+    NextActionResult,
+    QuestionPurpose,
 )
 from .factory import get_llm_service
+from .guardrail import assert_no_leak
+from .exceptions import LLMInvalidResponseError
 
 
 @dataclass
 class LessonSessionState:
     """State tạm trong 1 phiên học 1 concept — giữ ở cache/session,
     KHÔNG phải Django model (đó là việc của A ghi progress cuối cùng)."""
+
     concept: ConceptDTO
     lesson: LessonDTO
     evaluation_history: List[AnswerEvaluationResult]
@@ -31,7 +38,9 @@ class LearningOrchestrator:
         """Sinh đợt 3 concept tiếp theo."""
         return self.llm.generate_learning_path(concepts, mastery_context, batch_size=3)
 
-    def start_lesson(self, concept: ConceptDTO, mastery_context: dict) -> LessonSessionState:
+    def start_lesson(
+        self, concept: ConceptDTO, mastery_context: dict
+    ) -> LessonSessionState:
         lesson = self.llm.generate_lesson(concept, mastery_context)
         return LessonSessionState(concept=concept, lesson=lesson, evaluation_history=[])
 
@@ -48,7 +57,9 @@ class LearningOrchestrator:
         session.evaluation_history.append(evaluation)
         return self.llm.decide_next_action(session.concept, session.evaluation_history)
 
-    def handle_next_action(self, session: LessonSessionState, decision: NextActionResult):
+    def handle_next_action(
+        self, session: LessonSessionState, decision: NextActionResult
+    ):
         if decision.action == NextAction.EXPLAIN_AGAIN:
             misconceptions = [
                 e.misconception for e in session.evaluation_history if e.misconception
@@ -70,10 +81,28 @@ class LearningOrchestrator:
             session.concept, session.lesson, purpose=QuestionPurpose.LESSON_WRAPUP
         )
 
-    def submit_wrapup_answers(self, session: LessonSessionState, answers: list) -> NextActionResult:
+    def submit_wrapup_answers(
+        self, session: LessonSessionState, answers: list
+    ) -> NextActionResult:
         for question, selected_index in answers:
             evaluation = self.llm.evaluate_answer(question, selected_index)
             session.evaluation_history.append(evaluation)
 
-        decision = self.llm.decide_next_action(session.concept, session.evaluation_history)
+        decision = self.llm.decide_next_action(
+            session.concept, session.evaluation_history
+        )
         return decision
+
+    def get_hint(self, question, level: int, previous_hints: list):
+        """
+        Sinh hint cho checkpoint question, có guardrail chặn leak đáp án.
+        Thử lại 1 lần nếu leak; nếu lần 2 vẫn leak thì raise để view fallback
+        (vd: hiển thị hint level trước đó, hoặc thông báo lỗi cho học sinh).
+        """
+        hint = self.llm.generate_hint(question, level, previous_hints)
+        try:
+            assert_no_leak(hint.text, question)
+        except LLMInvalidResponseError:
+            hint = self.llm.generate_hint(question, level, previous_hints)
+            assert_no_leak(hint.text, question)  # lần 2 vẫn leak thì bay lên trên
+        return hint

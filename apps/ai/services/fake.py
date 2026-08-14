@@ -1,13 +1,28 @@
 from typing import List, Optional
 
 from .dto import (
-    AnalyzeMaterialResult, AnswerEvaluationResult, ChatMessageDTO,
-    ChatReplyResult, ChatScope, CheckQuestionResult, ConceptDTO,
-    ConversationResult, FlashcardDTO, HintResult, LearningContextDTO,
-    LearningPathBatchResult, LessonCardDTO, LessonDTO, NextAction,
-    NextActionResult, QuestionDTO, QuestionOptionDTO, QuestionPurpose,
+    AnalyzeMaterialResult,
+    AnswerEvaluationResult,
+    ChatMessageDTO,
+    ChatReplyResult,
+    ChatScope,
+    CheckQuestionResult,
+    ConceptDTO,
+    ConversationResult,
+    FlashcardDTO,
+    HintResult,
+    LearningContextDTO,
+    LearningPathBatchResult,
+    LessonCardDTO,
+    LessonDTO,
+    NextAction,
+    NextActionResult,
+    QuestionDTO,
+    QuestionOptionDTO,
+    QuestionPurpose,
 )
 from .interface import LLMService
+from .exceptions import LLMEmptyInputError
 
 
 class FakeLLMService(LLMService):
@@ -21,6 +36,9 @@ class FakeLLMService(LLMService):
         )
 
     def analyze_material(self, material_content, goal):
+        if not material_content or not material_content.strip():
+            raise LLMEmptyInputError("material_content không được để trống")
+
         return AnalyzeMaterialResult(
             concepts=[
                 ConceptDTO(id="c1", title="Bước sóng và tần số"),
@@ -51,7 +69,9 @@ class FakeLLMService(LLMService):
             ],
         )
 
-    def generate_check_question(self, concept, lesson, purpose, previous_misconceptions=None):
+    def generate_check_question(
+        self, concept, lesson, purpose, previous_misconceptions=None
+    ):
         n_questions = 1 if purpose == QuestionPurpose.CHECKPOINT else 2
         return CheckQuestionResult(
             questions=[self._fake_question(purpose) for _ in range(n_questions)]
@@ -74,15 +94,23 @@ class FakeLLMService(LLMService):
         ratio = correct_count / total
         if ratio >= 0.8:
             return NextActionResult(
-                action=NextAction.MOVE_NEXT, concept_id=concept.id, needs_next_batch=True
+                action=NextAction.MOVE_NEXT,
+                concept_id=concept.id,
+                needs_next_batch=True,
             )
         elif ratio >= 0.5:
-            return NextActionResult(action=NextAction.PRACTICE_MORE, concept_id=concept.id)
+            return NextActionResult(
+                action=NextAction.PRACTICE_MORE, concept_id=concept.id
+            )
         else:
-            return NextActionResult(action=NextAction.EXPLAIN_AGAIN, concept_id=concept.id)
+            return NextActionResult(
+                action=NextAction.EXPLAIN_AGAIN, concept_id=concept.id
+            )
 
     def generate_hint(self, question, level, previous_hints):
-        return HintResult(level=level, text=f"Gợi ý cấp {level} (fake) — không lộ đáp án.")
+        return HintResult(
+            level=level, text=f"Gợi ý cấp {level} (fake) — không lộ đáp án."
+        )
 
     def chat_reply(self, history, new_message, scope, learning_context=None):
         return ChatReplyResult(reply=f"(fake reply, scope={scope.value})")
