@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'apps.learning',  # 👈 'blog' ではなく 'apps.learning' に変更！
 
     # Phase 1 Domain Applications
     'apps.learning.apps.LearningConfig',
@@ -79,14 +78,10 @@ ASGI_APPLICATION = 'config.asgi.application'
 
 # Database
 # Starting with SQLite for Phase 1 development (can migrate to PostgreSQL later)
-DATABASES = { 
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "TempName",
-        "USER": "postgres",
-        "PASSWORD": "12345678",
-        "HOST": "localhost",
-        "PORT": "5432",
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
