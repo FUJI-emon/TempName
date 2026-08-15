@@ -11,7 +11,7 @@ from apps.ai.services.dto import ChatScope, ConceptDTO
 from apps.ai.services.exceptions import LLMEmptyInputError, LLMInvalidResponseError, LLMServiceError
 from apps.learning.models import LearningMaterial, UsersUser
 from apps.learning.services import LearningApplicationService
-
+from django.contrib.auth.hashers import check_password, make_password
 
 FRONTEND_DIR = Path(settings.BASE_DIR) / "Newfrontend"
 FRONTEND_PAGES = {
@@ -95,10 +95,33 @@ def create_material_view(request):
     Input: {"title": "...", "content": "...", "goal_title": "..."}
     """
     try:
-        data = json.loads(request.body)
-        title = data.get("title", "")
-        content = data.get("content", "")
-        goal_title = data.get("goal_title", "")
+        if request.content_type and request.content_type.startswith("multipart/form-data"):
+            data = request.POST
+            uploaded_document = request.FILES.get("document") or request.FILES.get("file")
+            title = data.get("title", "")
+            content = data.get("content", "")
+            goal_title = data.get("goal_title", "")
+
+            if uploaded_document is not None:
+                if not title:
+                    title = Path(uploaded_document.name).stem or uploaded_document.name
+                if not goal_title:
+                    goal_title = title
+                if not content:
+                    content = uploaded_document.read().decode("utf-8", errors="ignore")
+            elif not title or not content:
+                return JsonResponse(
+                    {
+                        "status": "error",
+                        "message": "document file or content is required.",
+                    },
+                    status=400,
+                )
+        else:
+            data = json.loads(request.body)
+            title = data.get("title", "")
+            content = data.get("content", "")
+            goal_title = data.get("goal_title", "")
 
         service = LearningApplicationService()
         material, analysis = service.process_and_create_material(title, content, goal_title)
@@ -107,6 +130,7 @@ def create_material_view(request):
             "status": "success",
             "material_id": material.id,
             "title": material.title,
+            "goal_title": goal_title or material.subject,
             "concepts": [
                 {"id": c.id, "title": c.title, "description": c.description}
                 for c in analysis.concepts
@@ -124,25 +148,52 @@ def create_material_view(request):
 def generate_path_view(request):
     """
     Endpoint sinh đợt learning path kế tiếp cho material.
-    Input: {"material_id": 1, "concepts": [{"id": "c1", "title": "..."}, ...], "student_id": 1}
+    Input:
+    {
+        "material_id": 1,
+        "concepts": [
+            {"id": "c1", "title": "...", "description": "..."}
+        ]
+    }
     """
     try:
         data = json.loads(request.body)
+
         material_id = data.get("material_id")
         concepts_raw = data.get("concepts", [])
-        student_id = data.get("student_id")
 
-        material = get_object_or_404(LearningMaterial, id=material_id)
-        student = UsersUser.objects.filter(id=student_id).first() if student_id else None
+        # Get current student from session
+        student = get_current_student(request)
+
+        if student is None:
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Authentication required.",
+                },
+                status=401,
+            )
+
+        material = get_object_or_404(
+            LearningMaterial,
+            id=material_id,
+        )
 
         concepts = [
-            ConceptDTO(id=c.get("id"), title=c.get("title"), description=c.get("description", ""))
+            ConceptDTO(
+                id=c.get("id"),
+                title=c.get("title"),
+                description=c.get("description", ""),
+            )
             for c in concepts_raw
         ]
 
         service = LearningApplicationService()
+
         path_batch, steps = service.generate_and_save_learning_path_batch(
-            material=material, concepts=concepts, student=student
+            material=material,
+            concepts=concepts,
+            student=student,
         )
 
         return JsonResponse({
@@ -151,11 +202,24 @@ def generate_path_view(request):
             "is_final_batch": path_batch.is_final_batch,
             "created_step_ids": [s.id for s in steps],
         })
-    except (LLMEmptyInputError, ValueError) as exc:
-        return JsonResponse({"status": "error", "message": str(exc)}, status=400)
-    except LLMServiceError as exc:
-        return JsonResponse({"status": "error", "message": f"LLM Error: {exc}"}, status=500)
 
+    except (LLMEmptyInputError, ValueError) as exc:
+        return JsonResponse(
+            {
+                "status": "error",
+                "message": str(exc),
+            },
+            status=400,
+        )
+
+    except LLMServiceError as exc:
+        return JsonResponse(
+            {
+                "status": "error",
+                "message": f"LLM Error: {exc}",
+            },
+            status=500,
+        )
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -226,13 +290,22 @@ def chat_view(request):
     """
     try:
         data = json.loads(request.body)
-        student_id = data.get("student_id")
         thread_id = data.get("thread_id")
         message = data.get("message", "")
         scope_str = data.get("scope", "material")
 
         scope = ChatScope(scope_str)
-        student = get_object_or_404(UsersUser, id=student_id)
+
+        student = get_current_student(request)
+
+        if student is None:
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Authentication required.",
+                },
+                status=401,
+            )
 
         service = LearningApplicationService()
         ai_msg = service.send_chat_message(
@@ -253,3 +326,253 @@ def chat_view(request):
         return JsonResponse({"status": "error", "message": f"Guardrail blocked chat: {exc}"}, status=422)
     except LLMServiceError as exc:
         return JsonResponse({"status": "error", "message": f"LLM Error: {exc}"}, status=500)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def create_chat_thread_view(request):
+    try:
+        data = json.loads(request.body)
+
+        scope_str = data.get("scope", "material")
+        scope_id = data.get("scope_id")
+
+        if scope_id is None:
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "scope_id is required.",
+                },
+                status=400,
+            )
+
+        student = get_current_student(request)
+
+        if student is None:
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Authentication required.",
+                },
+                status=401,
+            )
+
+        scope = ChatScope(scope_str)
+
+        service = LearningApplicationService()
+        thread = service.create_chat_thread(
+            student=student,
+            scope=scope,
+            scope_id=int(scope_id),
+        )
+
+        return JsonResponse({
+            "status": "success",
+            "thread_id": thread.id,
+            "scope": thread.scope_type,
+            "scope_id": thread.scope_id,
+        }, status=201)
+
+    except (json.JSONDecodeError, ValueError) as exc:
+        return JsonResponse(
+            {
+                "status": "error",
+                "message": str(exc),
+            },
+            status=400,
+        )
+
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def register_view(request):
+    """
+        API xử lý đăng ký tài khoản người dùng mới.
+
+        Phương thức: POST
+        Payload (JSON): username, email, password, display_name (optional)
+        """
+    try:
+        data = json.loads(request.body)
+
+        username = data.get("username", "").strip()
+        email = data.get("email", "").strip()
+        password = data.get("password", "")
+        display_name = data.get("display_name", "").strip()
+
+        if not username or not email or not password:
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Username, email and password are required.",
+                },
+                status=400,
+            )
+
+        if UsersUser.objects.filter(username=username).exists():
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Username already exists.",
+                },
+                status=409,
+            )
+
+        if UsersUser.objects.filter(email=email).exists():
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Email already exists.",
+                },
+                status=409,
+            )
+
+        user = UsersUser.objects.create(
+            username=username,
+            email=email,
+            password_hash=make_password(password),
+            display_name=display_name or username,
+        )
+
+        return JsonResponse(
+            {
+                "status": "success",
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "display_name": user.display_name,
+                },
+            },
+            status=201,
+        )
+
+    except json.JSONDecodeError:
+        return JsonResponse(
+            {
+                "status": "error",
+                "message": "Invalid JSON.",
+            },
+            status=400,
+        )
+@csrf_exempt
+@require_http_methods(["POST"])
+def login_view(request):
+    """
+        API xử lý đăng nhập người dùng và tạo session xác thực.
+
+        Phương thức: POST
+        Payload (JSON): username, password
+        """
+    try:
+        data = json.loads(request.body)
+
+        username = data.get("username", "").strip()
+        password = data.get("password", "")
+
+        if not username or not password:
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Username and password are required.",
+                },
+                status=400,
+            )
+
+        user = UsersUser.objects.filter(username=username).first()
+
+        if user is None or not check_password(password, user.password_hash):
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Invalid username or password.",
+                },
+                status=401,
+            )
+
+        # Clear old session and create a new authenticated session.
+        request.session.flush()
+        request.session["user_id"] = user.id
+        request.session.save()
+
+        return JsonResponse({
+            "status": "success",
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "display_name": user.display_name,
+            },
+        })
+
+    except json.JSONDecodeError:
+        return JsonResponse(
+            {
+                "status": "error",
+                "message": "Invalid JSON.",
+            },
+            status=400,
+        )
+
+
+import json
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+
+
+@require_http_methods(["GET"])
+def me_view(request):
+    """API lấy thông tin tài khoản đang đăng nhập dựa trên session."""
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return JsonResponse(
+            {
+                "status": "error",
+                "message": "Authentication required.",
+            },
+            status=401,
+        )
+
+    user = UsersUser.objects.filter(id=user_id).first()
+
+    if user is None:
+        request.session.flush()
+
+        return JsonResponse(
+            {
+                "status": "error",
+                "message": "User not found.",
+            },
+            status=401,
+        )
+
+    return JsonResponse(
+        {
+            "status": "success",
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+                "display_name": user.display_name,
+            },
+        }
+    )
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def logout_view(request):
+    request.session.flush()
+
+    return JsonResponse({
+        "status": "success",
+        "message": "Logged out successfully.",
+    })
+
+def get_current_student(request):
+    user_id = request.session.get("user_id")
+
+    if not user_id:
+        return None
+
+    return UsersUser.objects.filter(id=user_id).first()

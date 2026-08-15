@@ -1,5 +1,6 @@
-from typing import List, Optional, Tuple
 from decimal import Decimal
+from typing import List, Optional, Tuple
+
 from django.db import transaction
 from django.utils import timezone
 
@@ -14,36 +15,32 @@ from apps.ai.services.dto import (
     HintResult,
     LearningContextDTO,
     LearningPathBatchResult,
-    LessonDTO,
     NextAction,
     NextActionResult,
     QuestionDTO,
     QuestionOptionDTO,
     QuestionPurpose,
 )
-from apps.ai.services.exceptions import (
-    LLMEmptyInputError,
-    LLMInvalidResponseError,
-    LLMServiceError,
-)
+from apps.ai.services.exceptions import LLMEmptyInputError, LLMInvalidResponseError, LLMServiceError
 from apps.ai.services.factory import get_llm_service
-from apps.ai.services.guardrail import assert_no_leak, assert_no_leak_chat
-from apps.ai.services.orchestrator import LearningOrchestrator, LessonSessionState
+from apps.ai.services.orchestrator import LearningOrchestrator
 from apps.learning.models import (
     AssessmentSkill,
     AssessmentSkillCheck,
     ChatMessage,
     ChatThread,
+    LearningConcept,
     LearningGoal,
     LearningMaterial,
+    ProgressLesson,
     ProgressLessonCard,
     ProgressPathStep,
     ProgressStudentMaterialProgress,
     ProgressStudentStepStatus,
-    QuizCheckpointAttempt,
-    QuizCheckpointOption,
-    QuizCheckpointQuestion,
+    QuizAttempt,
     QuizHint,
+    QuizOption,
+    QuizQuestion,
     UsersUser,
 )
 
@@ -58,14 +55,39 @@ class LearningApplicationService:
         self.llm_service = llm_service or get_llm_service()
         self.orchestrator = LearningOrchestrator(llm_service=self.llm_service)
 
-    # -------------------------------------------------------------------------
-    # 1. Onboarding & Material Analysis
-    # -------------------------------------------------------------------------
+    def _get_primary_goal(self, material: LearningMaterial) -> LearningGoal:
+        goal = material.goals.order_by("created_at").first()
+        if goal:
+            return goal
+        return LearningGoal.objects.create(
+            material=material,
+            title=material.subject or material.title,
+            description=f"Auto-generated goal for {material.title}",
+        )
+
+    def _upsert_concept(self, goal: LearningGoal, concept: ConceptDTO, order_index: int) -> LearningConcept:
+        concept_model, _ = LearningConcept.objects.update_or_create(
+            goal=goal,
+            external_id=concept.id,
+            defaults={
+                "title": concept.title,
+                "description": concept.description or "",
+                "order_index": order_index,
+            },
+        )
+        return concept_model
+
+    @staticmethod
+    def _concept_dto_from_model(concept: LearningConcept) -> ConceptDTO:
+        return ConceptDTO(
+            id=concept.external_id or str(concept.id),
+            title=concept.title,
+            description=concept.description or "",
+        )
 
     def start_onboarding_conversation(
         self, user_message: str, uploaded_material: Optional[str] = None
     ):
-        """Start or continue onboarding dialogue to detect goal or material."""
         if not user_message or not user_message.strip():
             raise LLMEmptyInputError("user_message không được để trống")
         return self.llm_service.start_conversation(user_message, uploaded_material)
@@ -74,10 +96,6 @@ class LearningApplicationService:
     def process_and_create_material(
         self, title: str, content: str, goal_title: str
     ) -> Tuple[LearningMaterial, AnalyzeMaterialResult]:
-        """
-        Creates a LearningMaterial, invokes analyze_material(), and stores
-        LearningGoal and AssessmentSkill objects in the database.
-        """
         if not title or not title.strip():
             raise ValueError("Tiêu đề tài liệu không được để trống")
         if not content or not content.strip():
@@ -86,6 +104,9 @@ class LearningApplicationService:
         material = LearningMaterial.objects.create(
             title=title.strip(),
             content=content.strip(),
+            last_used_at=timezone.now(),
+            progress=0,
+            subject=(goal_title.strip() if goal_title else title.strip())[:20],
         )
 
         analysis = self.llm_service.analyze_material(
@@ -99,24 +120,29 @@ class LearningApplicationService:
             description=f"Generated goal for {material.title}",
         )
 
-        for skill_name in analysis.suggested_skills:
-            AssessmentSkill.objects.create(goal=goal, name=skill_name)
+        created_concepts: List[LearningConcept] = []
+        for order_index, concept in enumerate(analysis.concepts, start=1):
+            created_concepts.append(
+                LearningConcept.objects.create(
+                    goal=goal,
+                    external_id=concept.id,
+                    title=concept.title,
+                    description=concept.description or "",
+                    order_index=order_index,
+                )
+            )
 
-        if not analysis.suggested_skills and analysis.concepts:
-            for concept in analysis.concepts:
-                AssessmentSkill.objects.create(goal=goal, name=concept.title)
+        skill_names = analysis.suggested_skills or [concept.title for concept in analysis.concepts]
+        for index, skill_name in enumerate(skill_names):
+            if not created_concepts:
+                break
+            concept_ref = created_concepts[index % len(created_concepts)]
+            AssessmentSkill.objects.create(concept=concept_ref, name=skill_name)
 
         return material, analysis
 
-    # -------------------------------------------------------------------------
-    # 2. Self-Check & Skill Assessment
-    # -------------------------------------------------------------------------
-
     @transaction.atomic
-    def record_skill_checks(
-        self, student: UsersUser, skill_ids_known: List[int]
-    ):
-        """Record student self-check for skills."""
+    def record_skill_checks(self, student: UsersUser, skill_ids_known: List[int]):
         for skill_id in skill_ids_known:
             try:
                 skill = AssessmentSkill.objects.get(id=skill_id)
@@ -128,10 +154,6 @@ class LearningApplicationService:
             except AssessmentSkill.DoesNotExist:
                 continue
 
-    # -------------------------------------------------------------------------
-    # 3. Learning Path Generation & DB Persistence
-    # -------------------------------------------------------------------------
-
     @transaction.atomic
     def generate_and_save_learning_path_batch(
         self,
@@ -141,11 +163,8 @@ class LearningApplicationService:
         mastery_context: Optional[dict] = None,
         batch_size: int = 3,
     ) -> Tuple[LearningPathBatchResult, List[ProgressPathStep]]:
-        """
-        Calls generate_learning_path, generates lessons, cards, and checkpoint questions,
-        and saves them to database tables within a single atomic transaction.
-        """
         mastery_ctx = mastery_context or {}
+        goal = self._get_primary_goal(material)
         path_batch = self.llm_service.generate_learning_path(
             concepts=concepts,
             mastery_context=mastery_ctx,
@@ -154,28 +173,55 @@ class LearningApplicationService:
 
         created_steps: List[ProgressPathStep] = []
         existing_step_count = ProgressPathStep.objects.filter(material=material).count()
-
         concept_map = {c.id: c for c in concepts}
+        concept_models = {
+            concept.id: self._upsert_concept(goal, concept, idx + 1)
+            for idx, concept in enumerate(concepts)
+        }
 
         for idx, concept_id in enumerate(path_batch.ordered_concept_ids):
             concept = concept_map.get(
                 concept_id, ConceptDTO(id=concept_id, title=f"Concept {concept_id}")
             )
-            order_idx = existing_step_count + idx + 1
+            concept_model = concept_models.get(concept.id)
+            if concept_model is None:
+                concept_model = self._upsert_concept(goal, concept, idx + 1)
+                concept_models[concept.id] = concept_model
 
-            step, _ = ProgressPathStep.objects.get_or_create(
+            order_idx = existing_step_count + idx + 1
+            step = ProgressPathStep.objects.filter(
                 material=material,
-                order_index=order_idx,
-                defaults={"title": concept.title},
+                concept=concept_model,
+            ).first()
+            if step is None:
+                step, _ = ProgressPathStep.objects.get_or_create(
+                    material=material,
+                    concept=concept_model,
+                    defaults={
+                        "order_index": order_idx,
+                        "title": concept.title,
+                        "status": "generated",
+                    },
+                )
+            if step.concept_id != concept_model.id or step.title != concept.title:
+                step.concept = concept_model
+                step.title = concept.title
+                step.status = step.status or "generated"
+                step.save(update_fields=["concept", "title", "status"])
+
+            lesson = self.llm_service.generate_lesson(concept, mastery_ctx)
+            lesson_model, _ = ProgressLesson.objects.update_or_create(
+                step=step,
+                defaults={
+                    "concept": concept_model,
+                    "explanation": lesson.explanation,
+                    "example": lesson.example,
+                },
             )
 
-            # Generate Lesson content
-            lesson = self.llm_service.generate_lesson(concept, mastery_ctx)
-
-            # Save Lesson Cards
             for card_dto in lesson.cards:
                 ProgressLessonCard.objects.get_or_create(
-                    step=step,
+                    lesson=lesson_model,
                     order_index=card_dto.order_index,
                     defaults={
                         "heading": card_dto.heading,
@@ -183,31 +229,29 @@ class LearningApplicationService:
                     },
                 )
 
-            # Generate and save Checkpoint Questions
             checkpoint_res = self.llm_service.generate_check_question(
                 concept=concept,
                 lesson=lesson,
                 purpose=QuestionPurpose.CHECKPOINT,
             )
-
             last_card_order = len(lesson.cards) - 1 if lesson.cards else 0
 
             for question_dto in checkpoint_res.questions:
-                q_model = QuizCheckpointQuestion.objects.create(
-                    step=step,
+                q_model = QuizQuestion.objects.create(
+                    lesson=lesson_model,
+                    question_type=question_dto.purpose.value,
                     after_card_order=last_card_order,
                     question_text=question_dto.text,
                     explanation=question_dto.explanation,
                 )
                 for opt_dto in question_dto.options:
-                    QuizCheckpointOption.objects.create(
+                    QuizOption.objects.create(
                         question=q_model,
                         option_text=opt_dto.text,
                         is_correct=opt_dto.is_correct,
                     )
 
             if student:
-                # Step status setup
                 initial_status = (
                     ProgressStudentStepStatus.StepStatus.UNLOCKED
                     if order_idx == 1
@@ -222,7 +266,6 @@ class LearningApplicationService:
             created_steps.append(step)
 
         if student:
-            # Update overall progress
             ProgressStudentMaterialProgress.objects.get_or_create(
                 student=student,
                 material=material,
@@ -235,10 +278,6 @@ class LearningApplicationService:
 
         return path_batch, created_steps
 
-    # -------------------------------------------------------------------------
-    # 4. Checkpoint Answer Submission & Mastery Evaluation
-    # -------------------------------------------------------------------------
-
     @transaction.atomic
     def submit_checkpoint_answer(
         self,
@@ -246,19 +285,16 @@ class LearningApplicationService:
         question_id: int,
         selected_option_id: int,
         hints_used: int = 0,
-    ) -> Tuple[QuizCheckpointAttempt, NextActionResult]:
-        """
-        Evaluates student answer choice, saves attempt, updates step status,
-        determines next action, and triggers next path batch if required.
-        """
+    ) -> Tuple[QuizAttempt, NextActionResult]:
         try:
-            question_model = QuizCheckpointQuestion.objects.select_related("step__material").get(
-                id=question_id
-            )
-        except QuizCheckpointQuestion.DoesNotExist:
+            question_model = QuizQuestion.objects.select_related(
+                "lesson__step__material",
+                "lesson__step__concept",
+            ).get(id=question_id)
+        except QuizQuestion.DoesNotExist:
             raise ValueError(f"Không tìm thấy câu hỏi với ID {question_id}")
 
-        options = list(QuizCheckpointOption.objects.filter(question=question_model))
+        options = list(QuizOption.objects.filter(question=question_model))
         if not options:
             raise ValueError("Câu hỏi không có lựa chọn nào")
 
@@ -267,8 +303,6 @@ class LearningApplicationService:
             raise ValueError(f"Lựa chọn ID {selected_option_id} không hợp lệ")
 
         selected_index = options.index(selected_option)
-
-        # Convert to DTO
         question_dto = QuestionDTO(
             text=question_model.question_text,
             options=[
@@ -280,8 +314,7 @@ class LearningApplicationService:
         )
 
         eval_result = self.llm_service.evaluate_answer(question_dto, selected_index)
-
-        attempt = QuizCheckpointAttempt.objects.create(
+        attempt = QuizAttempt.objects.create(
             student=student,
             question=question_model,
             selected_option=selected_option,
@@ -289,14 +322,13 @@ class LearningApplicationService:
             hints_used=hints_used,
         )
 
-        step = question_model.step
+        step = question_model.lesson.step
         material = step.material
+        concept = step.concept
 
-        # Collect evaluation history for this concept/step
-        attempts = QuizCheckpointAttempt.objects.filter(
-            student=student, question__step=step
+        attempts = QuizAttempt.objects.filter(
+            student=student, question__lesson__step=step
         ).order_by("created_at")
-
         eval_history = [
             AnswerEvaluationResult(
                 is_correct=att.is_correct,
@@ -305,10 +337,9 @@ class LearningApplicationService:
             for att in attempts
         ]
 
-        concept_dto = ConceptDTO(id=str(step.id), title=step.title)
+        concept_dto = self._concept_dto_from_model(concept)
         next_action_res = self.llm_service.decide_next_action(concept_dto, eval_history)
 
-        # Update step progress if correct / MOVE_NEXT
         if eval_result.is_correct or next_action_res.action == NextAction.MOVE_NEXT:
             ProgressStudentStepStatus.objects.update_or_create(
                 student=student,
@@ -319,11 +350,9 @@ class LearningApplicationService:
                 },
             )
 
-            # Unlock next step if present
             next_step = ProgressPathStep.objects.filter(
                 material=material, order_index=step.order_index + 1
             ).first()
-
             if next_step:
                 ProgressStudentStepStatus.objects.update_or_create(
                     student=student,
@@ -331,7 +360,6 @@ class LearningApplicationService:
                     defaults={"status": ProgressStudentStepStatus.StepStatus.UNLOCKED},
                 )
 
-        # Update material progress
         all_steps_count = ProgressPathStep.objects.filter(material=material).count()
         completed_steps_count = ProgressStudentStepStatus.objects.filter(
             student=student,
@@ -341,7 +369,9 @@ class LearningApplicationService:
 
         completion_pct = Decimal("0.00")
         if all_steps_count > 0:
-            completion_pct = Decimal(completed_steps_count) / Decimal(all_steps_count) * Decimal("100.00")
+            completion_pct = (
+                Decimal(completed_steps_count) / Decimal(all_steps_count) * Decimal("100.00")
+            )
 
         material_status = (
             ProgressStudentMaterialProgress.MaterialStatus.COMPLETED
@@ -359,16 +389,17 @@ class LearningApplicationService:
             },
         )
 
-        # Handle needs_next_batch == True
         if next_action_res.needs_next_batch:
             remaining_concepts = [
-                ConceptDTO(id=f"step_{s.id}", title=s.title)
-                for s in ProgressPathStep.objects.filter(material=material).exclude(
+                self._concept_dto_from_model(step_item.concept)
+                for step_item in ProgressPathStep.objects.filter(material=material).exclude(
                     id__in=ProgressStudentStepStatus.objects.filter(
                         student=student,
                         status=ProgressStudentStepStatus.StepStatus.COMPLETED,
                     ).values_list("step_id", flat=True)
-                )
+                ).filter(
+                    lesson__isnull=True,
+                ).select_related("concept")
             ]
             if remaining_concepts:
                 self.generate_and_save_learning_path_batch(
@@ -380,22 +411,15 @@ class LearningApplicationService:
 
         return attempt, next_action_res
 
-    # -------------------------------------------------------------------------
-    # 5. Hint Generation with Guardrail
-    # -------------------------------------------------------------------------
-
     def get_question_hint(
         self, question_id: int, level: int, previous_hints: Optional[List[str]] = None
     ) -> HintResult:
-        """
-        Generates hint for a checkpoint question, applying runtime guardrail to prevent answer leakage.
-        """
         try:
-            q_model = QuizCheckpointQuestion.objects.get(id=question_id)
-        except QuizCheckpointQuestion.DoesNotExist:
+            q_model = QuizQuestion.objects.get(id=question_id)
+        except QuizQuestion.DoesNotExist:
             raise ValueError(f"Không tìm thấy câu hỏi với ID {question_id}")
 
-        options = list(QuizCheckpointOption.objects.filter(question=q_model))
+        options = list(QuizOption.objects.filter(question=q_model))
         question_dto = QuestionDTO(
             text=q_model.question_text,
             options=[
@@ -406,12 +430,12 @@ class LearningApplicationService:
             purpose=QuestionPurpose.CHECKPOINT,
         )
 
-        prev_hints = previous_hints or []
         hint_result = self.orchestrator.get_hint(
-            question=question_dto, level=level, previous_hints=prev_hints
+            question=question_dto,
+            level=level,
+            previous_hints=previous_hints or [],
         )
 
-        # Ensure in DB
         QuizHint.objects.get_or_create(
             question=q_model,
             level=level,
@@ -419,10 +443,6 @@ class LearningApplicationService:
         )
 
         return hint_result
-
-    # -------------------------------------------------------------------------
-    # 6. Chat with Scope & Guardrail
-    # -------------------------------------------------------------------------
 
     @transaction.atomic
     def send_chat_message(
@@ -433,10 +453,6 @@ class LearningApplicationService:
         scope: ChatScope,
         learning_context: Optional[LearningContextDTO] = None,
     ) -> ChatMessage:
-        """
-        Sends a user chat message, calls chat_reply, applies guardrail for QUIZ scope,
-        and records both user & AI messages in the ChatThread.
-        """
         if not user_message or not user_message.strip():
             raise LLMEmptyInputError("user_message không được để trống")
 
@@ -445,14 +461,12 @@ class LearningApplicationService:
         except ChatThread.DoesNotExist:
             raise ValueError(f"Không tìm thấy thread {thread_id} của student")
 
-        # Record student message
         ChatMessage.objects.create(
             thread=thread,
             role=ChatMessage.Role.STUDENT,
             content=user_message.strip(),
         )
 
-        # Load history DTOs
         db_messages = ChatMessage.objects.filter(thread=thread).order_by("created_at")
         history_dtos = [
             ChatMessageDTO(
@@ -469,12 +483,19 @@ class LearningApplicationService:
             learning_context=learning_context,
         )
 
-        # Guardrail check for QUIZ scope
         if scope == ChatScope.QUIZ:
-            current_q = getattr(learning_context, "current_question", None) if learning_context else None
-            assert_no_leak_chat(reply_result.reply, current_q)
+            current_q = (
+                getattr(learning_context, "current_question", None)
+                if learning_context
+                else None
+            )
+            # Guardrail is already enforced by the AI adapter; this extra check is kept here
+            # to preserve the service-level contract if the adapter is swapped out.
+            if current_q is not None:
+                from apps.ai.services.guardrail import assert_no_leak_chat
 
-        # Record AI reply message
+                assert_no_leak_chat(reply_result.reply, current_q)
+
         ai_message = ChatMessage.objects.create(
             thread=thread,
             role=ChatMessage.Role.AI,
@@ -482,3 +503,22 @@ class LearningApplicationService:
         )
 
         return ai_message
+
+    def create_chat_thread(
+        self,
+        student: UsersUser,
+        scope: ChatScope,
+        scope_id: int,
+    ) -> ChatThread:
+        if scope == ChatScope.MATERIAL:
+            scope_type = ChatThread.ScopeType.MATERIAL
+        elif scope == ChatScope.QUIZ:
+            scope_type = ChatThread.ScopeType.CHECKPOINT_QUESTION
+        else:
+            raise ValueError(f"Unsupported chat scope: {scope}")
+
+        return ChatThread.objects.create(
+            student=student,
+            scope_type=scope_type,
+            scope_id=scope_id,
+        )

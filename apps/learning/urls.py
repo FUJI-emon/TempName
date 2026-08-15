@@ -25,4 +25,9 @@ urlpatterns = [
     path("checkpoint/submit/", views.submit_checkpoint_view, name="submit_checkpoint"),
     path("hint/<int:question_id>/<int:level>/", views.get_hint_view, name="get_hint"),
     path("chat/", views.chat_view, name="chat"),
+    path("chat/thread/", views.create_chat_thread_view, name="create_chat_thread"),
+    path("auth/register/", views.register_view, name="register"),
+    path("auth/login/", views.login_view, name="login"),
+    path("auth/logout/", views.logout_view, name="logout"),
+    path("auth/me/", views.me_view, name="me"),
 ]

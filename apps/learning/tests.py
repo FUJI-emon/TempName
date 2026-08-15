@@ -1,5 +1,6 @@
 from django.test import TestCase, Client
 from django.urls import reverse
+
 from .models import LearningMaterial, LearningGoal
 
 
@@ -25,7 +26,6 @@ class LearningModelTestCase(TestCase):
 
     def test_homepage_view(self):
         client = Client()
-        response = client.get(reverse('learning:index'))
+        response = client.get(reverse("learning:index"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "AIとともに学習するクイズアプリ")
-        self.assertContains(response, "Django基礎講座")
+        self.assertContains(response, "Lumina Learning")
