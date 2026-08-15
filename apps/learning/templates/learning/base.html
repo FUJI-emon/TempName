@@ -172,28 +172,52 @@
         color: var(--text-main);
         text-decoration: none;
     }
+    .app-brand-mark,
+    .nav-icon,
+    .cta-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    .app-brand-mark {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        background: var(--primary-gradient);
+        color: #ffffff;
+        box-shadow: var(--shadow-indigo);
+    }
     .app-nav-links {
         display: flex;
         align-items: center;
         gap: 20px;
     }
     .app-nav-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
         font-weight: 700;
         font-size: 0.9rem;
         color: var(--text-muted);
         text-decoration: none;
         transition: var(--transition-fast);
-        padding: 6px 12px;
-        border-radius: var(--radius-sm);
+        padding: 8px 12px;
+        border-radius: var(--radius-pill);
+        border: 1px solid transparent;
     }
     .app-nav-link:hover, .app-nav-link.active {
         color: var(--primary);
         background: var(--primary-light);
+        border-color: rgba(99, 102, 241, 0.18);
     }
     .app-nav-cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
         background: var(--primary-gradient);
         color: #ffffff;
-        padding: 8px 18px;
+        padding: 8px 16px;
         border-radius: var(--radius-pill);
         font-weight: 800;
         font-size: 0.85rem;
@@ -205,21 +229,93 @@
         transform: translateY(-1px);
         box-shadow: 0 6px 16px rgba(99, 102, 241, 0.45);
     }
+    .nav-icon,
+    .cta-icon {
+        width: 20px;
+        height: 20px;
+        color: currentColor;
+    }
+    .nav-icon svg,
+    .cta-icon svg,
+    .app-brand-mark svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+    @media (max-width: 760px) {
+        .app-top-nav {
+            padding: 12px 16px;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .app-nav-links {
+            width: 100%;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .app-nav-link,
+        .app-nav-cta {
+            flex: 1 1 auto;
+            justify-content: center;
+        }
+    }
     </style>
 </head>
 <body>
+    {% with current_url=request.resolver_match.url_name|default:'' %}
 
     <header class="app-top-nav">
         <a href="{% url 'learning:dashboard' %}" class="app-brand">
-            <span>✨</span> <span>LearnAI</span>
+            <span class="app-brand-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" role="img" focusable="false">
+                    <path d="M12 3.5c1.9 0 3.45 1.55 3.45 3.45S13.9 10.4 12 10.4 8.55 8.85 8.55 6.95 10.1 3.5 12 3.5Z" fill="currentColor"/>
+                    <path d="M4.5 14.2c0-1.1.9-2 2-2h11c1.1 0 2 .9 2 2v2.3c0 .5-.2 1-.6 1.3-1.7 1.5-4 2.4-6.9 2.4s-5.2-.9-6.9-2.4c-.4-.3-.6-.8-.6-1.3v-2.3Z" fill="currentColor" opacity="0.95"/>
+                </svg>
+            </span>
+            <span>LearnAI</span>
         </a>
         <nav class="app-nav-links">
-            <a href="{% url 'learning:dashboard' %}" class="app-nav-link" data-i18n="navDashboard">ホーム</a>
-            <a href="{% url 'learning:subject_select' %}" class="app-nav-link" data-i18n="navSubjects">教科一覧</a>
-            <a href="{% url 'learning:profile' %}" class="app-nav-link" data-i18n="navProfile">プロフィール</a>
-            <a href="{% url 'learning:dashboard' %}" class="app-nav-cta" data-i18n="continueBtn">学習を再開 →</a>
+            <a href="{% url 'learning:dashboard' %}" class="app-nav-link{% if current_url == 'dashboard' %} active{% endif %}">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" focusable="false">
+                        <path d="M4 11.5 12 4l8 7.5"/>
+                        <path d="M6.5 10.2V20h11V10.2"/>
+                        <path d="M9.5 20v-5h5v5"/>
+                    </svg>
+                </span>
+                <span data-i18n="navDashboard">ホーム</span>
+            </a>
+            <a href="{% url 'learning:subject_select' %}" class="app-nav-link{% if current_url == 'subject_select' %} active{% endif %}">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" focusable="false">
+                        <path d="M6 4.5h12a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5H6A1.5 1.5 0 0 1 4.5 18V6A1.5 1.5 0 0 1 6 4.5Z"/>
+                        <path d="M8 9h8M8 13h5M8 17h4"/>
+                    </svg>
+                </span>
+                <span data-i18n="navSubjects">教科一覧</span>
+            </a>
+            <a href="{% url 'learning:profile' %}" class="app-nav-link{% if current_url == 'profile' %} active{% endif %}">
+                <span class="nav-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" focusable="false">
+                        <path d="M20 21a8 8 0 0 0-16 0"/>
+                        <circle cx="12" cy="8" r="4"/>
+                    </svg>
+                </span>
+                <span data-i18n="navProfile">プロフィール</span>
+            </a>
+            <a href="{% url 'learning:dashboard' %}" class="app-nav-cta">
+                <span data-i18n="continueBtn">学習を再開</span>
+                <span class="cta-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" role="img" focusable="false">
+                        <path d="M5 12h12"/>
+                        <path d="m13 6 6 6-6 6"/>
+                    </svg>
+                </span>
+            </a>
         </nav>
     </header>
+    {% endwith %}
 
     <main class="page-fade-in">
         {% block content %}
@@ -271,10 +367,15 @@
         document.querySelectorAll("[data-i18n]").forEach(el => {
             const key = el.getAttribute("data-i18n");
             if (dict[key]) {
-                if (dict[key].includes('<')) {
-                    el.innerHTML = dict[key];
+                let translated = dict[key];
+                const countValue = el.getAttribute("data-i18n-count");
+                if (countValue !== null) {
+                    translated = translated.replace("{count}", countValue);
+                }
+                if (translated.includes('<')) {
+                    el.innerHTML = translated;
                 } else {
-                    el.textContent = dict[key];
+                    el.textContent = translated;
                 }
             }
         });
@@ -283,6 +384,16 @@
             const key = el.getAttribute("data-i18n-placeholder");
             if (dict[key]) {
                 el.placeholder = dict[key];
+            }
+        });
+
+        document.querySelectorAll("[data-i18n-title]").forEach(el => {
+            const key = el.getAttribute("data-i18n-title");
+            if (dict[key]) {
+                el.title = dict[key];
+                if (el.getAttribute("aria-label") !== null) {
+                    el.setAttribute("aria-label", dict[key]);
+                }
             }
         });
 

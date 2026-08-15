@@ -1,7 +1,7 @@
 {% extends 'learning/base.html' %}
 {% load static %}
 
-{% block title %}プロフィール | LearnAI Platform{% endblock %}
+{% block title %}Profile | LearnAI Platform{% endblock %}
 
 {% block content %}
 <style>
@@ -133,9 +133,9 @@
 
 <div class="profile-container">
     <div class="profile-top-bar">
-        <a href="javascript:history.back()" class="top-bar-btn" title="戻る">‹</a>
+        <a href="javascript:history.back()" class="top-bar-btn" title="戻る" data-i18n-title="back">‹</a>
         <h1 class="profile-page-title" data-i18n="profile">Profile</h1>
-        <a href="{% url 'learning:settings' %}" class="top-bar-btn" title="設定">⚙️</a>
+        <a href="{% url 'learning:settings' %}" class="top-bar-btn" title="設定" data-i18n-title="settings">⚙️</a>
     </div>
 
     <div class="profile-card">
@@ -172,12 +172,20 @@ document.addEventListener("DOMContentLoaded", function() {
 
     updateProfileXp();
     updateProfileStreak();
+    updateProfileTitle();
 });
 
 window.onLanguageChanged = function(lang) {
     updateProfileXp();
     updateProfileStreak();
+    updateProfileTitle(lang);
 };
+
+function updateProfileTitle(lang) {
+    const currentLang = lang || localStorage.getItem("app_language") || "ja";
+    const dict = (window.i18nDictionary && window.i18nDictionary[currentLang]) ? window.i18nDictionary[currentLang] : {};
+    document.title = dict.profilePageTitle || "Profile | LearnAI Platform";
+}
 
 function updateProfileXp() {
     const xp = parseInt(localStorage.getItem('user_xp') || localStorage.getItem('dash_user_xp') || '0', 10);

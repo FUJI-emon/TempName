@@ -600,7 +600,7 @@
         </div>
 
         <div class="header-right-actions">
-            <a href="{% url 'learning:settings' %}" class="settings-btn" title="Cài đặt">⚙️</a>
+            <a href="{% url 'learning:settings' %}" class="settings-btn" title="Cài đặt" data-i18n-title="settings">⚙️</a>
         </div>
     </div>
 
@@ -609,14 +609,14 @@
     <div class="continue-hero-card">
         <div class="hero-left-info">
             <div class="hero-badge-active">
-                <span>📖</span> <span>Đang học gần đây</span>
+                <span>📖</span> <span data-i18n="recentLearning">Đang học gần đây</span>
             </div>
             <h2 class="hero-topic-title">{{ active_material.title }}</h2>
             <div class="hero-progress-wrapper">
                 <div class="hero-progress-bar">
                     <div class="hero-progress-fill" style="width: {{ active_material.progress|default:'0' }}%;"></div>
                 </div>
-                <span class="hero-progress-pct">{{ active_material.progress|default:'0' }}% Hoàn thành</span>
+                <span class="hero-progress-pct"><span class="progress-number">{{ active_material.progress|default:'0' }}</span><span data-i18n="progressCompleteSuffix">% Hoàn thành</span></span>
             </div>
         </div>
 
@@ -633,7 +633,7 @@
                 <div class="metric-icon">📚</div>
             </div>
             <div class="metric-value">{{ total_materials_count|default:"0" }}</div>
-            <div class="metric-label">Khóa học / Chủ đề</div>
+            <div class="metric-label" data-i18n="courseTopicCount">Khóa học / Chủ đề</div>
         </div>
 
         <div class="metric-card">
@@ -641,7 +641,7 @@
                 <div class="metric-icon">✓</div>
             </div>
             <div class="metric-value">{{ completed_materials_count|default:"0" }}</div>
-            <div class="metric-label">Khóa học hoàn thành</div>
+            <div class="metric-label" data-i18n="completedCourses">Khóa học hoàn thành</div>
         </div>
 
         <div class="metric-card">
@@ -649,7 +649,7 @@
                 <div class="metric-icon">⚡</div>
             </div>
             <div class="metric-value">{{ completed_steps_count|default:"0" }}</div>
-            <div class="metric-label">Bài học đã xong</div>
+            <div class="metric-label" data-i18n="completedLessons">Bài học đã xong</div>
         </div>
 
         <div class="metric-card">
@@ -657,7 +657,7 @@
                 <div class="metric-icon">📊</div>
             </div>
             <div class="metric-value">{{ avg_progress|default:"0" }}%</div>
-            <div class="metric-label">Tiến độ trung bình</div>
+            <div class="metric-label" data-i18n="avgProgress">Tiến độ trung bình</div>
         </div>
     </div>
 
@@ -666,7 +666,7 @@
     <div class="history-section-card">
         <div class="history-header-center">
             <h2 class="history-main-title" data-i18n="recentHistory">Lịch sử học tập gần đây</h2>
-            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Tổng {{ total_materials_count }} mục</span>
+            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;" data-i18n="totalItemsLabel" data-i18n-count="{{ total_materials_count|default:'0' }}">Tổng {{ total_materials_count }} mục</span>
         </div>
 
         <div class="history-grid-container">
@@ -675,11 +675,11 @@
                 <a href="{% url 'learning:topic_detail' item.id %}" class="history-card-item">
                     <div class="history-item-title">{{ item.title|truncatechars:26|default:"Untitled Topic" }}</div>
                     <div class="history-item-meta">
-                        <span>Tiến độ {{ item.progress }}%</span>
+                        <span><span data-i18n="progressLabel">Tiến độ</span> {{ item.progress }}%</span>
                         <span>{{ item.last_used_at|date:"d/m/Y"|default:"--" }}</span>
                     </div>
                 </a>
-                {% endfor %}
+            {% endfor %}
             {% else %}
                 <div class="empty-history-text" data-i18n="noHistory">Chưa có lịch sử học tập. Hãy bắt đầu một khóa học mới!</div>
             {% endif %}
@@ -695,7 +695,7 @@
         <!-- Add New Course Button (Links to AI Onboarding Chat) -->
         <a href="{% url 'learning:onboarding' %}" class="course-card course-add-card">
             <div class="add-icon-big">+</div>
-            <h3 class="course-name">+ Thêm khóa học mới</h3>
+            <h3 class="course-name" data-i18n="addNewCourse">+ Thêm khóa học mới</h3>
         </a>
 
         <!-- Real Materials / Topics Courses -->
@@ -714,7 +714,7 @@
 
                     <div style="margin-top: 14px;">
                         <div style="font-size:0.8rem; color:var(--text-muted); font-weight:700; margin-bottom:4px;">
-                            Tiến độ: {{ m.progress }}%
+                            <span data-i18n="progressLabel">Tiến độ</span>: {{ m.progress }}%
                         </div>
                         <div style="height:6px; background:var(--bg-surface-elevated); border-radius:var(--radius-pill); overflow:hidden;">
                             <div style="width: {{ m.progress }}%; height:100%; background:var(--primary-gradient);"></div>

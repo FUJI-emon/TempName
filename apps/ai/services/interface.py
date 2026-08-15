@@ -25,6 +25,7 @@ class LLMService(ABC):
 
     @abstractmethod
     def analyze_material(self, material_content: str, goal: str) -> AnalyzeMaterialResult:
+        
         """Tài liệu + mục tiêu -> danh sách concept cần học."""
         raise NotImplementedError
 

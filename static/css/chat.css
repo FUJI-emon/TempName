@@ -28,24 +28,23 @@
 
 .back-btn-circle {
   text-decoration: none;
-  color: var(--text-main);
-  font-size: 1.2rem;
-  font-weight: 700;
+  color: var(--primary);
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: var(--bg-surface);
-  border: 1px solid var(--border-light);
+  background: var(--primary-light);
+  border: 1px solid rgba(99, 102, 241, 0.22);
   display: flex;
   align-items: center;
   justify-content: center;
   transition: var(--transition-fast);
   box-shadow: var(--shadow-sm);
+  font-size: 1.2rem;
+  font-weight: 800;
 }
 
 .back-btn-circle:hover {
-  background: var(--primary-light);
-  color: var(--primary);
+  background: rgba(99, 102, 241, 0.18);
   transform: translateX(-2px);
 }
 
@@ -173,8 +172,8 @@
 
 .send-btn {
   border: none;
-  background: var(--primary-gradient);
-  color: #ffffff;
+  background: var(--primary-light);
+  color: var(--primary);
   width: 42px;
   height: 42px;
   border-radius: 50%;
@@ -183,13 +182,14 @@
   align-items: center;
   justify-content: center;
   transition: var(--transition-fast);
-  box-shadow: var(--shadow-indigo);
+  box-shadow: var(--shadow-sm);
   flex-shrink: 0;
+  border: 1px solid rgba(99, 102, 241, 0.22);
 }
 
 .send-btn:hover {
   transform: scale(1.06);
-  opacity: 0.95;
+  background: rgba(99, 102, 241, 0.18);
 }
 
 .send-btn:disabled {
