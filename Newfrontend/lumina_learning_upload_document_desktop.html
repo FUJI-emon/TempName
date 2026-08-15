@@ -275,30 +275,177 @@
 </div>
 </div>
 </div>
+<!-- Hidden File Input -->
+<input type="file" id="file-input" class="hidden" accept=".pdf,.doc,.docx,.ppt,.pptx,.txt">
+
+<!-- Status / Error Alert -->
+<div id="upload-status" class="hidden mb-6 p-4 rounded-xl text-sm font-medium flex items-center gap-3">
+  <span class="material-symbols-outlined text-xl" id="status-icon">info</span>
+  <span id="status-text">Processing...</span>
+</div>
+
 <!-- Upload Drag & Drop Area -->
-<div class="mb-10 border-2 border-dashed border-primary/40 rounded-xl bg-surface-bright hover:bg-primary-fixed-dim/10 transition-colors p-8 flex flex-col items-center justify-center text-center cursor-pointer group">
+<div id="dropzone" class="mb-10 border-2 border-dashed border-primary/40 rounded-xl bg-surface-bright hover:bg-primary-fixed-dim/10 transition-colors p-8 flex flex-col items-center justify-center text-center cursor-pointer group">
 <div class="w-16 h-16 rounded-full bg-primary-fixed-dim/20 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
-<span class="material-symbols-outlined text-3xl">cloud_upload</span>
+<span class="material-symbols-outlined text-3xl" id="dropzone-icon">cloud_upload</span>
 </div>
-<span class="font-headline-md text-headline-md text-on-surface text-lg mb-2">click to upload file</span>
-<span class="font-label-sm text-label-sm text-outline">PDF, Word, PowerPoint (maximum 10MB)</span>
+<span class="font-headline-md text-headline-md text-on-surface text-lg mb-2" id="dropzone-title">click or drag to upload file</span>
+<span class="font-label-sm text-label-sm text-outline" id="dropzone-subtitle">PDF, Word, PowerPoint, TXT (maximum 10MB)</span>
 </div>
+
+<!-- Optional Goal / Title Input -->
+<div class="mb-8 space-y-2">
+  <label for="goal-title-input" class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Learning Goal / Topic (Optional)</label>
+  <input type="text" id="goal-title-input" class="w-full px-4 py-3 bg-surface-container-lowest border border-surface-container-highest rounded-xl text-on-surface font-body-md focus:outline-none focus:ring-2 focus:ring-primary" placeholder="e.g. Embedded Systems Firmware Architecture">
+</div>
+
 <!-- Footer Actions -->
 <div class="flex flex-col items-center gap-4">
-<button class="w-full py-4 px-6 rounded-full bg-primary text-on-primary font-button text-button shadow-[0px_4px_20px_rgba(94,92,230,0.15)] hover:bg-on-primary-fixed-variant transition-all hover:shadow-[0px_6px_24px_rgba(94,92,230,0.25)] flex items-center justify-center gap-2 hover:-translate-y-1">
-<span class="material-symbols-outlined">upload</span>
-                        upload
-                    </button>
-<button class="font-button text-button text-on-surface-variant hover:text-primary transition-colors py-2 px-4 rounded-lg hover:bg-surface-container-low hover:-translate-y-1 transition-all duration-300 hover:shadow-lg">
-                        skip
-                    </button>
+<button id="upload-btn" type="button" class="w-full py-4 px-6 rounded-full bg-primary text-on-primary font-button text-button shadow-[0px_4px_20px_rgba(94,92,230,0.15)] hover:bg-on-primary-fixed-variant transition-all hover:shadow-[0px_6px_24px_rgba(94,92,230,0.25)] flex items-center justify-center gap-2 hover:-translate-y-1">
+<span class="material-symbols-outlined" id="upload-btn-icon">upload</span>
+<span id="upload-btn-text">upload and analyze</span>
+</button>
 </div>
 </div>
 </div>
 </main>
 
-
-
-
+<script src="./api.js"></script>
 <script src="./navigation.js?v=10"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  let selectedFile = null;
+
+  const dropzone = document.getElementById("dropzone");
+  const fileInput = document.getElementById("file-input");
+  const dropzoneIcon = document.getElementById("dropzone-icon");
+  const dropzoneTitle = document.getElementById("dropzone-title");
+  const dropzoneSubtitle = document.getElementById("dropzone-subtitle");
+  const goalTitleInput = document.getElementById("goal-title-input");
+  const uploadBtn = document.getElementById("upload-btn");
+  const uploadBtnText = document.getElementById("upload-btn-text");
+  const uploadBtnIcon = document.getElementById("upload-btn-icon");
+  const uploadStatus = document.getElementById("upload-status");
+  const statusIcon = document.getElementById("status-icon");
+  const statusText = document.getElementById("status-text");
+
+  function showStatus(msg, type = "info") {
+    uploadStatus.classList.remove("hidden", "bg-error-container", "text-on-error-container", "bg-primary-container/20", "text-primary");
+    statusIcon.classList.remove("animate-spin");
+
+    if (type === "error") {
+      uploadStatus.classList.add("bg-error-container", "text-on-error-container");
+      statusIcon.textContent = "error";
+    } else if (type === "loading") {
+      uploadStatus.classList.add("bg-primary-container/20", "text-primary");
+      statusIcon.textContent = "progress_activity";
+      statusIcon.classList.add("animate-spin");
+    } else {
+      uploadStatus.classList.add("bg-primary-container/20", "text-primary");
+      statusIcon.textContent = "check_circle";
+    }
+    statusText.textContent = msg;
+  }
+
+  function hideStatus() {
+    uploadStatus.classList.add("hidden");
+    statusIcon.classList.remove("animate-spin");
+  }
+
+  function handleFileSelection(file) {
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      showStatus("File size exceeds 10MB limit.", "error");
+      return;
+    }
+    selectedFile = file;
+    hideStatus();
+    dropzoneIcon.textContent = "description";
+    dropzoneTitle.textContent = file.name;
+    const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+    dropzoneSubtitle.textContent = `File selected: ${sizeInMB} MB`;
+    dropzone.classList.add("border-primary", "bg-primary-fixed-dim/20");
+    if (!goalTitleInput.value) {
+      const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+      goalTitleInput.value = nameWithoutExt;
+    }
+  }
+
+  dropzone.addEventListener("click", () => fileInput.click());
+
+  fileInput.addEventListener("change", (e) => {
+    if (e.target.files && e.target.files[0]) {
+      handleFileSelection(e.target.files[0]);
+    }
+  });
+
+  dropzone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropzone.classList.add("border-primary", "bg-primary-fixed-dim/20");
+  });
+
+  dropzone.addEventListener("dragleave", (e) => {
+    e.preventDefault();
+    if (!selectedFile) {
+      dropzone.classList.remove("border-primary", "bg-primary-fixed-dim/20");
+    }
+  });
+
+  dropzone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileSelection(e.dataTransfer.files[0]);
+    }
+  });
+
+  uploadBtn.addEventListener("click", async () => {
+    const goalTitle = goalTitleInput.value.trim();
+
+    if (!selectedFile && !goalTitle) {
+      showStatus("Vui lòng chọn một file tài liệu hoặc nhập chủ đề học tập.", "error");
+      return;
+    }
+
+    uploadBtn.disabled = true;
+    uploadBtnText.textContent = "Analyzing document with AI...";
+    uploadBtnIcon.textContent = "progress_activity";
+    uploadBtnIcon.classList.add("animate-spin");
+    showStatus("Đang gửi tài liệu tới AI Engine để trích xuất khái niệm...", "loading");
+
+    try {
+      const formData = new FormData();
+      if (selectedFile) {
+        formData.append("document", selectedFile);
+        formData.append("title", selectedFile.name);
+      } else {
+        formData.append("title", goalTitle);
+        formData.append("content", goalTitle);
+      }
+      if (goalTitle) {
+        formData.append("goal_title", goalTitle);
+      }
+
+      const res = await window.API.learning.createMaterial(formData);
+
+      if (res.status === "success") {
+        showStatus("Tạo tài liệu & phân tích khái niệm thành công!", "success");
+        window.API.storage.setMaterial(res);
+        setTimeout(() => {
+          window.location.href = "review_document_content_selection.html";
+        }, 400);
+      } else {
+        showStatus(res.message || "Không thể phân tích tài liệu.", "error");
+      }
+    } catch (err) {
+      const msg = err.data?.message || err.message || "Đã xảy ra lỗi trong quá trình phân tích tài liệu (có thể do hết token hoặc dịch vụ AI bận).";
+      showStatus(msg, "error");
+    } finally {
+      uploadBtn.disabled = false;
+      uploadBtnText.textContent = "upload and analyze";
+      uploadBtnIcon.textContent = "upload";
+      uploadBtnIcon.classList.remove("animate-spin");
+    }
+  });
+});
+</script>
 </body></html>

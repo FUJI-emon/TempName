@@ -408,6 +408,9 @@
   }
 
   function navigateWithTransition(target) {
+    if (target === ROUTES.landing && window.API?.auth) {
+      window.API.auth.logout();
+    }
     const body = document.body;
     if (!body) {
       window.location.href = target;
@@ -459,7 +462,6 @@
     [ROUTES.login]: [
       { match: /forgot password/i, target: ROUTES.landing },
       { match: /sign up/i, target: ROUTES.landing },
-      { match: /sign in/i, target: ROUTES.dashboard },
       { match: /google/i, target: ROUTES.dashboard },
       { match: /apple/i, target: ROUTES.dashboard }
     ],
@@ -472,9 +474,7 @@
       { match: /review now/i, target: ROUTES.reviewDocument }
     ],
     [ROUTES.upload]: [
-      { match: /chevron_left|arrow_back/i, target: ROUTES.dashboard },
-      { match: /upload/i, target: ROUTES.reviewDocument },
-      { match: /skip/i, target: ROUTES.courses }
+      { match: /chevron_left|arrow_back/i, target: ROUTES.dashboard }
     ],
     [ROUTES.reviewDocument]: [
       { match: /arrow_back|chevron_left/i, target: ROUTES.upload },
@@ -621,17 +621,6 @@
     const rulesForPage = pageRules[currentPage];
     if (rulesForPage) {
       applyRules(rulesForPage, "a, button");
-    }
-
-    if (currentPage === ROUTES.login) {
-      const form = document.querySelector("form");
-      if (form && form.dataset.navBound !== "true") {
-        form.dataset.navBound = "true";
-        form.addEventListener("submit", (event) => {
-          event.preventDefault();
-          window.location.href = ROUTES.dashboard;
-        });
-      }
     }
   }
 

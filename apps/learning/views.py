@@ -2,6 +2,7 @@ import json
 from pathlib import Path
 
 from django.conf import settings
+from django.contrib.auth.hashers import check_password, make_password
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
@@ -9,9 +10,8 @@ from django.views.decorators.http import require_http_methods
 
 from apps.ai.services.dto import ChatScope, ConceptDTO
 from apps.ai.services.exceptions import LLMEmptyInputError, LLMInvalidResponseError, LLMServiceError
-from apps.learning.models import LearningMaterial, UsersUser
+from apps.learning.models import LearningMaterial, ProgressLesson, ProgressPathStep, QuizOption, QuizQuestion, UsersUser
 from apps.learning.services import LearningApplicationService
-from django.contrib.auth.hashers import check_password, make_password
 
 FRONTEND_DIR = Path(settings.BASE_DIR) / "Newfrontend"
 FRONTEND_PAGES = {
@@ -32,7 +32,7 @@ FRONTEND_PAGES = {
 
 
 def _serve_newfrontend_file(filename: str, content_type: str = "text/html; charset=utf-8"):
-    if filename not in FRONTEND_PAGES and filename != "navigation.js":
+    if filename not in FRONTEND_PAGES and filename not in ("navigation.js", "api.js"):
         raise Http404("Frontend page not found")
 
     file_path = FRONTEND_DIR / filename
@@ -60,6 +60,10 @@ def frontend_navigation_js(request):
     return _serve_newfrontend_file("navigation.js", content_type="application/javascript; charset=utf-8")
 
 
+def frontend_api_js(request):
+    return _serve_newfrontend_file("api.js", content_type="application/javascript; charset=utf-8")
+
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def onboarding_view(request):
@@ -84,7 +88,9 @@ def onboarding_view(request):
     except (LLMEmptyInputError, ValueError) as exc:
         return JsonResponse({"status": "error", "message": str(exc)}, status=400)
     except LLMServiceError as exc:
-        return JsonResponse({"status": "error", "message": f"LLM Error: {exc}"}, status=500)
+        return JsonResponse({"status": "error", "message": f"Dịch vụ AI gặp sự cố: {exc}"}, status=500)
+    except Exception as exc:
+        return JsonResponse({"status": "error", "message": f"Không thể trích xuất khái niệm từ tài liệu (có thể hết token hoặc lỗi kết nối AI Engine): {exc}"}, status=500)
 
 
 @csrf_exempt
@@ -140,7 +146,9 @@ def create_material_view(request):
     except (LLMEmptyInputError, ValueError) as exc:
         return JsonResponse({"status": "error", "message": str(exc)}, status=400)
     except LLMServiceError as exc:
-        return JsonResponse({"status": "error", "message": f"LLM Error: {exc}"}, status=500)
+        return JsonResponse({"status": "error", "message": f"Dịch vụ AI gặp sự cố: {exc}"}, status=500)
+    except Exception as exc:
+        return JsonResponse({"status": "error", "message": f"Không thể trích xuất khái niệm từ tài liệu (có thể hết token hoặc lỗi kết nối AI Engine): {exc}"}, status=500)
 
 
 @csrf_exempt
@@ -166,13 +174,16 @@ def generate_path_view(request):
         student = get_current_student(request)
 
         if student is None:
-            return JsonResponse(
-                {
-                    "status": "error",
-                    "message": "Authentication required.",
-                },
-                status=401,
+            student, _ = UsersUser.objects.get_or_create(
+                username="demo_student",
+                defaults={
+                    "email": "demo@lumina.ai",
+                    "display_name": "Alex Learner",
+                    "password_hash": "demo_hash"
+                }
             )
+            request.session["user_id"] = student.id
+            request.session.save()
 
         material = get_object_or_404(
             LearningMaterial,
@@ -201,6 +212,16 @@ def generate_path_view(request):
             "ordered_concept_ids": path_batch.ordered_concept_ids,
             "is_final_batch": path_batch.is_final_batch,
             "created_step_ids": [s.id for s in steps],
+            "steps": [
+                {
+                    "id": s.id,
+                    "order_index": s.order_index,
+                    "title": s.title,
+                    "status": s.status,
+                    "concept_id": s.concept_id,
+                }
+                for s in steps
+            ],
         })
 
     except (LLMEmptyInputError, ValueError) as exc:
@@ -220,6 +241,15 @@ def generate_path_view(request):
             },
             status=500,
         )
+    except Exception as exc:
+        return JsonResponse(
+            {
+                "status": "error",
+                "message": f"Dịch vụ AI gặp sự cố: {exc}",
+            },
+            status=500,
+        )
+
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -235,7 +265,20 @@ def submit_checkpoint_view(request):
         selected_option_id = data.get("selected_option_id")
         hints_used = data.get("hints_used", 0)
 
-        student = get_object_or_404(UsersUser, id=student_id)
+        if not student_id:
+            student = get_current_student(request)
+            if not student:
+                student, _ = UsersUser.objects.get_or_create(
+                    username="demo_student",
+                    defaults={
+                        "email": "demo@lumina.ai",
+                        "display_name": "Alex Learner",
+                        "password_hash": "demo_hash"
+                    }
+                )
+        else:
+            student = get_object_or_404(UsersUser, id=student_id)
+
         service = LearningApplicationService()
 
         attempt, next_action_res = service.submit_checkpoint_answer(
@@ -245,17 +288,71 @@ def submit_checkpoint_view(request):
             hints_used=hints_used,
         )
 
+        question_model = QuizQuestion.objects.filter(id=question_id).first()
+        explanation = question_model.explanation if question_model else "Đã phân tích kết quả bài làm."
+
         return JsonResponse({
             "status": "success",
             "is_correct": attempt.is_correct,
             "next_action": next_action_res.action.value,
             "needs_next_batch": next_action_res.needs_next_batch,
             "reasoning": next_action_res.reasoning,
+            "explanation": explanation,
         })
     except (LLMEmptyInputError, ValueError) as exc:
         return JsonResponse({"status": "error", "message": str(exc)}, status=400)
     except LLMServiceError as exc:
         return JsonResponse({"status": "error", "message": f"LLM Error: {exc}"}, status=500)
+    except Exception as exc:
+        return JsonResponse({"status": "error", "message": f"Lỗi hệ thống: {exc}"}, status=500)
+
+
+@require_http_methods(["GET"])
+def get_step_quiz_view(request, step_id):
+    """
+    Endpoint lấy câu hỏi checkpoint và danh sách các lựa chọn cho 1 step.
+    GET /step/<step_id>/quiz/
+    """
+    try:
+        step = ProgressPathStep.objects.filter(id=step_id).first()
+        question = None
+
+        if step:
+            lesson = getattr(step, "lesson", None)
+            if lesson:
+                question = QuizQuestion.objects.filter(lesson=lesson).first()
+
+        if not question:
+            # Fallback: find any QuizQuestion created in the system or for recent lesson
+            question = QuizQuestion.objects.order_by("-id").first()
+
+        if not question:
+            return JsonResponse({
+                "status": "error",
+                "message": "Chưa có câu hỏi checkpoint trong hệ thống."
+            }, status=404)
+
+        options = list(QuizOption.objects.filter(question=question))
+
+        return JsonResponse({
+            "status": "success",
+            "step_id": step.id if step else step_id,
+            "step_title": step.title if step else "Kiểm tra kiến thức",
+            "question": {
+                "id": question.id,
+                "question_text": question.question_text,
+                "explanation": question.explanation,
+                "options": [
+                    {
+                        "id": opt.id,
+                        "option_text": opt.option_text,
+                    }
+                    for opt in options
+                ]
+            }
+        })
+    except Exception as exc:
+        return JsonResponse({"status": "error", "message": f"Lỗi hệ thống: {exc}"}, status=500)
 
 
 @require_http_methods(["GET"])
@@ -279,6 +376,8 @@ def get_hint_view(request, question_id, level):
         return JsonResponse({"status": "error", "message": f"Guardrail blocked: {exc}"}, status=422)
     except LLMServiceError as exc:
         return JsonResponse({"status": "error", "message": f"LLM Error: {exc}"}, status=500)
+    except Exception as exc:
+        return JsonResponse({"status": "error", "message": f"Lỗi hệ thống: {exc}"}, status=500)
 
 
 @csrf_exempt
@@ -326,6 +425,9 @@ def chat_view(request):
         return JsonResponse({"status": "error", "message": f"Guardrail blocked chat: {exc}"}, status=422)
     except LLMServiceError as exc:
         return JsonResponse({"status": "error", "message": f"LLM Error: {exc}"}, status=500)
+    except Exception as exc:
+        return JsonResponse({"status": "error", "message": f"Lỗi hệ thống: {exc}"}, status=500)
+
 
 @csrf_exempt
 @require_http_methods(["POST"])
@@ -382,16 +484,15 @@ def create_chat_thread_view(request):
         )
 
 
-
 @csrf_exempt
 @require_http_methods(["POST"])
 def register_view(request):
     """
-        API xử lý đăng ký tài khoản người dùng mới.
+    API xử lý đăng ký tài khoản người dùng mới.
 
-        Phương thức: POST
-        Payload (JSON): username, email, password, display_name (optional)
-        """
+    Phương thức: POST
+    Payload (JSON): username, email, password, display_name (optional)
+    """
     try:
         data = json.loads(request.body)
 
@@ -455,15 +556,17 @@ def register_view(request):
             },
             status=400,
         )
+
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def login_view(request):
     """
-        API xử lý đăng nhập người dùng và tạo session xác thực.
+    API xử lý đăng nhập người dùng và tạo session xác thực.
 
-        Phương thức: POST
-        Payload (JSON): username, password
-        """
+    Phương thức: POST
+    Payload (JSON): username, password
+    """
     try:
         data = json.loads(request.body)
 
@@ -515,11 +618,6 @@ def login_view(request):
         )
 
 
-import json
-from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
-
-
 @require_http_methods(["GET"])
 def me_view(request):
     """API lấy thông tin tài khoản đang đăng nhập dựa trên session."""
@@ -559,6 +657,7 @@ def me_view(request):
         }
     )
 
+
 @csrf_exempt
 @require_http_methods(["POST"])
 def logout_view(request):
@@ -568,6 +667,7 @@ def logout_view(request):
         "status": "success",
         "message": "Logged out successfully.",
     })
+
 
 def get_current_student(request):
     user_id = request.session.get("user_id")

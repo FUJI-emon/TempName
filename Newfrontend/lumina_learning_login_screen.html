@@ -121,48 +121,82 @@
 <span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">school</span>
                     Lumina Learning
                 </div>
-<h1 class="font-headline-lg text-headline-lg text-on-surface">Welcome back</h1>
-<p class="font-body-md text-body-md text-on-surface-variant">Sign in to continue your learning journey</p>
+<h1 class="font-headline-lg text-headline-lg text-on-surface" id="auth-title">Welcome back</h1>
+<p class="font-body-md text-body-md text-on-surface-variant" id="auth-subtitle">Sign in to continue your learning journey</p>
 </div>
+
+<!-- Error Alert -->
+<div id="auth-error" class="hidden p-3 rounded-lg bg-error-container text-on-error-container text-sm flex items-center gap-2">
+  <span class="material-symbols-outlined text-lg">error</span>
+  <span id="auth-error-msg">An error occurred</span>
+</div>
+
 <!-- Form -->
-<form class="space-y-4" onsubmit="event.preventDefault();">
-<!-- Email Input -->
+<form class="space-y-4" id="auth-form">
+<!-- Display Name Input (Only for Register) -->
+<div class="space-y-1 hidden" id="display-name-group">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase" for="display_name">Full Name / Display Name</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">badge</span>
+</div>
+<input class="w-full pl-10 pr-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-body-md text-body-md text-on-surface transition-shadow hover:-translate-y-1 hover:shadow-md transition-all duration-300" id="display_name" placeholder="Alex Morgan" type="text">
+</div>
+</div>
+
+<!-- Username / Email Input -->
 <div class="space-y-1">
+<label class="font-label-sm text-label-sm text-on-surface-variant uppercase" id="username-label" for="username">Username / Email</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline" id="username-icon">person</span>
+</div>
+<input class="w-full pl-10 pr-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-body-md text-body-md text-on-surface transition-shadow hover:-translate-y-1 hover:shadow-md transition-all duration-300" id="username" placeholder="alex@example.com" required type="text">
+</div>
+</div>
+
+<!-- Email Input (Only for Register) -->
+<div class="space-y-1 hidden" id="email-group">
 <label class="font-label-sm text-label-sm text-on-surface-variant uppercase" for="email">Email Address</label>
 <div class="relative">
 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
 <span class="material-symbols-outlined text-outline">mail</span>
 </div>
-<input class="w-full pl-10 pr-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-body-md text-body-md text-on-surface transition-shadow hover:-translate-y-1 hover:shadow-md transition-all duration-300" id="email" placeholder="alex@example.com" required="" type="email">
+<input class="w-full pl-10 pr-3 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-body-md text-body-md text-on-surface transition-shadow hover:-translate-y-1 hover:shadow-md transition-all duration-300" id="email" placeholder="alex@example.com" type="email">
 </div>
 </div>
+
 <!-- Password Input -->
 <div class="space-y-1">
 <div class="flex justify-between items-center">
 <label class="font-label-sm text-label-sm text-on-surface-variant uppercase" for="password">Password</label>
-<a class="font-label-sm text-label-sm text-primary hover:text-primary-fixed-dim transition-colors" href="#">Forgot password?</a>
+<a class="font-label-sm text-label-sm text-primary hover:text-primary-fixed-dim transition-colors" id="forgot-link" href="#">Forgot password?</a>
 </div>
 <div class="relative">
 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
 <span class="material-symbols-outlined text-outline">lock</span>
 </div>
-<input class="w-full pl-10 pr-10 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-body-md text-body-md text-on-surface transition-shadow hover:-translate-y-1 hover:shadow-md transition-all duration-300" id="password" placeholder="••••••••" required="" type="password">
-<button class="absolute inset-y-0 right-0 pr-3 flex items-center text-outline hover:text-on-surface-variant transition-colors" type="button">
-<span class="material-symbols-outlined">visibility</span>
+<input class="w-full pl-10 pr-10 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-body-md text-body-md text-on-surface transition-shadow hover:-translate-y-1 hover:shadow-md transition-all duration-300" id="password" placeholder="••••••••" required type="password">
+<button class="absolute inset-y-0 right-0 pr-3 flex items-center text-outline hover:text-on-surface-variant transition-colors" id="toggle-password" type="button">
+<span class="material-symbols-outlined" id="toggle-password-icon">visibility</span>
 </button>
 </div>
 </div>
+
 <!-- Primary Action -->
-<button class="w-full mt-6 bg-primary hover:bg-surface-tint text-on-primary font-button text-button py-3 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98] hover:-translate-y-1 hover:shadow-lg duration-300" type="submit">
-                    Sign In
-                </button>
+<button class="w-full mt-6 bg-primary hover:bg-surface-tint text-on-primary font-button text-button py-3 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98] hover:-translate-y-1 hover:shadow-lg duration-300 flex items-center justify-center gap-2" id="submit-btn" type="submit">
+  <span id="submit-btn-text">Sign In</span>
+  <span class="material-symbols-outlined hidden animate-spin" id="submit-spinner">progress_activity</span>
+</button>
 </form>
+
 <!-- Divider -->
 <div class="relative flex items-center py-2">
 <div class="flex-grow border-t border-outline-variant"></div>
 <span class="flex-shrink-0 mx-4 font-label-sm text-label-sm text-on-surface-variant">Or continue with</span>
 <div class="flex-grow border-t border-outline-variant"></div>
 </div>
+
 <!-- Social Logins -->
 <div class="grid grid-cols-2 gap-4">
 <button class="flex items-center justify-center gap-2 bg-surface-container-lowest border border-outline-variant hover:bg-surface-container-low text-on-surface font-button text-button py-2 px-4 rounded-lg transition-colors hover:-translate-y-1 hover:shadow-md transition-all duration-300" type="button">
@@ -174,15 +208,138 @@
                     Apple
                 </button>
 </div>
+
 <!-- Footer -->
 <div class="text-center mt-2">
-<p class="font-body-md text-body-md text-on-surface-variant">
-                    Don't have an account? <a class="text-primary font-semibold hover:underline decoration-2 underline-offset-4" href="#">Sign up</a>
+<p class="font-body-md text-body-md text-on-surface-variant" id="toggle-mode-text">
+  Don't have an account? <button class="text-primary font-semibold hover:underline decoration-2 underline-offset-4" id="toggle-mode-btn" type="button">Sign up</button>
 </p>
 </div>
 </div>
 </main>
 
-
+<script src="./api.js"></script>
 <script src="./navigation.js?v=10"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  let isSignUpMode = false;
+
+  const authTitle = document.getElementById("auth-title");
+  const authSubtitle = document.getElementById("auth-subtitle");
+  const authForm = document.getElementById("auth-form");
+  const authError = document.getElementById("auth-error");
+  const authErrorMsg = document.getElementById("auth-error-msg");
+  const usernameInput = document.getElementById("username");
+  const usernameLabel = document.getElementById("username-label");
+  const emailInput = document.getElementById("email");
+  const emailGroup = document.getElementById("email-group");
+  const displayNameInput = document.getElementById("display_name");
+  const displayNameGroup = document.getElementById("display-name-group");
+  const passwordInput = document.getElementById("password");
+  const submitBtnText = document.getElementById("submit-btn-text");
+  const submitSpinner = document.getElementById("submit-spinner");
+  const toggleModeBtn = document.getElementById("toggle-mode-btn");
+  const toggleModeText = document.getElementById("toggle-mode-text");
+  const togglePasswordBtn = document.getElementById("toggle-password");
+  const togglePasswordIcon = document.getElementById("toggle-password-icon");
+  const forgotLink = document.getElementById("forgot-link");
+
+  function showError(msg) {
+    authErrorMsg.textContent = msg;
+    authError.classList.remove("hidden");
+  }
+
+  function hideError() {
+    authError.classList.add("hidden");
+  }
+
+  function setMode(signUp) {
+    isSignUpMode = signUp;
+    hideError();
+    if (isSignUpMode) {
+      authTitle.textContent = "Create Account";
+      authSubtitle.textContent = "Join Lumina Learning to start your path";
+      usernameLabel.textContent = "Username";
+      usernameInput.placeholder = "alexmorgan";
+      emailGroup.classList.remove("hidden");
+      emailInput.required = true;
+      displayNameGroup.classList.remove("hidden");
+      submitBtnText.textContent = "Sign Up";
+      forgotLink.classList.add("hidden");
+      toggleModeText.innerHTML = 'Already have an account? <button class="text-primary font-semibold hover:underline decoration-2 underline-offset-4" id="toggle-mode-btn" type="button">Sign in</button>';
+    } else {
+      authTitle.textContent = "Welcome back";
+      authSubtitle.textContent = "Sign in to continue your learning journey";
+      usernameLabel.textContent = "Username / Email";
+      usernameInput.placeholder = "alex@example.com";
+      emailGroup.classList.add("hidden");
+      emailInput.required = false;
+      displayNameGroup.classList.add("hidden");
+      submitBtnText.textContent = "Sign In";
+      forgotLink.classList.remove("hidden");
+      toggleModeText.innerHTML = 'Don\'t have an account? <button class="text-primary font-semibold hover:underline decoration-2 underline-offset-4" id="toggle-mode-btn" type="button">Sign up</button>';
+    }
+    // Re-bind toggle mode button since innerHTML was changed
+    document.getElementById("toggle-mode-btn").addEventListener("click", function () {
+      setMode(!isSignUpMode);
+    });
+  }
+
+  toggleModeBtn.addEventListener("click", function () {
+    setMode(!isSignUpMode);
+  });
+
+  togglePasswordBtn.addEventListener("click", function () {
+    const isPassword = passwordInput.type === "password";
+    passwordInput.type = isPassword ? "text" : "password";
+    togglePasswordIcon.textContent = isPassword ? "visibility_off" : "visibility";
+  });
+
+  authForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    hideError();
+
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value;
+
+    if (!username || !password) {
+      showError("Please enter all required fields.");
+      return;
+    }
+
+    submitBtnText.textContent = isSignUpMode ? "Signing up..." : "Signing in...";
+    submitSpinner.classList.remove("hidden");
+
+    try {
+      if (isSignUpMode) {
+        const email = emailInput.value.trim();
+        const displayName = displayNameInput.value.trim();
+        if (!email) {
+          showError("Email address is required.");
+          return;
+        }
+        await window.API.auth.register({
+          username: username,
+          email: email,
+          password: password,
+          display_name: displayName
+        });
+      } else {
+        await window.API.auth.login({
+          username: username,
+          password: password
+        });
+      }
+      // Successfully authenticated
+      window.location.href = "student_dashboard_overview.html";
+    } catch (err) {
+      showError(err.data?.message || err.message || "Authentication failed. Please check your credentials.");
+    } finally {
+      submitBtnText.textContent = isSignUpMode ? "Sign Up" : "Sign In";
+      submitSpinner.classList.add("hidden");
+    }
+  });
+});
+</script>
 </body></html>
+
