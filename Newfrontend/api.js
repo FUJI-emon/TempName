@@ -104,8 +104,19 @@
       setMaterial(materialData) {
         try {
           localStorage.setItem(STORAGE_KEY_MATERIAL, JSON.stringify(materialData));
+          const matId = materialData.id || materialData.material_id;
+          if (matId) {
+            localStorage.setItem("lumina.lastMaterialId", matId);
+          }
         } catch (e) {
           console.error("Failed to save material in localStorage", e);
+        }
+      },
+      getLastMaterialId() {
+        try {
+          return localStorage.getItem("lumina.lastMaterialId");
+        } catch {
+          return null;
         }
       },
       clearMaterial() {
@@ -210,6 +221,18 @@
           options.body = payload;
         }
         return request("/material/create/", options);
+      },
+
+      async getMaterials() {
+        return request("/materials/", {
+          method: "GET"
+        });
+      },
+
+      async getMaterialDetail(materialId) {
+        return request(`/material/${materialId}/`, {
+          method: "GET"
+        });
       },
 
       async generatePath(payload) {

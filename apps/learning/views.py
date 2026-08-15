@@ -1,16 +1,28 @@
-import json
+from decimal import Decimal
 from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth.hashers import check_password, make_password
 from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from apps.ai.services.dto import ChatScope, ConceptDTO
 from apps.ai.services.exceptions import LLMEmptyInputError, LLMInvalidResponseError, LLMServiceError
-from apps.learning.models import LearningMaterial, ProgressLesson, ProgressPathStep, QuizOption, QuizQuestion, UsersUser
+from apps.learning.models import (
+    LearningConcept,
+    LearningGoal,
+    LearningMaterial,
+    ProgressLesson,
+    ProgressLessonCard,
+    ProgressPathStep,
+    ProgressStudentMaterialProgress,
+    QuizOption,
+    QuizQuestion,
+    UsersUser,
+)
 from apps.learning.services import LearningApplicationService
 
 FRONTEND_DIR = Path(settings.BASE_DIR) / "Newfrontend"
@@ -110,7 +122,7 @@ def create_material_view(request):
 
             if uploaded_document is not None:
                 if not title:
-                    title = Path(uploaded_document.name).stem or uploaded_document.name
+                    title = uploaded_document.name
                 if not goal_title:
                     goal_title = title
                 if not content:
@@ -132,9 +144,33 @@ def create_material_view(request):
         service = LearningApplicationService()
         material, analysis = service.process_and_create_material(title, content, goal_title)
 
+        student = get_current_student(request)
+        if not student:
+            student, _ = UsersUser.objects.get_or_create(
+                username="demo_student",
+                defaults={
+                    "email": "demo@lumina.ai",
+                    "display_name": "Alex Learner",
+                    "password_hash": "demo_hash"
+                }
+            )
+            request.session["user_id"] = student.id
+            request.session.save()
+
+        ProgressStudentMaterialProgress.objects.get_or_create(
+            student=student,
+            material=material,
+            defaults={
+                "status": ProgressStudentMaterialProgress.MaterialStatus.IN_PROGRESS,
+                "completion_percent": Decimal("0.00"),
+                "last_active_at": timezone.now(),
+            }
+        )
+
         return JsonResponse({
             "status": "success",
             "material_id": material.id,
+            "id": material.id,
             "title": material.title,
             "goal_title": goal_title or material.subject,
             "concepts": [
@@ -149,6 +185,90 @@ def create_material_view(request):
         return JsonResponse({"status": "error", "message": f"Dịch vụ AI gặp sự cố: {exc}"}, status=500)
     except Exception as exc:
         return JsonResponse({"status": "error", "message": f"Không thể trích xuất khái niệm từ tài liệu (có thể hết token hoặc lỗi kết nối AI Engine): {exc}"}, status=500)
+
+
+@require_http_methods(["GET"])
+def list_materials_view(request):
+    """
+    API lấy danh sách các tài liệu học tập (Material History) từ DB.
+    """
+    try:
+        student = get_current_student(request)
+        if student:
+            progress_qs = ProgressStudentMaterialProgress.objects.filter(student=student).select_related("material")
+            material_ids = [p.material_id for p in progress_qs]
+            materials = list(LearningMaterial.objects.filter(id__in=material_ids).order_by("-created_at"))
+            if not materials:
+                materials = list(LearningMaterial.objects.order_by("-created_at"))
+        else:
+            materials = list(LearningMaterial.objects.order_by("-created_at"))
+
+        results = []
+        for mat in materials:
+            goal = mat.goals.first()
+            concepts_count = LearningConcept.objects.filter(goal__material=mat).count()
+            results.append({
+                "id": mat.id,
+                "material_id": mat.id,
+                "title": mat.title,
+                "goal_title": goal.title if goal else mat.title,
+                "created_at": mat.created_at.strftime("%Y-%m-%d %H:%M:%S") if mat.created_at else "",
+                "progress": mat.progress or 0,
+                "subject": mat.subject or mat.title,
+                "concepts_count": concepts_count
+            })
+
+        return JsonResponse({
+            "status": "success",
+            "materials": results
+        })
+    except Exception as exc:
+        return JsonResponse({"status": "error", "message": str(exc)}, status=500)
+
+
+@require_http_methods(["GET"])
+def get_material_detail_view(request, material_id):
+    """
+    API lấy chi tiết tài liệu học tập và danh sách khái niệm từ DB theo material_id.
+    """
+    try:
+        material = get_object_or_404(LearningMaterial, id=material_id)
+        goal = material.goals.first()
+        concepts = LearningConcept.objects.filter(goal__material=material).order_by("order_index", "id")
+
+        steps = ProgressPathStep.objects.filter(material=material).order_by("order_index", "id")
+        step_list = [
+            {
+                "id": s.id,
+                "order_index": s.order_index,
+                "title": s.title,
+                "status": s.status,
+                "concept_id": s.concept_id
+            }
+            for s in steps
+        ]
+
+        return JsonResponse({
+            "status": "success",
+            "material_id": material.id,
+            "id": material.id,
+            "title": material.title,
+            "goal_title": goal.title if goal else material.title,
+            "subject": material.subject or material.title,
+            "created_at": material.created_at.strftime("%Y-%m-%d %H:%M:%S") if material.created_at else "",
+            "progress": material.progress or 0,
+            "concepts": [
+                {
+                    "id": c.external_id or str(c.id),
+                    "title": c.title,
+                    "description": c.description or ""
+                }
+                for c in concepts
+            ],
+            "steps": step_list
+        })
+    except Exception as exc:
+        return JsonResponse({"status": "error", "message": str(exc)}, status=500)
 
 
 @csrf_exempt
@@ -310,21 +430,24 @@ def submit_checkpoint_view(request):
 @require_http_methods(["GET"])
 def get_step_quiz_view(request, step_id):
     """
-    Endpoint lấy câu hỏi checkpoint và danh sách các lựa chọn cho 1 step.
+    Endpoint lấy câu hỏi checkpoint, danh sách bài học và các lựa chọn cho 1 step.
     GET /step/<step_id>/quiz/
     """
     try:
         step = ProgressPathStep.objects.filter(id=step_id).first()
         question = None
+        lesson_obj = None
 
         if step:
-            lesson = getattr(step, "lesson", None)
-            if lesson:
-                question = QuizQuestion.objects.filter(lesson=lesson).first()
+            lesson_obj = getattr(step, "lesson", None)
+            if lesson_obj:
+                question = QuizQuestion.objects.filter(lesson=lesson_obj).first()
 
         if not question:
             # Fallback: find any QuizQuestion created in the system or for recent lesson
             question = QuizQuestion.objects.order_by("-id").first()
+            if question and question.lesson:
+                lesson_obj = question.lesson
 
         if not question:
             return JsonResponse({
@@ -334,10 +457,29 @@ def get_step_quiz_view(request, step_id):
 
         options = list(QuizOption.objects.filter(question=question))
 
+        lesson_data = None
+        if lesson_obj:
+            cards = list(ProgressLessonCard.objects.filter(lesson=lesson_obj).order_by("order_index"))
+            lesson_data = {
+                "id": lesson_obj.id,
+                "explanation": lesson_obj.explanation,
+                "example": lesson_obj.example,
+                "cards": [
+                    {
+                        "id": c.id,
+                        "order_index": c.order_index,
+                        "heading": c.heading,
+                        "body": c.body
+                    }
+                    for c in cards
+                ]
+            }
+
         return JsonResponse({
             "status": "success",
             "step_id": step.id if step else step_id,
             "step_title": step.title if step else "Kiểm tra kiến thức",
+            "lesson": lesson_data,
             "question": {
                 "id": question.id,
                 "question_text": question.question_text,

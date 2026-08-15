@@ -230,49 +230,10 @@
                     </p>
 </div>
 <!-- Document History Section -->
-<div class="mb-8">
+<div class="mb-8" id="document-history-section">
 <h3 class="font-headline-md text-headline-md text-on-primary-fixed-variant text-lg mb-4 text-left">Document history</h3>
-<div class="flex flex-col border border-surface-container-highest rounded-lg overflow-hidden divide-y divide-surface-container-highest">
-<!-- History Item 1 -->
-<div class="flex items-center justify-between p-4 bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer hover:-translate-y-1 transition-all duration-200 duration-300 hover:shadow-lg">
-<div class="flex items-center gap-4">
-<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim/20 flex items-center justify-center text-primary">
-<span class="material-symbols-outlined">description</span>
-</div>
-<span class="font-body-md text-body-md text-on-surface font-medium">Firmware_v1.2.pdf</span>
-</div>
-<span class="font-label-sm text-label-sm text-outline">2.4 MB</span>
-</div>
-<!-- History Item 2 -->
-<div class="flex items-center justify-between p-4 bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer hover:-translate-y-1 transition-all duration-200 duration-300 hover:shadow-lg">
-<div class="flex items-center gap-4">
-<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim/20 flex items-center justify-center text-primary">
-<span class="material-symbols-outlined">description</span>
-</div>
-<span class="font-body-md text-body-md text-on-surface font-medium">Firmware_v2.0.pdf</span>
-</div>
-<span class="font-label-sm text-label-sm text-outline">3.1 MB</span>
-</div>
-<!-- History Item 3 -->
-<div class="flex items-center justify-between p-4 bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer hover:-translate-y-1 transition-all duration-200 duration-300 hover:shadow-lg">
-<div class="flex items-center gap-4">
-<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim/20 flex items-center justify-center text-primary">
-<span class="material-symbols-outlined">description</span>
-</div>
-<span class="font-body-md text-body-md text-on-surface font-medium">Module_3_notes.pdf</span>
-</div>
-<span class="font-label-sm text-label-sm text-outline">1.8 MB</span>
-</div>
-<!-- History Item 4 -->
-<div class="flex items-center justify-between p-4 bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer hover:-translate-y-1 transition-all duration-200 duration-300 hover:shadow-lg">
-<div class="flex items-center gap-4">
-<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim/20 flex items-center justify-center text-primary">
-<span class="material-symbols-outlined">description</span>
-</div>
-<span class="font-body-md text-body-md text-on-surface font-medium">Lab_report_final.docx</span>
-</div>
-<span class="font-label-sm text-label-sm text-outline">4.6 MB</span>
-</div>
+<div class="flex flex-col border border-surface-container-highest rounded-lg overflow-hidden divide-y divide-surface-container-highest" id="document-history-list">
+  <div class="p-4 text-xs text-on-surface-variant text-center">Loading uploaded document history...</div>
 </div>
 </div>
 <!-- Hidden File Input -->
@@ -328,6 +289,55 @@ document.addEventListener("DOMContentLoaded", function () {
   const uploadStatus = document.getElementById("upload-status");
   const statusIcon = document.getElementById("status-icon");
   const statusText = document.getElementById("status-text");
+  const docHistoryList = document.getElementById("document-history-list");
+
+  // Load Real Uploaded Materials History from Backend DB
+  async function loadDocumentHistory() {
+    if (!docHistoryList) return;
+    try {
+      const res = await window.API.learning.getMaterials();
+      if (res.status === "success" && res.materials && res.materials.length > 0) {
+        docHistoryList.innerHTML = "";
+        res.materials.forEach((mat) => {
+          const item = document.createElement("div");
+          item.className = "flex items-center justify-between p-4 bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer hover:-translate-y-1 transition-all duration-200 hover:shadow-lg";
+          
+          item.innerHTML = `
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-lg bg-primary-fixed-dim/20 flex items-center justify-center text-primary">
+                <span class="material-symbols-outlined">description</span>
+              </div>
+              <span class="font-body-md text-body-md text-on-surface font-medium">${escapeHtml(mat.title || mat.goal_title)}</span>
+            </div>
+            <span class="font-label-sm text-label-sm text-outline">${mat.created_at || 'Recent'}</span>
+          `;
+
+          item.addEventListener("click", async () => {
+            try {
+              const detail = await window.API.learning.getMaterialDetail(mat.id);
+              if (detail.status === "success") {
+                window.API.storage.setMaterial(detail);
+              }
+            } catch (e) {}
+            window.location.href = `personalized_learning_path.html?material_id=${mat.id}`;
+          });
+
+          docHistoryList.appendChild(item);
+        });
+      } else {
+        docHistoryList.innerHTML = `<div class="p-4 text-xs text-on-surface-variant text-center">Chưa có tài liệu nào được tải lên.</div>`;
+      }
+    } catch (err) {
+      docHistoryList.innerHTML = `<div class="p-4 text-xs text-on-surface-variant text-center">Không thể tải lịch sử tài liệu.</div>`;
+    }
+  }
+
+  loadDocumentHistory();
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
 
   function showStatus(msg, type = "info") {
     uploadStatus.classList.remove("hidden", "bg-error-container", "text-on-error-container", "bg-primary-container/20", "text-primary");

@@ -257,7 +257,7 @@
 <script src="./api.js"></script>
 <script src="./navigation.js?v=10"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
   const docTitle = document.getElementById("doc-title");
   const conceptsList = document.getElementById("concepts-list");
   const submitBtn = document.getElementById("submit-btn");
@@ -268,7 +268,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const statusIcon = document.getElementById("status-icon");
   const statusText = document.getElementById("status-text");
 
-  const material = window.API?.storage?.getMaterial();
+  const urlParams = new URLSearchParams(window.location.search);
+  const materialIdFromUrl = urlParams.get("material_id");
+  let material = window.API?.storage?.getMaterial();
 
   function showStatus(msg, type = "info") {
     reviewStatus.classList.remove("hidden", "bg-error-container", "text-on-error-container", "bg-primary-container/20", "text-primary");
@@ -291,6 +293,22 @@ document.addEventListener("DOMContentLoaded", function () {
   function hideStatus() {
     reviewStatus.classList.add("hidden");
     statusIcon.classList.remove("animate-spin");
+  }
+
+  // Fetch from backend DB if needed
+  const matId = materialIdFromUrl || material?.id || material?.material_id || window.API?.storage?.getLastMaterialId();
+  if (matId && (!material || (materialIdFromUrl && material.id != materialIdFromUrl))) {
+    try {
+      showStatus("Loading material details from database...", "loading");
+      const res = await window.API.learning.getMaterialDetail(matId);
+      if (res.status === "success") {
+        material = res;
+        window.API.storage.setMaterial(res);
+        hideStatus();
+      }
+    } catch (err) {
+      console.error("Failed to load material detail from backend", err);
+    }
   }
 
   if (!material || !material.concepts || material.concepts.length === 0) {

@@ -235,38 +235,221 @@
 <div class="w-full max-w-2xl relative">
 <!-- Overall Progress Indicator (Above Card) -->
 <div class="flex items-center justify-between mb-4 px-2">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Module: Linear Regression</span>
-<span class="font-label-sm text-label-sm text-primary font-bold">38% Complete</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider" id="module-header-title">Module: Interactive Lesson</span>
+<span class="font-label-sm text-label-sm text-primary font-bold" id="step-progress-percent">In Progress</span>
 </div>
 <!-- The Learning Card -->
 <article class="bg-surface-container-lowest rounded-xl soft-shadow overflow-hidden flex flex-col relative transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
 <!-- Linear Progress Bar -->
 <div class="h-1 w-full bg-surface-variant relative">
-<div class="absolute top-0 left-0 h-full w-3/8 progress-gradient rounded-r-full" style="width: 37.5%;"></div>
+<div class="absolute top-0 left-0 h-full w-3/8 progress-gradient rounded-r-full" style="width: 50%;"></div>
 </div>
 <div class="p-8 flex flex-col gap-6">
 <!-- Card Header -->
 <header>
-<h2 class="font-label-sm text-label-sm text-secondary uppercase mb-2">Card 3 / 8</h2>
-<h1 class="font-headline-lg text-headline-lg text-on-surface">The Hypothesis Function</h1>
+<h2 class="font-label-sm text-label-sm text-secondary uppercase mb-2" id="lesson-card-index">Lesson Concept</h2>
+<h1 class="font-headline-lg text-headline-lg text-on-surface" id="lesson-card-title">Loading Lesson...</h1>
 </header>
 <!-- Card Body -->
-<div class="flex flex-col gap-4 text-on-surface-variant">
+<div class="flex flex-col gap-4 text-on-surface-variant" id="lesson-card-body">
 <p class="font-body-md text-body-md">
-                            In simple linear regression, we try to draw a straight line that best fits our data. This line is defined by the <strong>Hypothesis Function</strong>.
+                            Loading AI Lesson content from backend...
                         </p>
-<!-- Equation Callout -->
-<div class="bg-primary-fixed/20 p-4 rounded-lg flex items-center justify-center my-2 border border-primary-fixed">
-<span class="font-display-lg text-display-lg text-on-primary-fixed-variant italic">y = mx + c</span>
 </div>
+</div>
+<!-- Card Footer (Navigation) -->
+<footer class="p-6 border-t border-surface-variant flex justify-between items-center bg-surface-bright">
+<button class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-surface-container-low rounded-lg transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+                        Previous
+                    </button>
+<button class="flex items-center gap-2 px-6 py-2 bg-primary text-on-primary rounded-lg shadow-sm hover:shadow-md transition-shadow font-button text-button hover:-translate-y-1 duration-300">
+                        Next
+                        <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</footer>
+</article>
+<!-- Overlay Checkpoint Popup (Messenger Style) -->
+<div class="absolute -right-12 top-24 w-[380px] glass-panel rounded-xl shadow-2xl p-5 flex flex-col gap-4 border border-outline-variant/30 z-30 animate-fade-in-up hover:-translate-y-1 transition-transform duration-300" id="checkpoint-popup">
+<!-- AI Header -->
+<div class="flex items-center gap-3 border-b border-surface-variant/50 pb-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="smart_toy">smart_toy</span>
+</div>
+<div class="flex-1">
+<h3 class="font-button text-button text-on-surface">Knowledge Check</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant" id="quiz-tutor-name">Lumina AI Tutor</p>
+</div>
+</div>
+<!-- Question -->
+<div class="bg-primary/5 p-4 rounded-lg rounded-tl-none border border-primary/10">
+<p class="font-body-md text-body-md text-on-surface font-medium" id="quiz-question-text">
+  Loading AI Checkpoint question...
+</p>
+</div>
+<!-- Multiple Choice Options -->
+<div class="flex flex-col gap-2" id="quiz-options-container">
+  <div class="p-4 text-center text-xs text-on-surface-variant">Fetching options from backend...</div>
+</div>
+
+<!-- Hint Display Box -->
+<div id="hint-text-box" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200"></div>
+
+<!-- Feedback Display Box -->
+<div id="quiz-feedback-box" class="hidden p-4 rounded-xl text-sm font-medium flex flex-col gap-2"></div>
+
+<!-- Action Footer -->
+<div class="flex flex-col gap-2 pt-2 border-t border-surface-variant/50">
+  <div class="flex justify-between items-center">
+    <button id="hint-btn" type="button" class="font-label-sm text-xs text-secondary hover:underline flex items-center gap-1">
+      <span class="material-symbols-outlined text-sm">lightbulb</span>
+      <span id="hint-btn-text">Get Hint (Level 1)</span>
+    </button>
+    <button id="quiz-submit-btn" type="button" class="px-4 py-2 bg-primary text-on-primary font-button text-xs rounded-lg shadow-sm hover:bg-primary/90 transition-all">
+      Submit Answer
+    </button>
+  </div>
+  <button id="next-action-btn" type="button" class="hidden w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-button text-xs rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 mt-1">
+    <span>Continue Learning Path</span>
+    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+  </button>
+</div>
+</div>
+</main>
+
+<style>
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+                      "button": [
+                              "16px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); color: theme('colors.on-surface'); }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 20px rgba(94, 92, 230, 0.08);
+        }
+        .progress-gradient {
+            background: linear-gradient(90deg, theme('colors.primary'), theme('colors.secondary'));
+        }
+        /* Background blur effect */
+        .bg-blur-overlay {
+            backdrop-filter: blur(8px);
+            background-color: rgba(249, 249, 254, 0.6); /* background color with opacity */
+        }
+    </style>
+</head>
+<body class="min-h-screen relative overflow-hidden font-body-md text-body-md flex antialiased">
+<!-- Side Navigation -->
+<nav class="w-64 flex flex-col justify-between h-screen bg-surface-container-lowest border-r border-outline-variant/30 py-6 px-4 relative z-30 shrink-0 soft-shadow">
+<div class="flex flex-col gap-8">
+<div class="px-4 font-headline-md text-headline-md font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="lightbulb">lightbulb</span>
+            Lumina
+        </div>
+<div class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span> My Courses
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span> AI Tutor
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span> Settings
+            </a>
+</div>
+</div>
+<div class="flex items-center gap-3 px-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold">AL</div>
+<div class="flex flex-col">
+<span class="font-button text-button text-on-surface">Alex Learner</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Pro Plan</span>
+</div>
+</div>
+</nav>
+<!-- Background Layer: Simulated "Personalized Learning Path" Dashboard (Blurred out) -->
+<div class="absolute inset-0 z-0 opacity-40 pointer-events-none select-none flex flex-col p-container-padding gap-section-margin pl-[calc(16rem+32px)]">
+<header class="flex justify-between items-center h-16 w-full max-w-[1440px] mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary">Lumina Learning</div>
+</header>
+<div class="flex max-w-[1440px] mx-auto w-full gap-gutter">
+<!-- Simulated Sidebar -->
+<div class="w-[280px] hidden lg:flex flex-col gap-2 p-6 bg-surface-container-lowest rounded-xl soft-shadow">
+<div class="h-10 bg-surface-variant rounded"></div>
+<div class="h-10 bg-surface-variant rounded"></div>
+<div class="h-10 bg-surface-variant rounded"></div>
+</div>
+<!-- Simulated Main Content -->
+<div class="flex-1 flex flex-col gap-card-gap">
+<div class="h-32 bg-surface-container-lowest rounded-xl soft-shadow w-full"></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-card-gap">
+<div class="h-64 bg-surface-container-lowest rounded-xl soft-shadow"></div>
+<div class="h-64 bg-surface-container-lowest rounded-xl soft-shadow"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Global Blur Overlay to dim the background -->
+<div class="absolute inset-0 z-10 bg-blur-overlay ml-64"></div>
+<!-- Main Active Canvas (Z-20) -->
+<main class="relative z-20 flex-1 flex flex-col items-center justify-center p-container-padding min-h-screen">
+<!-- Learning Card Container -->
+<div class="w-full max-w-2xl relative">
+<!-- Overall Progress Indicator (Above Card) -->
+<div class="flex items-center justify-between mb-4 px-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider" id="module-header-title">Module: Interactive Lesson</span>
+<span class="font-label-sm text-label-sm text-primary font-bold" id="step-progress-percent">In Progress</span>
+</div>
+<!-- The Learning Card -->
+<article class="bg-surface-container-lowest rounded-xl soft-shadow overflow-hidden flex flex-col relative transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
+<!-- Linear Progress Bar -->
+<div class="h-1 w-full bg-surface-variant relative">
+<div class="absolute top-0 left-0 h-full w-3/8 progress-gradient rounded-r-full" style="width: 50%;"></div>
+</div>
+<div class="p-8 flex flex-col gap-6">
+<!-- Card Header -->
+<header>
+<h2 class="font-label-sm text-label-sm text-secondary uppercase mb-2" id="lesson-card-index">Lesson Concept</h2>
+<h1 class="font-headline-lg text-headline-lg text-on-surface" id="lesson-card-title">Loading Lesson...</h1>
+</header>
+<!-- Card Body -->
+<div class="flex flex-col gap-4 text-on-surface-variant" id="lesson-card-body">
 <p class="font-body-md text-body-md">
-                            Here, <em>y</em> is the predicted value, <em>x</em> is our input feature, <em>m</em> is the slope (weight), and <em>c</em> is the y-intercept (bias).
+                            Loading AI Lesson content from backend...
                         </p>
-<!-- Simulated Diagram Placeholder -->
-<div class="w-full h-48 bg-surface-container rounded-lg border border-outline-variant flex items-center justify-center mt-2 relative overflow-hidden">
-<img class="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-multiply" data-alt="A clean, modern 2D line graph illustration showing a straight diagonal line passing through a scatter plot of data points on an x and y axis. The line is bold purple, the points are subtle dots. The style is minimalist corporate flat design, on a light background, suitable for an educational textbook." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB92TuHGfQZ6hAbm6W2Ws6krl6gjKMINViNDnoeiGcfqvXOomMilU4vV5uEBTdYmrueLSVAXIyMaHbC8keY2RKUBEm__RzFVc5_hhcnQ_Rc3ogm0S4AN58lqxnSXCvYjgkYYa-MBFYBfTHglBvOvbUgwqlFe-3SiQKWeJW5RxA7i7HzFuWAFut35OJ-rKQlcti9rQT8BT1cU8IQxcI12yzmuiNNXneNm3SgnbuHbvIDr65eHVt8efP8">
-<span class="material-symbols-outlined text-outline-variant text-4xl relative z-10">monitoring</span>
-</div>
 </div>
 </div>
 <!-- Card Footer (Navigation) -->
@@ -343,6 +526,11 @@
 <script src="./navigation.js?v=10"></script>
 <script>
 document.addEventListener("DOMContentLoaded", async function () {
+  const moduleHeaderTitle = document.getElementById("module-header-title");
+  const lessonCardTitle = document.getElementById("lesson-card-title");
+  const lessonCardIndex = document.getElementById("lesson-card-index");
+  const lessonCardBody = document.getElementById("lesson-card-body");
+
   const questionTextEl = document.getElementById("quiz-question-text");
   const optionsContainer = document.getElementById("quiz-options-container");
   const hintBtn = document.getElementById("hint-btn");
@@ -356,8 +544,10 @@ document.addEventListener("DOMContentLoaded", async function () {
   const stepIdFromUrl = urlParams.get("step_id");
 
   let activeStep = null;
+  let material = null;
   try {
     activeStep = JSON.parse(localStorage.getItem("lumina.activeStep"));
+    material = window.API?.storage?.getMaterial();
   } catch (e) {}
 
   const currentStepId = stepIdFromUrl || activeStep?.id || 1;
@@ -365,17 +555,60 @@ document.addEventListener("DOMContentLoaded", async function () {
   let selectedOptionId = null;
   let hintsUsed = 0;
 
-  // Load Real Quiz Question & Options from Backend
+  if (material && material.title) {
+    moduleHeaderTitle.textContent = `Module: ${material.title}`;
+  }
+
+  // Load Real ProgressLesson, Lesson Cards, and Quiz Question from Backend
   try {
     const res = await window.API.learning.getStepQuiz(currentStepId);
-    if (res.status === "success" && res.question) {
-      currentQuestion = res.question;
-      renderQuiz(currentQuestion);
-    } else {
-      showDefaultFallbackQuiz();
+    if (res.status === "success") {
+      if (res.step_title) {
+        lessonCardTitle.textContent = res.step_title;
+      }
+      if (res.lesson) {
+        renderLessonContent(res.lesson);
+      }
+      if (res.question) {
+        currentQuestion = res.question;
+        renderQuiz(currentQuestion);
+      }
     }
   } catch (err) {
-    showDefaultFallbackQuiz();
+    console.error("Failed to load step quiz/lesson", err);
+  }
+
+  function renderLessonContent(lesson) {
+    lessonCardBody.innerHTML = "";
+
+    if (lesson.explanation) {
+      const p = document.createElement("p");
+      p.className = "font-body-md text-body-md text-on-surface-variant leading-relaxed";
+      p.textContent = lesson.explanation;
+      lessonCardBody.appendChild(p);
+    }
+
+    if (lesson.example) {
+      const codeBox = document.createElement("div");
+      codeBox.className = "bg-primary/5 p-4 rounded-xl border border-primary/20 text-xs font-mono text-on-surface my-2 space-y-1";
+      codeBox.innerHTML = `<span class="text-primary font-bold block mb-1">💡 Example:</span> ${escapeHtml(lesson.example)}`;
+      lessonCardBody.appendChild(codeBox);
+    }
+
+    if (lesson.cards && lesson.cards.length > 0) {
+      lesson.cards.forEach((card) => {
+        const cardBox = document.createElement("div");
+        cardBox.className = "bg-surface-container-low p-4 rounded-xl border border-surface-variant/50 space-y-2 mt-2";
+        cardBox.innerHTML = `
+          <h4 class="font-bold text-on-surface text-sm flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-primary inline-block"></span>
+            ${escapeHtml(card.heading)}
+          </h4>
+          <p class="text-xs text-on-surface-variant leading-relaxed">${escapeHtml(card.body)}</p>
+        `;
+        lessonCardBody.appendChild(cardBox);
+      });
+    }
   }
 
   function renderQuiz(q) {
@@ -414,20 +647,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
   }
 
-  function showDefaultFallbackQuiz() {
-    currentQuestion = {
-      id: 1,
-      question_text: "In simple linear regression (y = mx + c), what does 'm' represent?",
-      explanation: "'m' represents the slope or weight parameter connecting feature x to output y.",
-      options: [
-        { id: 1, option_text: "The predicted output variable (y)" },
-        { id: 2, option_text: "The slope or weight parameter" },
-        { id: 3, option_text: "The y-intercept or bias term" }
-      ]
-    };
-    renderQuiz(currentQuestion);
-  }
-
   // Handle Hint Request
   hintBtn.addEventListener("click", async () => {
     if (!currentQuestion) return;
@@ -441,11 +660,11 @@ document.addEventListener("DOMContentLoaded", async function () {
         hintTextBox.innerHTML = `<strong>💡 Hint ${hintsUsed}:</strong> ${escapeHtml(res.hint)}`;
       } else {
         hintTextBox.classList.remove("hidden");
-        hintTextBox.innerHTML = `<strong>💡 Hint ${hintsUsed}:</strong> Pay attention to the coefficient attached to x.`;
+        hintTextBox.innerHTML = `<strong>💡 Hint ${hintsUsed}:</strong> Pay attention to the core concepts in this lesson.`;
       }
     } catch {
       hintTextBox.classList.remove("hidden");
-      hintTextBox.innerHTML = `<strong>💡 Hint ${hintsUsed}:</strong> Pay attention to the coefficient attached to x.`;
+      hintTextBox.innerHTML = `<strong>💡 Hint ${hintsUsed}:</strong> Pay attention to the core concepts in this lesson.`;
     }
   });
 
@@ -495,11 +714,11 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (res.needs_next_batch) {
         nextActionBtn.querySelector("span").textContent = "Generate Next Learning Batch";
         nextActionBtn.onclick = async () => {
-          const material = window.API?.storage?.getMaterial();
+          const mat = window.API?.storage?.getMaterial();
           const selectedConcepts = window.API?.storage?.getSelectedConcepts();
-          if (material && selectedConcepts) {
+          if (mat && selectedConcepts) {
             await window.API.learning.generatePath({
-              material_id: material.material_id,
+              material_id: mat.id || mat.material_id,
               concepts: selectedConcepts
             }).catch(() => {});
           }

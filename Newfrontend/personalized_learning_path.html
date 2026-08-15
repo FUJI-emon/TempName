@@ -281,7 +281,7 @@
 <script src="./api.js"></script>
 <script src="./navigation.js?v=10"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
   const pathTitle = document.getElementById("path-title");
   const pathSubtitle = document.getElementById("path-subtitle");
   const pathTreeContainer = document.getElementById("path-tree-container");
@@ -290,9 +290,29 @@ document.addEventListener("DOMContentLoaded", function () {
   const remainingStepsCount = document.getElementById("remaining-steps-count");
   const continueBtn = document.getElementById("continue-learning-btn");
 
-  const material = window.API?.storage?.getMaterial();
-  const pathData = window.API?.storage?.getLearningPath();
-  const selectedConcepts = window.API?.storage?.getSelectedConcepts();
+  const urlParams = new URLSearchParams(window.location.search);
+  const materialIdFromUrl = urlParams.get("material_id");
+  let material = window.API?.storage?.getMaterial();
+  let pathData = window.API?.storage?.getLearningPath();
+  let selectedConcepts = window.API?.storage?.getSelectedConcepts();
+
+  const matId = materialIdFromUrl || material?.id || material?.material_id || window.API?.storage?.getLastMaterialId();
+
+  if (matId && (!material || (materialIdFromUrl && material.id != materialIdFromUrl))) {
+    try {
+      const detailRes = await window.API.learning.getMaterialDetail(matId);
+      if (detailRes.status === "success") {
+        material = detailRes;
+        window.API.storage.setMaterial(detailRes);
+        if (detailRes.steps && detailRes.steps.length > 0) {
+          pathData = detailRes;
+          window.API.storage.setLearningPath(detailRes);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to load material detail for learning path", err);
+    }
+  }
 
   if (material && (material.title || material.goal_title)) {
     pathTitle.textContent = material.title || material.goal_title;
