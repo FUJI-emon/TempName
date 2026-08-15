@@ -1,0 +1,304 @@
+<!DOCTYPE html><html class="light" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Optimize Learning Path - Document Upload</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,100..900;1,100..900&amp;family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&amp;family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-fixed": "#310048",
+                      "on-primary": "#ffffff",
+                      "outline-variant": "#c7c4d7",
+                      "outline": "#777586",
+                      "surface-container-highest": "#e2e2e7",
+                      "secondary-fixed": "#f6d9ff",
+                      "surface-container": "#ededf2",
+                      "primary": "#4441cc",
+                      "secondary": "#9026c3",
+                      "on-secondary": "#ffffff",
+                      "primary-fixed": "#e2dfff",
+                      "tertiary-container": "#006dd6",
+                      "primary-fixed-dim": "#c2c1ff",
+                      "tertiary-fixed": "#d6e3ff",
+                      "surface-container-high": "#e8e8ed",
+                      "tertiary-fixed-dim": "#aac7ff",
+                      "on-primary-container": "#f4f1ff",
+                      "on-tertiary": "#ffffff",
+                      "surface-dim": "#d9dade",
+                      "tertiary": "#0055a9",
+                      "on-secondary-fixed-variant": "#7200a3",
+                      "on-primary-fixed": "#0c006b",
+                      "inverse-primary": "#c2c1ff",
+                      "error-container": "#ffdad6",
+                      "error": "#ba1a1a",
+                      "on-error": "#ffffff",
+                      "secondary-container": "#cb66fe",
+                      "background": "#f9f9fe",
+                      "surface-tint": "#4d4ad5",
+                      "on-surface-variant": "#464554",
+                      "primary-container": "#5e5ce6",
+                      "secondary-fixed-dim": "#e9b3ff",
+                      "inverse-on-surface": "#f0f0f5",
+                      "on-tertiary-container": "#f0f3ff",
+                      "surface-variant": "#e2e2e7",
+                      "surface-bright": "#f9f9fe",
+                      "on-secondary-container": "#4a006b",
+                      "on-background": "#1a1c1f",
+                      "on-tertiary-fixed": "#001b3e",
+                      "on-primary-fixed-variant": "#332dbc",
+                      "surface": "#f9f9fe",
+                      "inverse-surface": "#2e3034",
+                      "on-surface": "#1a1c1f",
+                      "on-tertiary-fixed-variant": "#00468d",
+                      "surface-container-lowest": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "surface-container-low": "#f3f3f8"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "section-margin": "48px",
+                      "base": "8px",
+                      "card-gap": "24px",
+                      "gutter": "24px",
+                      "container-padding": "32px"
+              },
+              "fontFamily": {
+                      "button": [
+                              "Manrope"
+                      ],
+                      "body-lg": [
+                              "Manrope"
+                      ],
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-sm": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Manrope"
+                      ],
+                      "display-lg": [
+                              "Hanken Grotesk"
+                      ]
+              },
+              "fontSize": {
+                      "button": [
+                              "16px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background min-h-screen text-on-background font-body-md antialiased overflow-x-hidden">
+<!-- SideNavBar Component -->
+<nav class="hidden md:flex flex-col h-full py-8 px-6 w-[280px] h-screen fixed left-0 top-0 shadow-lg dark:shadow-none bg-surface-container-lowest dark:bg-inverse-surface z-40 transition-all duration-200 ease-in-out">
+<!-- Brand Logo/Header -->
+<div class="mb-12 px-4 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary font-bold">
+                L
+            </div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">Lumina AI</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Enlightened Learning</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex flex-col gap-2 flex-grow">
+<!-- Active Tab Semantic Match: Dashboard (Closest fit for a setup/upload screen context) -->
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 ease-in-out text-primary dark:text-inverse-primary font-bold border-r-4 border-primary dark:border-inverse-primary bg-primary-fixed-dim/20 hover:bg-surface-container-high dark:hover:bg-on-surface-variant/10 hover:text-primary dark:hover:text-inverse-primary hover:-translate-y-1 duration-300 hover:shadow-lg" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 ease-in-out text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-on-surface-variant/10 hover:text-primary dark:hover:text-inverse-primary hover:-translate-y-1 duration-300 hover:shadow-lg" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-sm text-label-sm">Courses</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 ease-in-out text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-on-surface-variant/10 hover:text-primary dark:hover:text-inverse-primary hover:-translate-y-1 duration-300 hover:shadow-lg" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-label-sm text-label-sm">History</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 ease-in-out text-on-surface-variant dark:text-surface-variant hover:bg-surface-container-high dark:hover:bg-on-surface-variant/10 hover:text-primary dark:hover:text-inverse-primary hover:-translate-y-1 duration-300 hover:shadow-lg" href="#">
+<span class="material-symbols-outlined">psychology</span>
+<span class="font-label-sm text-label-sm">AI Tutor</span>
+</a>
+</div>
+<!-- CTA & Profile -->
+<div class="mt-auto flex flex-col gap-6">
+<button class="w-full py-3 px-4 rounded-lg bg-primary-container text-on-primary-container font-button text-button shadow-[0px_4px_20px_rgba(94,92,230,0.08)] hover:bg-primary transition-colors hover:-translate-y-1 transition-all duration-300 hover:shadow-lg">
+                Upgrade to Pro
+            </button>
+<div class="flex items-center gap-3 px-4 pt-4 border-t border-surface-container-high">
+<img class="w-10 h-10 rounded-full object-cover bg-surface-variant" data-alt="A small circular avatar placeholder image for a user profile in a clean, modern learning dashboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwU4S7Vbkr15xqvn7fxi6yTbxzsdW0RD4vKAvjINTI4GCl7DrmDCin_HIahaslEe9mQpMhzLgSEooSqk0GxFnjZvtnaWUp_Ei0UUH_EEf8kDlz3bflwmuSaHQt2euVYm0DPkaCtfaFEiMpmhVtbf90rmJsqqhL0pWFAtUVeRdZLwkmYIm8mFR-MTRz7BfaEnzG5qSBbnLXbQVXLN5akSDn2S6fKTSfDwpevrtC3Qrhih67-ROKh2mV">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface">Alex Student</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant opacity-80">Free Plan</span>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="md:ml-[280px] min-h-screen flex flex-col w-full max-w-[1440px] mx-auto">
+<!-- TopAppBar Component -->
+<header class="flex justify-between items-center w-full px-8 h-16 docked full-width top-0 sticky z-50 backdrop-blur-xl bg-surface/80 dark:bg-background/80 flat no shadows transition-opacity hover:opacity-80">
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full bg-surface-container-lowest shadow-[0px_4px_20px_rgba(94,92,230,0.08)] flex items-center justify-center text-on-surface hover:bg-surface-container-low transition-colors hover:-translate-y-1 transition-all duration-300 hover:shadow-lg">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<h2 class="font-headline-md text-headline-md font-bold text-on-background dark:text-on-surface">Document</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors hover:-translate-y-1 transition-all duration-300 hover:shadow-lg">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</header>
+<!-- Page Content -->
+<div class="flex-grow flex flex-col justify-center px-container-padding md:px-0 md:pr-24">
+<div class="w-full max-w-4xl bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(94,92,230,0.08)] p-8 md:p-12 mx-auto hover:-translate-y-1 transition-all duration-200">
+<!-- Header Text -->
+<div class="mb-10 text-center">
+<h1 class="font-headline-lg text-headline-lg text-on-primary-fixed-variant mb-4">optimize the learning path</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xl mx-auto">
+                        Would you like to upload documents so the AI can design a more personalized and suitable learning path?
+                    </p>
+</div>
+<!-- Document History Section -->
+<div class="mb-8">
+<h3 class="font-headline-md text-headline-md text-on-primary-fixed-variant text-lg mb-4 text-left">Document history</h3>
+<div class="flex flex-col border border-surface-container-highest rounded-lg overflow-hidden divide-y divide-surface-container-highest">
+<!-- History Item 1 -->
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer hover:-translate-y-1 transition-all duration-200 duration-300 hover:shadow-lg">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">description</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface font-medium">Firmware_v1.2.pdf</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">2.4 MB</span>
+</div>
+<!-- History Item 2 -->
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer hover:-translate-y-1 transition-all duration-200 duration-300 hover:shadow-lg">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">description</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface font-medium">Firmware_v2.0.pdf</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">3.1 MB</span>
+</div>
+<!-- History Item 3 -->
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer hover:-translate-y-1 transition-all duration-200 duration-300 hover:shadow-lg">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">description</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface font-medium">Module_3_notes.pdf</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">1.8 MB</span>
+</div>
+<!-- History Item 4 -->
+<div class="flex items-center justify-between p-4 bg-surface-container-lowest hover:bg-surface-container-low transition-colors cursor-pointer hover:-translate-y-1 transition-all duration-200 duration-300 hover:shadow-lg">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-primary-fixed-dim/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">description</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface font-medium">Lab_report_final.docx</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">4.6 MB</span>
+</div>
+</div>
+</div>
+<!-- Upload Drag & Drop Area -->
+<div class="mb-10 border-2 border-dashed border-primary/40 rounded-xl bg-surface-bright hover:bg-primary-fixed-dim/10 transition-colors p-8 flex flex-col items-center justify-center text-center cursor-pointer group">
+<div class="w-16 h-16 rounded-full bg-primary-fixed-dim/20 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">cloud_upload</span>
+</div>
+<span class="font-headline-md text-headline-md text-on-surface text-lg mb-2">click to upload file</span>
+<span class="font-label-sm text-label-sm text-outline">PDF, Word, PowerPoint (maximum 10MB)</span>
+</div>
+<!-- Footer Actions -->
+<div class="flex flex-col items-center gap-4">
+<button class="w-full py-4 px-6 rounded-full bg-primary text-on-primary font-button text-button shadow-[0px_4px_20px_rgba(94,92,230,0.15)] hover:bg-on-primary-fixed-variant transition-all hover:shadow-[0px_6px_24px_rgba(94,92,230,0.25)] flex items-center justify-center gap-2 hover:-translate-y-1">
+<span class="material-symbols-outlined">upload</span>
+                        upload
+                    </button>
+<button class="font-button text-button text-on-surface-variant hover:text-primary transition-colors py-2 px-4 rounded-lg hover:bg-surface-container-low hover:-translate-y-1 transition-all duration-300 hover:shadow-lg">
+                        skip
+                    </button>
+</div>
+</div>
+</div>
+</main>
+
+
+
+
+<script src="./navigation.js?v=10"></script>
+</body></html>

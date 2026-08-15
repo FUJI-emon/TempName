@@ -1,0 +1,262 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Lumina Learning - Final Test Result</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Manrope:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed": "#001b3e",
+                        "on-tertiary-container": "#f0f3ff",
+                        "surface-variant": "#e2e2e7",
+                        "secondary-fixed": "#f6d9ff",
+                        "on-tertiary-fixed-variant": "#00468d",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#7200a3",
+                        "on-primary-container": "#f4f1ff",
+                        "primary-fixed-dim": "#c2c1ff",
+                        "secondary": "#9026c3",
+                        "secondary-container": "#cb66fe",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-highest": "#e2e2e7",
+                        "surface-container-high": "#e8e8ed",
+                        "inverse-primary": "#c2c1ff",
+                        "outline": "#777586",
+                        "surface-bright": "#f9f9fe",
+                        "error": "#ba1a1a",
+                        "on-surface": "#1a1c1f",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#ededf2",
+                        "on-primary-fixed-variant": "#332dbc",
+                        "surface-container-low": "#f3f3f8",
+                        "surface-dim": "#d9dade",
+                        "tertiary": "#0055a9",
+                        "on-primary-fixed": "#0c006b",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#2e3034",
+                        "surface": "#f9f9fe",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed": "#310048",
+                        "inverse-on-surface": "#f0f0f5",
+                        "tertiary-fixed": "#d6e3ff",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#1a1c1f",
+                        "tertiary-fixed-dim": "#aac7ff",
+                        "primary-fixed": "#e2dfff",
+                        "primary": "#4441cc",
+                        "background": "#f9f9fe",
+                        "tertiary-container": "#006dd6",
+                        "primary-container": "#5e5ce6",
+                        "secondary-fixed-dim": "#e9b3ff",
+                        "on-secondary-container": "#4a006b",
+                        "on-surface-variant": "#464554",
+                        "surface-tint": "#4d4ad5",
+                        "outline-variant": "#c7c4d7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "section-margin": "48px",
+                        "base": "8px",
+                        "container-padding": "32px",
+                        "card-gap": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-lg": ["Manrope"],
+                        "label-sm": ["JetBrains Mono"],
+                        "button": ["Manrope"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "button": ["16px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; background-color: #F8F9FE; color: #1a1c1f; }
+        h1, h2, h3, h4, h5, h6, .font-headline-md, .font-display-lg, .font-headline-lg { font-family: 'Hanken Grotesk', sans-serif; }
+        .font-label-sm { font-family: 'JetBrains Mono', monospace; }
+        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.5); }
+        .shadow-soft { box-shadow: 0px 4px 20px rgba(94, 92, 230, 0.08); }
+        .shadow-active { box-shadow: 0px 0px 0px 2px #4441cc, 0px 4px 20px rgba(94, 92, 230, 0.15); }
+        .gradient-text { background: linear-gradient(135deg, #4441cc 0%, #9026c3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    </style>
+</head>
+<body class="bg-background min-h-screen flex flex-col items-center py-section-margin px-container-padding">
+<!-- Header Section -->
+<header class="text-center mb-section-margin w-full max-w-4xl mx-auto">
+<h1 class="font-display-lg text-display-lg mb-base flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">celebration</span>
+            Lesson Complete
+        </h1>
+<h2 class="font-headline-md text-headline-md text-on-surface-variant mb-6">Linear Regression</h2>
+<div class="glass-panel shadow-soft rounded-2xl p-8 max-w-lg mx-auto relative overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+<!-- Decorative background blur -->
+<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-10 -left-10 w-32 h-32 bg-secondary/20 rounded-full blur-3xl pointer-events-none"></div>
+<div class="relative z-10 flex flex-col items-center">
+<div class="text-[64px] font-bold font-headline-lg leading-none gradient-text mb-2 tracking-tighter">80%</div>
+<div class="font-button text-button text-on-surface-variant bg-surface-container-low px-4 py-1.5 rounded-full mb-6 flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[#10b981]"></span> 4 Correct 
+                     <span class="w-2 h-2 rounded-full bg-error ml-2"></span> 1 Incorrect
+                </div>
+<p class="font-body-md text-body-md text-center text-on-surface">Great job! You have completed the final test for this lesson and are ready to move forward.</p>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="w-full max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Question Review List -->
+<section class="lg:col-span-5 flex flex-col gap-4">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Question Review</h3>
+<!-- Q1 -->
+<button class="w-full text-left bg-surface-container-lowest shadow-soft rounded-xl p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors group hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full bg-[#10b981]/10 flex items-center justify-center text-[#10b981]">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<div class="font-button text-button text-on-surface">Question 1</div>
+<div class="font-label-sm text-label-sm text-[#10b981]">Correct</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
+</button>
+<!-- Q2 -->
+<button class="w-full text-left bg-surface-container-lowest shadow-soft rounded-xl p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors group hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full bg-[#10b981]/10 flex items-center justify-center text-[#10b981]">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<div class="font-button text-button text-on-surface">Question 2</div>
+<div class="font-label-sm text-label-sm text-[#10b981]">Correct</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
+</button>
+<!-- Q3 (Active/Incorrect) -->
+<button class="w-full text-left bg-surface-container-lowest shadow-active rounded-xl p-4 flex items-center justify-between relative overflow-hidden group hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="flex items-center gap-4 pl-2">
+<div class="w-8 h-8 rounded-full bg-error/10 flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">cancel</span>
+</div>
+<div>
+<div class="font-button text-button text-on-surface">Question 3</div>
+<div class="font-label-sm text-label-sm text-error">Incorrect</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary">chevron_right</span>
+</button>
+<!-- Q4 -->
+<button class="w-full text-left bg-surface-container-lowest shadow-soft rounded-xl p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors group hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full bg-[#10b981]/10 flex items-center justify-center text-[#10b981]">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<div class="font-button text-button text-on-surface">Question 4</div>
+<div class="font-label-sm text-label-sm text-[#10b981]">Correct</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
+</button>
+<!-- Q5 -->
+<button class="w-full text-left bg-surface-container-lowest shadow-soft rounded-xl p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors group hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+<div class="flex items-center gap-4">
+<div class="w-8 h-8 rounded-full bg-[#10b981]/10 flex items-center justify-center text-[#10b981]">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<div class="font-button text-button text-on-surface">Question 5</div>
+<div class="font-label-sm text-label-sm text-[#10b981]">Correct</div>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
+</button>
+</section>
+<!-- Detail Review Panel -->
+<section class="lg:col-span-7 h-full">
+<div class="bg-surface-container-lowest shadow-soft rounded-2xl p-8 h-full flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary text-2xl">menu_book</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Question 3 Review</h3>
+</div>
+<div class="bg-surface-container-low rounded-xl p-6 mb-card-gap">
+<p class="font-body-lg text-body-lg text-on-surface mb-2 font-medium">What is the primary goal of minimizing the cost function in linear regression?</p>
+</div>
+<div class="space-y-4 mb-8 flex-grow">
+<!-- User's Incorrect Answer -->
+<div class="border border-error/30 bg-error/5 rounded-xl p-4 flex items-start gap-4">
+<div class="mt-1 text-error">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">cancel</span>
+</div>
+<div>
+<div class="font-label-sm text-label-sm text-error mb-1 uppercase tracking-wider">Your Answer</div>
+<div class="font-body-md text-body-md text-on-surface">A) To increase the slope</div>
+</div>
+</div>
+<!-- Correct Answer -->
+<div class="border border-[#10b981]/30 bg-[#10b981]/5 rounded-xl p-4 flex items-start gap-4">
+<div class="mt-1 text-[#10b981]">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<div class="font-label-sm text-label-sm text-[#10b981] mb-1 uppercase tracking-wider">Correct Answer</div>
+<div class="font-body-md text-body-md text-on-surface">B) To find the line of best fit</div>
+</div>
+</div>
+</div>
+<!-- AI Actions -->
+<div class="flex flex-col sm:flex-row gap-4 mt-auto pt-6 border-t border-surface-variant">
+<button class="flex-1 flex items-center justify-center gap-2 bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors font-button text-button py-3 px-6 rounded-lg shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+<span class="material-symbols-outlined text-xl">record_voice_over</span>
+                        Hear AI Explanation
+                    </button>
+<button class="flex-1 flex items-center justify-center gap-2 border-2 border-primary text-primary hover:bg-primary/5 transition-colors font-button text-button py-3 px-6 rounded-lg hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+<span class="material-symbols-outlined text-xl">smart_toy</span>
+                        Ask AI about this
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Primary Action Buttons -->
+<footer class="w-full max-w-[1200px] mx-auto mt-section-margin flex flex-col sm:flex-row-reverse items-center justify-center gap-4 pt-8 border-t border-surface-variant">
+<button class="w-full sm:w-auto bg-primary text-on-primary hover:bg-primary/90 transition-colors font-button text-button py-4 px-8 rounded-xl shadow-md hover:shadow-lg flex items-center justify-center gap-2 text-lg hover:-translate-y-1 transition-all duration-300">
+            Continue to Next Lesson
+            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+<button class="w-full sm:w-auto text-primary hover:bg-primary/5 transition-colors font-button text-button py-4 px-8 rounded-xl flex items-center justify-center gap-2 text-lg hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+<span class="material-symbols-outlined">refresh</span>
+            Review Mistakes
+        </button>
+</footer>
+
+
+<script src="./navigation.js?v=10"></script>
+</body></html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Lumina Learning - Linear Regression</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Manrope:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "inverse-primary": "#c2c1ff",
+                      "on-secondary-container": "#4a006b",
+                      "tertiary-fixed": "#d6e3ff",
+                      "on-surface-variant": "#464554",
+                      "primary-fixed-dim": "#c2c1ff",
+                      "surface-variant": "#e2e2e7",
+                      "surface-tint": "#4d4ad5",
+                      "error": "#ba1a1a",
+                      "inverse-on-surface": "#f0f0f5",
+                      "background": "#f9f9fe",
+                      "on-tertiary-container": "#f0f3ff",
+                      "surface": "#f9f9fe",
+                      "primary-container": "#5e5ce6",
+                      "tertiary-container": "#006dd6",
+                      "on-error": "#ffffff",
+                      "outline": "#777586",
+                      "on-background": "#1a1c1f",
+                      "on-tertiary-fixed-variant": "#00468d",
+                      "secondary-fixed-dim": "#e9b3ff",
+                      "surface-dim": "#d9dade",
+                      "surface-container-low": "#f3f3f8",
+                      "surface-bright": "#f9f9fe",
+                      "on-primary-fixed": "#0c006b",
+                      "surface-container": "#ededf2",
+                      "primary-fixed": "#e2dfff",
+                      "on-primary-fixed-variant": "#332dbc",
+                      "surface-container-lowest": "#ffffff",
+                      "secondary-fixed": "#f6d9ff",
+                      "tertiary-fixed-dim": "#aac7ff",
+                      "on-secondary-fixed-variant": "#7200a3",
+                      "secondary-container": "#cb66fe",
+                      "on-secondary-fixed": "#310048",
+                      "outline-variant": "#c7c4d7",
+                      "surface-container-highest": "#e2e2e7",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-container": "#f4f1ff",
+                      "tertiary": "#0055a9",
+                      "on-error-container": "#93000a",
+                      "on-secondary": "#ffffff",
+                      "on-surface": "#1a1c1f",
+                      "error-container": "#ffdad6",
+                      "secondary": "#9026c3",
+                      "inverse-surface": "#2e3034",
+                      "surface-container-high": "#e8e8ed",
+                      "on-tertiary-fixed": "#001b3e",
+                      "primary": "#4441cc",
+                      "on-primary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "section-margin": "48px",
+                      "gutter": "24px",
+                      "container-padding": "32px",
+                      "base": "8px",
+                      "card-gap": "24px"
+              },
+              "fontFamily": {
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "display-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-sm": [
+                              "JetBrains Mono"
+                      ],
+                      "body-md": [
+                              "Manrope"
+                      ],
+                      "button": [
+                              "Manrope"
+                      ],
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-lg": [
+                              "Manrope"
+                      ]
+              },
+              "fontSize": {
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "button": [
+                              "16px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); color: theme('colors.on-surface'); }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 20px rgba(94, 92, 230, 0.08);
+        }
+        .progress-gradient {
+            background: linear-gradient(90deg, theme('colors.primary'), theme('colors.secondary'));
+        }
+        /* Background blur effect */
+        .bg-blur-overlay {
+            backdrop-filter: blur(8px);
+            background-color: rgba(249, 249, 254, 0.6); /* background color with opacity */
+        }
+    </style>
+</head>
+<body class="min-h-screen relative overflow-hidden font-body-md text-body-md flex antialiased">
+<!-- Side Navigation -->
+<nav class="w-64 flex flex-col justify-between h-screen bg-surface-container-lowest border-r border-outline-variant/30 py-6 px-4 relative z-30 shrink-0 soft-shadow">
+<div class="flex flex-col gap-8">
+<div class="px-4 font-headline-md text-headline-md font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="lightbulb">lightbulb</span>
+            Lumina
+        </div>
+<div class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span> My Courses
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span> AI Tutor
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span> Settings
+            </a>
+</div>
+</div>
+<div class="flex items-center gap-3 px-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold">AL</div>
+<div class="flex flex-col">
+<span class="font-button text-button text-on-surface">Alex Learner</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Pro Plan</span>
+</div>
+</div>
+</nav>
+<!-- Background Layer: Simulated "Personalized Learning Path" Dashboard (Blurred out) -->
+<div class="absolute inset-0 z-0 opacity-40 pointer-events-none select-none flex flex-col p-container-padding gap-section-margin pl-[calc(16rem+32px)]">
+<header class="flex justify-between items-center h-16 w-full max-w-[1440px] mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary">Lumina Learning</div>
+</header>
+<div class="flex max-w-[1440px] mx-auto w-full gap-gutter">
+<!-- Simulated Sidebar -->
+<div class="w-[280px] hidden lg:flex flex-col gap-2 p-6 bg-surface-container-lowest rounded-xl soft-shadow">
+<div class="h-10 bg-surface-variant rounded"></div>
+<div class="h-10 bg-surface-variant rounded"></div>
+<div class="h-10 bg-surface-variant rounded"></div>
+</div>
+<!-- Simulated Main Content -->
+<div class="flex-1 flex flex-col gap-card-gap">
+<div class="h-32 bg-surface-container-lowest rounded-xl soft-shadow w-full"></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-card-gap">
+<div class="h-64 bg-surface-container-lowest rounded-xl soft-shadow"></div>
+<div class="h-64 bg-surface-container-lowest rounded-xl soft-shadow"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Global Blur Overlay to dim the background -->
+<div class="absolute inset-0 z-10 bg-blur-overlay ml-64"></div>
+<!-- Main Active Canvas (Z-20) -->
+<main class="relative z-20 flex-1 flex flex-col items-center justify-center p-container-padding min-h-screen">
+<!-- Learning Card Container -->
+<div class="w-full max-w-2xl relative">
+<!-- Overall Progress Indicator (Above Card) -->
+<div class="flex items-center justify-between mb-4 px-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Module: Linear Regression</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">38% Complete</span>
+</div>
+<!-- The Learning Card -->
+<article class="bg-surface-container-lowest rounded-xl soft-shadow overflow-hidden flex flex-col relative transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
+<!-- Linear Progress Bar -->
+<div class="h-1 w-full bg-surface-variant relative">
+<div class="absolute top-0 left-0 h-full w-3/8 progress-gradient rounded-r-full" style="width: 37.5%;"></div>
+</div>
+<div class="p-8 flex flex-col gap-6">
+<!-- Card Header -->
+<header>
+<h2 class="font-label-sm text-label-sm text-secondary uppercase mb-2">Card 3 / 8</h2>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">The Hypothesis Function</h1>
+</header>
+<!-- Card Body -->
+<div class="flex flex-col gap-4 text-on-surface-variant">
+<p class="font-body-md text-body-md">
+                            In simple linear regression, we try to draw a straight line that best fits our data. This line is defined by the <strong>Hypothesis Function</strong>.
+                        </p>
+<!-- Equation Callout -->
+<div class="bg-primary-fixed/20 p-4 rounded-lg flex items-center justify-center my-2 border border-primary-fixed">
+<span class="font-display-lg text-display-lg text-on-primary-fixed-variant italic">y = mx + c</span>
+</div>
+<p class="font-body-md text-body-md">
+                            Here, <em>y</em> is the predicted value, <em>x</em> is our input feature, <em>m</em> is the slope (weight), and <em>c</em> is the y-intercept (bias).
+                        </p>
+<!-- Simulated Diagram Placeholder -->
+<div class="w-full h-48 bg-surface-container rounded-lg border border-outline-variant flex items-center justify-center mt-2 relative overflow-hidden">
+<img class="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-multiply" data-alt="A clean, modern 2D line graph illustration showing a straight diagonal line passing through a scatter plot of data points on an x and y axis. The line is bold purple, the points are subtle dots. The style is minimalist corporate flat design, on a light background, suitable for an educational textbook." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB92TuHGfQZ6hAbm6W2Ws6krl6gjKMINViNDnoeiGcfqvXOomMilU4vV5uEBTdYmrueLSVAXIyMaHbC8keY2RKUBEm__RzFVc5_hhcnQ_Rc3ogm0S4AN58lqxnSXCvYjgkYYa-MBFYBfTHglBvOvbUgwqlFe-3SiQKWeJW5RxA7i7HzFuWAFut35OJ-rKQlcti9rQT8BT1cU8IQxcI12yzmuiNNXneNm3SgnbuHbvIDr65eHVt8efP8">
+<span class="material-symbols-outlined text-outline-variant text-4xl relative z-10">monitoring</span>
+</div>
+</div>
+</div>
+<!-- Card Footer (Navigation) -->
+<footer class="p-6 border-t border-surface-variant flex justify-between items-center bg-surface-bright">
+<button class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-surface-container-low rounded-lg transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+                        Previous
+                    </button>
+<button class="flex items-center gap-2 px-6 py-2 bg-primary text-on-primary rounded-lg shadow-sm hover:shadow-md transition-shadow font-button text-button hover:-translate-y-1 duration-300">
+                        Next
+                        <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</footer>
+</article>
+<!-- Overlay Checkpoint Popup (Messenger Style) -->
+<div class="absolute -right-12 top-24 w-[360px] glass-panel rounded-xl shadow-2xl p-5 flex flex-col gap-4 border border-outline-variant/30 z-30 animate-fade-in-up hover:-translate-y-1 transition-transform duration-300">
+<!-- AI Header -->
+<div class="flex items-center gap-3 border-b border-surface-variant/50 pb-3">
+<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-on-primary-container" data-icon="smart_toy">smart_toy</span>
+</div>
+<div class="flex-1">
+<h3 class="font-button text-button text-on-surface">Knowledge Check</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Lumina AI Tutor</p>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+</div>
+<!-- Question -->
+<div class="bg-primary/5 p-4 rounded-lg rounded-tl-none border border-primary/10">
+<p class="font-body-md text-body-md text-on-surface">
+                        Before we move on: In the equation <strong>y = mx + c</strong>, what does <strong>"m"</strong> represent?
+                    </p>
+</div>
+<!-- Multiple Choice Options -->
+<div class="flex flex-col gap-2">
+<button class="text-left p-3 rounded-lg border border-outline-variant hover:border-primary hover:bg-primary/5 transition-colors font-body-md text-body-md text-on-surface flex items-center gap-3 group hover:-translate-y-1 hover:shadow-sm duration-300">
+<div class="w-5 h-5 rounded-full border border-outline group-hover:border-primary flex items-center justify-center"></div>
+                        The predicted output
+                    </button>
+<button class="text-left p-3 rounded-lg border border-outline-variant hover:border-primary hover:bg-primary/5 transition-colors font-body-md text-body-md text-on-surface flex items-center gap-3 group hover:-translate-y-1 hover:shadow-sm duration-300">
+<div class="w-5 h-5 rounded-full border border-outline group-hover:border-primary flex items-center justify-center"></div>
+                        The slope or weight
+                    </button>
+<button class="text-left p-3 rounded-lg border border-outline-variant hover:border-primary hover:bg-primary/5 transition-colors font-body-md text-body-md text-on-surface flex items-center gap-3 group hover:-translate-y-1 hover:shadow-sm duration-300">
+<div class="w-5 h-5 rounded-full border border-outline group-hover:border-primary flex items-center justify-center"></div>
+                        The y-intercept or bias
+                    </button>
+</div>
+<!-- Hints Indicator -->
+<div class="flex justify-between items-center mt-2 pt-2 border-t border-surface-variant/50">
+<span class="font-label-sm text-label-sm text-secondary flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="lightbulb">lightbulb</span>
+                        Hints: 3/3 remaining
+                    </span>
+<button class="font-label-sm text-label-sm text-primary hover:underline font-medium">
+                        Need help?
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<style>
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+
+
+<script src="./navigation.js?v=10"></script>
+</body></html>

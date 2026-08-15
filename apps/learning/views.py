@@ -1,5 +1,8 @@
 import json
-from django.http import JsonResponse
+from pathlib import Path
+
+from django.conf import settings
+from django.http import Http404, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
@@ -10,17 +13,51 @@ from apps.learning.models import LearningMaterial, UsersUser
 from apps.learning.services import LearningApplicationService
 
 
+FRONTEND_DIR = Path(settings.BASE_DIR) / "Newfrontend"
+FRONTEND_PAGES = {
+    "course_history_my_learning_journeys_1.html",
+    "final_test_ai_review_conversation.html",
+    "final_test_full_screen_question_review.html",
+    "final_test_result_summary_review.html",
+    "interactive_lesson_linear_regression_with_sidebar.html",
+    "lumina_learning_landing_page.html",
+    "lumina_learning_login_screen.html",
+    "lumina_learning_upload_document_desktop.html",
+    "new_course_ai_topic_discussion.html",
+    "personalized_learning_path.html",
+    "review_document_content_selection.html",
+    "settings_user_account_preferences.html",
+    "student_dashboard_overview.html",
+}
+
+
+def _serve_newfrontend_file(filename: str, content_type: str = "text/html; charset=utf-8"):
+    if filename not in FRONTEND_PAGES and filename != "navigation.js":
+        raise Http404("Frontend page not found")
+
+    file_path = FRONTEND_DIR / filename
+    if not file_path.exists():
+        raise Http404("Frontend page not found")
+
+    body = file_path.read_text(encoding="utf-8", errors="ignore")
+    if content_type.startswith("text/html") and "<body" in body and 'data-page=' not in body:
+        body = body.replace("<body", f'<body data-page="{filename}"', 1)
+
+    response = HttpResponse(body, content_type=content_type)
+    response["Cache-Control"] = "no-store"
+    return response
+
+
 def index(request):
-    """
-    Homepage view for the learning app.
-    Displays project educational vision and current registered learning materials.
-    """
-    materials = LearningMaterial.objects.prefetch_related("goals").all()
-    context = {
-        "title": "AI cùng học tập — Level-up App",
-        "materials": materials,
-    }
-    return render(request, "learning/index.html", context)
+    return _serve_newfrontend_file("lumina_learning_landing_page.html")
+
+
+def frontend_page(request, page_name):
+    return _serve_newfrontend_file(page_name)
+
+
+def frontend_navigation_js(request):
+    return _serve_newfrontend_file("navigation.js", content_type="application/javascript; charset=utf-8")
 
 
 @csrf_exempt

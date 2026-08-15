@@ -1,0 +1,333 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Lumina AI - AI Tutor Chat</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Manrope:wght@400;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#aac7ff",
+                    "secondary": "#9026c3",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-dim": "#d9dade",
+                    "on-error-container": "#93000a",
+                    "on-tertiary": "#ffffff",
+                    "on-primary-fixed-variant": "#332dbc",
+                    "surface-bright": "#f9f9fe",
+                    "secondary-container": "#cb66fe",
+                    "outline-variant": "#c7c4d7",
+                    "inverse-on-surface": "#f0f0f5",
+                    "tertiary-container": "#006dd6",
+                    "error": "#ba1a1a",
+                    "on-secondary-fixed-variant": "#7200a3",
+                    "tertiary-fixed": "#d6e3ff",
+                    "surface-tint": "#4d4ad5",
+                    "tertiary": "#0055a9",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed": "#0c006b",
+                    "surface-container": "#ededf2",
+                    "primary-container": "#5e5ce6",
+                    "surface-container-highest": "#e2e2e7",
+                    "on-secondary-container": "#4a006b",
+                    "surface": "#f9f9fe",
+                    "surface-container-low": "#f3f3f8",
+                    "on-tertiary-fixed": "#001b3e",
+                    "surface-variant": "#e2e2e7",
+                    "on-tertiary-fixed-variant": "#00468d",
+                    "outline": "#777586",
+                    "secondary-fixed-dim": "#e9b3ff",
+                    "primary-fixed": "#e2dfff",
+                    "primary": "#4441cc",
+                    "secondary-fixed": "#f6d9ff",
+                    "on-background": "#1a1c1f",
+                    "primary-fixed-dim": "#c2c1ff",
+                    "surface-container-high": "#e8e8ed",
+                    "on-surface": "#1a1c1f",
+                    "on-tertiary-container": "#f0f3ff",
+                    "on-surface-variant": "#464554",
+                    "inverse-primary": "#c2c1ff",
+                    "on-secondary-fixed": "#310048",
+                    "on-error": "#ffffff",
+                    "background": "#f9f9fe",
+                    "on-secondary": "#ffffff",
+                    "inverse-surface": "#2e3034",
+                    "on-primary-container": "#f4f1ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "gutter": "24px",
+                    "container-padding": "32px",
+                    "card-gap": "24px",
+                    "section-margin": "48px"
+            },
+            "fontFamily": {
+                    "headline-md": [
+                            "Hanken Grotesk"
+                    ],
+                    "body-lg": [
+                            "Manrope"
+                    ],
+                    "body-md": [
+                            "Manrope"
+                    ],
+                    "label-sm": [
+                            "JetBrains Mono"
+                    ],
+                    "display-lg": [
+                            "Hanken Grotesk"
+                    ],
+                    "headline-lg": [
+                            "Hanken Grotesk"
+                    ],
+                    "button": [
+                            "Manrope"
+                    ]
+            },
+            "fontSize": {
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-sm": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "56px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "button": [
+                            "16px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+          }
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #F8F9FE; /* background_page Surface Level 0 */
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .chat-ai-bg {
+            background-color: rgba(94, 92, 230, 0.05); /* Subtle indigo tint */
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-background h-screen w-screen overflow-hidden flex selection:bg-primary-container selection:text-on-primary-container">
+<!-- Desktop Side Navigation Shell -->
+<nav class="hidden md:flex flex-col h-full py-8 px-6 bg-surface-container-lowest shadow-[0px_4px_20px_rgba(94,92,230,0.08)] fixed left-0 top-0 w-[280px] z-50">
+<!-- Brand Header -->
+<div class="mb-12">
+<h1 class="font-display-lg text-headline-md text-primary tracking-tight">Lumina AI</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Enlightened Learning</p>
+</div>
+<!-- Navigation Links -->
+<div class="flex-1 space-y-2 flex flex-col">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-body-md hover:bg-surface-container transition-colors duration-200 hover:-translate-y-1 hover:shadow-md transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-body-md hover:bg-surface-container transition-colors duration-200 hover:-translate-y-1 hover:shadow-md transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="">My Courses</span>
+</a>
+<!-- Active Tab: AI Tutor -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary font-bold border-r-4 border-primary bg-primary-container/10 transition-transform duration-150 scale-95 hover:-translate-y-1 hover:shadow-md transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="psychology" data-weight="fill" style="font-variation-settings: 'FILL' 1;">psychology</span>
+<span class="">AI Tutor</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-body-md hover:bg-surface-container transition-colors duration-200 hover:-translate-y-1 hover:shadow-md transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="folder_open">folder_open</span>
+<span class="">Resources</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant font-body-md hover:bg-surface-container transition-colors duration-200 hover:-translate-y-1 hover:shadow-md transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="">Settings</span>
+</a>
+</div>
+<!-- CTA & Footer -->
+<div class="mt-auto space-y-4 pt-8">
+<button class="w-full py-3 px-4 bg-primary text-on-primary font-button text-button rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 hover:-translate-y-1 transition-all duration-300 hover:shadow-lg">
+                Upgrade to Pro
+            </button>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant font-body-md hover:bg-surface-container transition-colors duration-200 hover:-translate-y-1 hover:shadow-sm transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="help">help</span>
+<span class="font-label-sm text-label-sm">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant font-body-md hover:bg-surface-container transition-colors duration-200 hover:-translate-y-1 hover:shadow-sm transition-all duration-300" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="logout">logout</span>
+<span class="font-label-sm text-label-sm">Logout</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-[280px] h-full flex flex-col relative max-w-[1440px] mx-auto w-full">
+<!-- Mobile Header Overlay (if accessed on small screens) -->
+<header class="md:hidden sticky top-0 w-full z-40 bg-surface/80 backdrop-blur-xl h-20 flex justify-between items-center px-6">
+<h1 class="font-display-lg text-headline-lg text-primary tracking-tight">Lumina AI</h1>
+<button class="text-on-surface-variant p-2 rounded-full hover:bg-surface-container">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</header>
+<!-- Chat Container -->
+<div class="flex-1 overflow-y-auto px-container-padding py-section-margin pb-32 flex flex-col items-center">
+<div class="w-full max-w-3xl space-y-8 flex flex-col">
+<!-- Initial AI Greeting & Suggestions -->
+<div class="flex flex-col items-center text-center space-y-6 mt-12 mb-12">
+<div class="w-20 h-20 rounded-full bg-primary-container/20 flex items-center justify-center border-2 border-primary/10 shadow-sm">
+<span class="material-symbols-outlined text-4xl text-primary" data-icon="psychology">psychology</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-background mb-2">What would you like to learn today?</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg mx-auto">Start a new study session or pick up where we left off. I'm ready when you are.</p>
+</div>
+<!-- Suggestion Chips -->
+<div class="flex flex-wrap justify-center gap-4 mt-6">
+<button class="px-5 py-2.5 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-body-md hover:border-primary hover:text-primary hover:shadow-sm transition-all duration-200 flex items-center gap-2 hover:-translate-y-1 hover:shadow-md duration-300 hover:shadow-lg">
+<span class="material-symbols-outlined text-sm" data-icon="science">science</span>
+                            Quantum Mechanics
+                        </button>
+<button class="px-5 py-2.5 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-body-md hover:border-primary hover:text-primary hover:shadow-sm transition-all duration-200 flex items-center gap-2 hover:-translate-y-1 hover:shadow-md duration-300 hover:shadow-lg">
+<span class="material-symbols-outlined text-sm" data-icon="experiment">experiment</span>
+                            Organic Chemistry
+                        </button>
+<button class="px-5 py-2.5 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-body-md hover:border-primary hover:text-primary hover:shadow-sm transition-all duration-200 flex items-center gap-2 hover:-translate-y-1 hover:shadow-md duration-300 hover:shadow-lg">
+<span class="material-symbols-outlined text-sm" data-icon="data_exploration">data_exploration</span>
+                            Data Science
+                        </button>
+</div>
+</div>
+<!-- Example of an ongoing conversation block (Hidden by default in a new session, shown for UI completeness) -->
+<!-- User Message -->
+<div class="flex justify-end w-full">
+<div class="max-w-[80%] bg-surface-container-lowest p-6 rounded-2xl rounded-tr-sm shadow-[0px_4px_20px_rgba(94,92,230,0.08)] border border-surface-variant/50 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+<p class="font-body-md text-on-surface">I'd like to start with Data Science, specifically focusing on building a simple linear regression model in Python.</p>
+</div>
+</div>
+<!-- AI Message -->
+<div class="flex justify-start w-full gap-4">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center mt-1 border border-primary/10">
+<span class="material-symbols-outlined text-[20px] text-primary" data-icon="psychology">psychology</span>
+</div>
+<div class="max-w-[85%] chat-ai-bg p-6 rounded-2xl rounded-tl-sm shadow-[0px_4px_20px_rgba(94,92,230,0.08)] border border-primary/10 space-y-4 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+<p class="font-body-md text-on-surface">Excellent choice! Linear regression is a foundational algorithm in Data Science.</p>
+<p class="font-body-md text-on-surface">Before we dive into the Python code using `scikit-learn`, let's make sure we understand the core concept. In simple terms, linear regression tries to draw the "best fit" straight line through a set of data points to predict a continuous outcome.</p>
+<!-- AI Learning Card inside chat -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 mt-4 hover:-translate-y-1 hover:shadow-md transition-all duration-300 hover:shadow-lg">
+<div class="flex items-center gap-3 mb-3">
+<span class="material-symbols-outlined text-primary" data-icon="lightbulb">lightbulb</span>
+<h4 class="font-headline-md text-body-lg font-semibold text-on-surface">Core Concept Check</h4>
+</div>
+<p class="font-body-md text-on-surface-variant mb-4">Are you familiar with the terms "independent variable" (features) and "dependent variable" (target)?</p>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-primary/10 text-primary font-button text-button rounded-lg hover:bg-primary/20 transition-colors hover:-translate-y-1 hover:shadow-md transition-all duration-300">Yes, I know them</button>
+<button class="px-4 py-2 border border-outline-variant text-on-surface-variant font-button text-button rounded-lg hover:bg-surface-container transition-colors hover:-translate-y-1 hover:shadow-md transition-all duration-300">Explain briefly</button>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Thinking Indicator -->
+<div class="flex justify-start w-full gap-4 opacity-70">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center mt-1">
+<span class="material-symbols-outlined text-[20px] text-primary/50" data-icon="psychology">psychology</span>
+</div>
+<div class="flex items-center p-4">
+<p class="font-label-sm text-label-sm text-primary animate-pulse flex items-center gap-2">
+<span class="w-1.5 h-1.5 bg-primary rounded-full inline-block"></span>
+<span class="w-1.5 h-1.5 bg-primary rounded-full inline-block animation-delay-150"></span>
+<span class="w-1.5 h-1.5 bg-primary rounded-full inline-block animation-delay-300"></span>
+                            AI is structuring lesson...
+                        </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Sticky Input Area & Actions -->
+<div class="absolute bottom-0 w-full glass-panel border-t border-surface-variant/30 pb-8 pt-4 px-container-padding">
+<div class="max-w-3xl mx-auto w-full relative flex flex-col gap-4">
+<!-- Action Prompts -->
+<div class="flex justify-between items-center px-2">
+<button class="flex items-center gap-2 text-primary hover:text-primary-container transition-colors font-button text-button">
+<span class="material-symbols-outlined text-xl" data-icon="upload_file">upload_file</span>
+                        Upload study materials
+                    </button>
+<div class="text-on-surface-variant font-label-sm text-label-sm">
+                        Session: New
+                    </div>
+</div>
+<!-- Input Box -->
+<div class="relative bg-surface-container-lowest rounded-2xl shadow-[0px_8px_30px_rgba(94,92,230,0.12)] border border-outline-variant/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary-container transition-all duration-200 flex items-end p-2 pl-4 hover:-translate-y-1 hover:shadow-lg duration-300">
+<button class="p-2 text-outline hover:text-primary transition-colors mb-1">
+<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
+</button>
+<textarea class="w-full bg-transparent border-none focus:ring-0 resize-none font-body-lg text-on-surface placeholder:text-outline/70 py-3 px-2 max-h-32" placeholder="Message Lumina AI or choose a topic above..." rows="1" style="min-height: 52px;"></textarea>
+<button class="p-3 bg-primary text-on-primary rounded-xl hover:shadow-md transition-shadow mb-1 ml-2 flex items-center justify-center">
+<span class="material-symbols-outlined hover:-translate-y-1 hover:shadow-lg transition-all duration-300" data-icon="send">send</span>
+</button>
+</div>
+<p class="text-center font-label-sm text-label-sm text-outline mt-1">Lumina AI can make mistakes. Verify important information.</p>
+</div>
+</div>
+</main>
+
+
+
+
+<script src="./navigation.js?v=10"></script>
+</body></html>

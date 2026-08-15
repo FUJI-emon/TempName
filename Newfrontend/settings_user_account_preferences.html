@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - Lumina AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Manrope:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "outline": "#777586",
+                      "primary": "#4441cc",
+                      "secondary-container": "#cb66fe",
+                      "secondary": "#9026c3",
+                      "inverse-primary": "#c2c1ff",
+                      "surface-container-highest": "#e2e2e7",
+                      "on-primary": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "surface-bright": "#f9f9fe",
+                      "primary-container": "#5e5ce6",
+                      "secondary-fixed-dim": "#e9b3ff",
+                      "on-primary-fixed-variant": "#332dbc",
+                      "surface-variant": "#e2e2e7",
+                      "on-tertiary-fixed": "#001b3e",
+                      "surface-container-high": "#e8e8ed",
+                      "surface": "#f9f9fe",
+                      "surface-dim": "#d9dade",
+                      "on-tertiary": "#ffffff",
+                      "on-tertiary-container": "#f0f3ff",
+                      "surface-container": "#ededf2",
+                      "on-surface": "#1a1c1f",
+                      "secondary-fixed": "#f6d9ff",
+                      "tertiary": "#0055a9",
+                      "tertiary-container": "#006dd6",
+                      "on-error": "#ffffff",
+                      "tertiary-fixed-dim": "#aac7ff",
+                      "on-secondary": "#ffffff",
+                      "on-primary-fixed": "#0c006b",
+                      "on-background": "#1a1c1f",
+                      "inverse-on-surface": "#f0f0f5",
+                      "on-secondary-fixed": "#310048",
+                      "on-tertiary-fixed-variant": "#00468d",
+                      "surface-container-lowest": "#ffffff",
+                      "background": "#f9f9fe",
+                      "surface-container-low": "#f3f3f8",
+                      "on-primary-container": "#f4f1ff",
+                      "primary-fixed-dim": "#c2c1ff",
+                      "surface-tint": "#4d4ad5",
+                      "outline-variant": "#c7c4d7",
+                      "on-surface-variant": "#464554",
+                      "inverse-surface": "#2e3034",
+                      "primary-fixed": "#e2dfff",
+                      "error-container": "#ffdad6",
+                      "on-secondary-container": "#4a006b",
+                      "error": "#ba1a1a",
+                      "on-secondary-fixed-variant": "#7200a3",
+                      "tertiary-fixed": "#d6e3ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "section-margin": "48px",
+                      "card-gap": "24px",
+                      "container-padding": "32px",
+                      "gutter": "24px",
+                      "base": "8px"
+              },
+              "fontFamily": {
+                      "body-lg": [
+                              "Manrope"
+                      ],
+                      "display-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Manrope"
+                      ],
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-sm": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "button": [
+                              "Manrope"
+                      ]
+              },
+              "fontSize": {
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "button": [
+                              "16px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 600ms ease-out forwards;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            @keyframes fadeInReduced {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+            .animate-fade-in {
+                animation: fadeInReduced 600ms ease-out forwards;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased flex min-h-screen animate-fade-in">
+<!-- SideNavBar (from JSON) -->
+<aside class="fixed left-0 top-0 h-full w-[280px] bg-surface-container-lowest dark:bg-inverse-surface shadow-[0px_4px_20px_rgba(94,92,230,0.08)] dark:shadow-none flex flex-col py-8 px-6 z-20">
+<!-- Brand Header -->
+<div class="mb-10 pl-2">
+<h1 class="font-display-lg text-headline-md text-primary dark:text-primary-fixed-dim tracking-tight">Lumina AI</h1>
+<p class="font-body-md text-body-md text-outline">Enlightened Learning</p>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 flex flex-col gap-2">
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant font-body-md hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors duration-200 hover:-translate-y-1 hover:shadow-md transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="">Dashboard</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant font-body-md hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors duration-200 hover:-translate-y-1 hover:shadow-md transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="">My Courses</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant dark:text-surface-variant font-body-md hover:bg-surface-container dark:hover:bg-surface-container-high transition-colors duration-200 hover:-translate-y-1 hover:shadow-md transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span class="">AI Tutor</span>
+</a>
+<!-- Active Navigation Item -->
+<a class="flex items-center gap-4 px-4 py-3 rounded-lg text-primary dark:text-primary-fixed-dim font-bold border-r-4 border-primary dark:border-primary-fixed-dim bg-primary-container/10 transition-transform duration-150 hover:-translate-y-1 hover:shadow-md transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="settings" data-weight="fill">settings</span>
+<span class="">Settings</span>
+</a>
+</nav>
+<!-- CTA & Footer Actions -->
+<div class="mt-auto flex flex-col gap-4">
+<button class="w-full py-3 bg-primary text-on-primary rounded-lg font-button text-button shadow-sm hover:shadow-md transition-shadow hover:-translate-y-1 transition-all duration-300">
+                Upgrade to Pro
+            </button>
+<div class="h-px bg-surface-variant w-full my-2"></div>
+<a class="flex items-center gap-4 px-4 py-2 rounded-lg text-on-surface-variant font-body-md hover:bg-surface-container transition-colors duration-200 hover:-translate-y-1 hover:shadow-md transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="">Help Center</span>
+</a>
+<a class="flex items-center gap-4 px-4 py-2 rounded-lg text-on-surface-variant font-body-md hover:bg-surface-container transition-colors duration-200 hover:-translate-y-1 hover:shadow-md transition-all duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-[280px] p-container-padding max-w-[1440px] mx-auto w-full">
+<!-- Page Header -->
+<div class="mb-section-margin">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Settings</h2>
+<p class="font-body-md text-body-md text-outline mt-1">Manage your account preferences and application settings.</p>
+</div>
+<div class="flex flex-col gap-card-gap max-w-4xl">
+<!-- 1. Profile Settings -->
+<section class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(94,92,230,0.08)] p-8 border border-surface-variant/50 relative overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+<!-- Subtle decorative background element -->
+<div class="absolute -top-24 -right-24 w-64 h-64 bg-primary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="person">person</span>
+                    Profile Settings
+                </h3>
+<div class="flex items-center justify-between flex-wrap gap-6">
+<div class="flex items-center gap-6">
+<div class="relative">
+<img class="w-20 h-20 rounded-full object-cover border-4 border-surface shadow-sm" data-alt="A highly detailed, professional headshot of a young male professional named Alex Miller, used as an avatar in a modern AI learning platform. He has a friendly, intelligent expression, wearing smart casual attire. The background is a clean, bright, subtle gradient matching the light-mode aesthetic of the application, emphasizing a premium, organized, and focused learning environment. The lighting is soft and flattering, creating a polished, corporate yet approachable look. High resolution, clear details." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVtkfIqDyjjFqchf2wcUZCV9d6bzZCycDjSXIdvWLmugeD-XP2LK-ef34E3ZdGYNxw0edMLCo5s3KA0698gzLEWO2z4NUfrA4swGmt8RXDWsvpK0UFL9NCSGooM1LhWbSn1jq9BEOK_C-3k7nVfPA5wXyUVvAPE60NXbk6n6QeemGx7TxLa3DPD72gXlaL-xFA8BOFaJra3nc_ArwgrD5EcGZvag2ND2v2qEZ_5i8PidFFplcyYHBe"/>
+<button class="absolute bottom-0 right-0 w-8 h-8 bg-surface-container-lowest rounded-full shadow border border-surface-variant flex items-center justify-center text-primary hover:bg-surface-container transition-colors" title="Change Avatar">
+<span class="material-symbols-outlined text-[16px]" data-icon="edit">edit</span>
+</button>
+</div>
+<div>
+<h4 class="font-headline-md text-[20px] text-on-surface m-0 leading-tight">Alex Miller</h4>
+<div class="flex items-center gap-2 mt-1 mb-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-container/20 text-secondary font-label-sm text-label-sm border border-secondary/20">
+<span class="material-symbols-outlined text-[14px] mr-1" data-icon="school">school</span>
+                                    Level 12 Learner
+                                </span>
+</div>
+<p class="font-body-md text-body-md text-outline">alex.miller@example.com</p>
+</div>
+</div>
+<button class="px-6 py-2.5 bg-transparent border-2 border-primary text-primary font-button text-button rounded-lg hover:bg-primary/5 transition-colors hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+                        Edit Profile
+                    </button>
+</div>
+</section>
+<!-- 2. Account & Security -->
+<section class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(94,92,230,0.08)] p-8 border border-surface-variant/50 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="shield_lock">shield_lock</span>
+                    Account &amp; Security
+                </h3>
+<div class="flex flex-col divide-y divide-surface-variant/60">
+<!-- Password -->
+<div class="py-5 flex items-center justify-between first:pt-0">
+<div>
+<p class="font-body-lg text-body-lg text-on-surface font-semibold">Password</p>
+<p class="font-body-md text-body-md text-outline">Last changed 3 months ago</p>
+</div>
+<button class="text-primary font-button text-button hover:underline px-2">Update</button>
+</div>
+<!-- Linked Accounts -->
+<div class="py-5 flex items-center justify-between">
+<div>
+<p class="font-body-lg text-body-lg text-on-surface font-semibold">Linked Accounts</p>
+<p class="font-body-md text-body-md text-outline">Manage connections for quick login</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="px-3 py-1 bg-surface-container rounded-md font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="link">link</span> Google
+                            </span>
+<button class="text-primary font-button text-button hover:underline px-2">Manage</button>
+</div>
+</div>
+<!-- 2FA -->
+<div class="py-5 flex items-center justify-between pb-0">
+<div>
+<p class="font-body-lg text-body-lg text-on-surface font-semibold">Two-Factor Authentication</p>
+<p class="font-body-md text-body-md text-outline">Add an extra layer of security to your account</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-surface-variant after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary shadow-inner"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Grid for Preferences and Notifications -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-card-gap">
+<!-- 3. App Preferences -->
+<section class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(94,92,230,0.08)] p-8 border border-surface-variant/50 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="tune">tune</span>
+                        App Preferences
+                    </h3>
+<div class="flex flex-col gap-6">
+<!-- Theme Toggle -->
+<div class="flex items-center justify-between">
+<label class="font-body-md text-body-md text-on-surface font-semibold cursor-pointer">Appearance Theme</label>
+<div class="flex items-center bg-surface-container rounded-lg p-1">
+<button class="flex items-center gap-1 px-3 py-1.5 bg-surface-container-lowest rounded shadow-sm text-primary font-label-sm text-label-sm hover:-translate-y-0.5 hover:shadow-sm transition-all duration-300" aria-pressed="true" data-theme-option="light">
+<span class="material-symbols-outlined text-[16px]" data-icon="light_mode">light_mode</span> Light
+                                </button>
+<button class="flex items-center gap-1 px-3 py-1.5 text-on-surface-variant hover:text-on-surface font-label-sm text-label-sm transition-colors hover:-translate-y-0.5 hover:shadow-sm transition-all duration-300" aria-pressed="false" data-theme-option="dark">
+<span class="material-symbols-outlined text-[16px]" data-icon="dark_mode">dark_mode</span> Dark
+                                </button>
+</div>
+</div>
+<!-- Language Dropdown -->
+<div>
+<label class="block font-body-md text-body-md text-on-surface font-semibold mb-2" for="language-select">Primary Language</label>
+<div class="relative">
+<select class="appearance-none w-full bg-surface-container-lowest border border-outline-variant text-on-surface font-body-md rounded-lg focus:ring-2 focus:ring-primary focus:border-primary block p-3 pr-10 hover:border-outline transition-colors hover:-translate-y-1 hover:shadow-md transition-all duration-300" id="language-select">
+<option selected="" value="en">English (US)</option>
+<option value="vi">Vietnamese (Tiếng Việt)</option>
+<option value="ja">Japanese (日本語)</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. Notifications -->
+<section class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(94,92,230,0.08)] p-8 border border-surface-variant/50 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="notifications">notifications</span>
+                        Notifications
+                    </h3>
+<div class="flex flex-col gap-5">
+<div class="flex items-center justify-between">
+<div>
+<p class="font-body-md text-body-md text-on-surface font-semibold">Study Reminders</p>
+<p class="font-label-sm text-label-sm text-outline normal-case tracking-normal">In-app &amp; push alerts</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-surface-variant after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary shadow-inner"></div>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<p class="font-body-md text-body-md text-on-surface font-semibold">New Lesson Updates</p>
+<p class="font-label-sm text-label-sm text-outline normal-case tracking-normal">AI Tutor course additions</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-surface-variant after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary shadow-inner"></div>
+</label>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<p class="font-body-md text-body-md text-on-surface font-semibold">Email Digest</p>
+<p class="font-label-sm text-label-sm text-outline normal-case tracking-normal">Weekly progress reports</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-variant peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-surface-variant after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary shadow-inner"></div>
+</label>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+<script src="./navigation.js?v=10"></script>
+</body></html>
