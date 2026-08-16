@@ -94,7 +94,7 @@ class LearningApplicationService:
 
     @transaction.atomic
     def process_and_create_material(
-        self, title: str, content: str, goal_title: str
+        self, title: str, content: str, goal_title: str, user: Optional[UsersUser] = None
     ) -> Tuple[LearningMaterial, AnalyzeMaterialResult]:
         if not title or not title.strip():
             raise ValueError("Tiêu đề tài liệu không được để trống")
@@ -102,6 +102,7 @@ class LearningApplicationService:
             raise LLMEmptyInputError("Nội dung tài liệu không được để trống")
 
         material = LearningMaterial.objects.create(
+            user=user,
             title=title.strip(),
             content=content.strip(),
             last_used_at=timezone.now(),
@@ -165,6 +166,18 @@ class LearningApplicationService:
     ) -> Tuple[LearningPathBatchResult, List[ProgressPathStep]]:
         mastery_ctx = mastery_context or {}
         goal = self._get_primary_goal(material)
+
+        if not concepts:
+            existing_concepts = LearningConcept.objects.filter(goal__material=material).order_by("order_index", "id")
+            concepts = [
+                ConceptDTO(
+                    id=c.external_id or str(c.id),
+                    title=c.title,
+                    description=c.description or "",
+                )
+                for c in existing_concepts
+            ]
+
         path_batch = self.llm_service.generate_learning_path(
             concepts=concepts,
             mastery_context=mastery_ctx,
@@ -209,47 +222,71 @@ class LearningApplicationService:
                 step.status = step.status or "generated"
                 step.save(update_fields=["concept", "title", "status"])
 
-            lesson = self.llm_service.generate_lesson(concept, mastery_ctx)
-            lesson_model, _ = ProgressLesson.objects.update_or_create(
-                step=step,
-                defaults={
-                    "concept": concept_model,
-                    "explanation": lesson.explanation,
-                    "example": lesson.example,
-                },
-            )
-
-            for card_dto in lesson.cards:
-                ProgressLessonCard.objects.get_or_create(
-                    lesson=lesson_model,
-                    order_index=card_dto.order_index,
+            lesson_model = ProgressLesson.objects.filter(step=step).first()
+            if not lesson_model or not lesson_model.cards.exists():
+                # Phase 1: Generate Lesson Content (Cards, Explanation, Example)
+                lesson = self.llm_service.generate_lesson(concept, mastery_ctx)
+                lesson_model, _ = ProgressLesson.objects.update_or_create(
+                    step=step,
                     defaults={
-                        "heading": card_dto.heading,
-                        "body": card_dto.body,
+                        "concept": concept_model,
+                        "explanation": lesson.explanation,
+                        "example": lesson.example,
                     },
                 )
 
-            checkpoint_res = self.llm_service.generate_check_question(
-                concept=concept,
-                lesson=lesson,
-                purpose=QuestionPurpose.CHECKPOINT,
-            )
-            last_card_order = len(lesson.cards) - 1 if lesson.cards else 0
-
-            for question_dto in checkpoint_res.questions:
-                q_model = QuizQuestion.objects.create(
-                    lesson=lesson_model,
-                    question_type=question_dto.purpose.value,
-                    after_card_order=last_card_order,
-                    question_text=question_dto.text,
-                    explanation=question_dto.explanation,
-                )
-                for opt_dto in question_dto.options:
-                    QuizOption.objects.create(
-                        question=q_model,
-                        option_text=opt_dto.text,
-                        is_correct=opt_dto.is_correct,
+                for card_dto in lesson.cards:
+                    ProgressLessonCard.objects.get_or_create(
+                        lesson=lesson_model,
+                        order_index=card_dto.order_index,
+                        defaults={
+                            "heading": card_dto.heading,
+                            "body": card_dto.body,
+                        },
                     )
+
+                # Phase 2: Generate Quiz Questions (Checkpoint & Final Test) using generated Lesson Cards
+                mid_card_order = max(0, (len(lesson.cards) // 2) - 1) if lesson.cards else 0
+                checkpoint_res = self.llm_service.generate_check_question(
+                    concept=concept,
+                    lesson=lesson,
+                    purpose=QuestionPurpose.CHECKPOINT,
+                )
+                for question_dto in checkpoint_res.questions:
+                    q_model = QuizQuestion.objects.create(
+                        lesson=lesson_model,
+                        question_type=question_dto.purpose.value,
+                        after_card_order=mid_card_order,
+                        question_text=question_dto.text,
+                        explanation=question_dto.explanation,
+                    )
+                    for opt_dto in question_dto.options:
+                        QuizOption.objects.create(
+                            question=q_model,
+                            option_text=opt_dto.text,
+                            is_correct=opt_dto.is_correct,
+                        )
+
+                last_card_order = max(0, len(lesson.cards) - 1) if lesson.cards else 0
+                wrapup_res = self.llm_service.generate_check_question(
+                    concept=concept,
+                    lesson=lesson,
+                    purpose=QuestionPurpose.LESSON_WRAPUP,
+                )
+                for question_dto in wrapup_res.questions:
+                    q_model = QuizQuestion.objects.create(
+                        lesson=lesson_model,
+                        question_type=question_dto.purpose.value,
+                        after_card_order=last_card_order,
+                        question_text=question_dto.text,
+                        explanation=question_dto.explanation,
+                    )
+                    for opt_dto in question_dto.options:
+                        QuizOption.objects.create(
+                            question=q_model,
+                            option_text=opt_dto.text,
+                            is_correct=opt_dto.is_correct,
+                        )
 
             if student:
                 initial_status = (
@@ -510,15 +547,55 @@ class LearningApplicationService:
         scope: ChatScope,
         scope_id: int,
     ) -> ChatThread:
-        if scope == ChatScope.MATERIAL:
+        if scope == ChatScope.GOAL:
+            scope_type = ChatThread.ScopeType.GOAL
+        elif scope == ChatScope.MATERIAL:
             scope_type = ChatThread.ScopeType.MATERIAL
         elif scope == ChatScope.QUIZ:
             scope_type = ChatThread.ScopeType.CHECKPOINT_QUESTION
         else:
             raise ValueError(f"Unsupported chat scope: {scope}")
 
-        return ChatThread.objects.create(
+        thread, _ = ChatThread.objects.get_or_create(
             student=student,
             scope_type=scope_type,
             scope_id=scope_id,
         )
+        return thread
+
+    def get_thread_messages(
+        self,
+        student: UsersUser,
+        thread_id: int,
+    ) -> List[ChatMessage]:
+        try:
+            thread = ChatThread.objects.get(id=thread_id, student=student)
+        except ChatThread.DoesNotExist:
+            raise ValueError(f"Không tìm thấy thread {thread_id} của student")
+
+        return list(ChatMessage.objects.filter(thread=thread).order_by("created_at"))
+
+    @transaction.atomic
+    def delete_material(self, material_id: int, student_id: Optional[int] = None) -> bool:
+        """
+        Xóa một LearningMaterial cùng tất cả các dữ liệu liên quan (Goals, Concepts, Steps, Lessons, Quizzes, Progress, ChatThreads).
+        """
+        try:
+            if student_id:
+                material = LearningMaterial.objects.get(pk=material_id, user_id=student_id)
+            else:
+                material = LearningMaterial.objects.get(pk=material_id)
+        except LearningMaterial.DoesNotExist:
+            return False
+
+        goal_ids = list(material.goals.values_list("id", flat=True))
+
+        from django.db.models import Q
+        ChatThread.objects.filter(
+            Q(scope_type=ChatThread.ScopeType.MATERIAL, scope_id=material.id) |
+            Q(scope_type=ChatThread.ScopeType.GOAL, scope_id__in=goal_ids)
+        ).delete()
+
+        material.delete()
+        return True
+

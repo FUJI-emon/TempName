@@ -15,6 +15,9 @@ class UsersUser(models.Model):
 
 
 class LearningMaterial(models.Model):
+    user = models.ForeignKey(
+        UsersUser, on_delete=models.CASCADE, related_name="materials", null=True, blank=True
+    )
     title = models.CharField(max_length=200, null=False)
     content = models.TextField(null=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -276,6 +279,7 @@ class QuizAttempt(models.Model):
 class ChatThread(models.Model):
     class ScopeType(models.TextChoices):
         MATERIAL = "material", "Material"
+        GOAL = "goal", "Goal"
         CHECKPOINT_QUESTION = "checkpoint_question", "Checkpoint Question"
 
     student = models.ForeignKey(UsersUser, on_delete=models.CASCADE, null=False)
@@ -285,6 +289,12 @@ class ChatThread(models.Model):
 
     class Meta:
         db_table = "chat_thread"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["student", "scope_type", "scope_id"],
+                name="chat_thread_student_scope_unique",
+            )
+        ]
 
 
 class ChatMessage(models.Model):

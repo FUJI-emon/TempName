@@ -1,3 +1,4 @@
+import json
 from decimal import Decimal
 from pathlib import Path
 
@@ -9,9 +10,11 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
-from apps.ai.services.dto import ChatScope, ConceptDTO
-from apps.ai.services.exceptions import LLMEmptyInputError, LLMInvalidResponseError, LLMServiceError
+from apps.ai.services.dto import ChatScope, ConceptDTO, LearningContextDTO
+from apps.ai.services.exceptions import LLMEmptyInputError, LLMInvalidResponseError, LLMRateLimitError, LLMServiceError
 from apps.learning.models import (
+    ChatMessage,
+    ChatThread,
     LearningConcept,
     LearningGoal,
     LearningMaterial,
@@ -19,6 +22,7 @@ from apps.learning.models import (
     ProgressLessonCard,
     ProgressPathStep,
     ProgressStudentMaterialProgress,
+    ProgressStudentStepStatus,
     QuizOption,
     QuizQuestion,
     UsersUser,
@@ -99,10 +103,39 @@ def onboarding_view(request):
         })
     except (LLMEmptyInputError, ValueError) as exc:
         return JsonResponse({"status": "error", "message": str(exc)}, status=400)
+    except LLMRateLimitError as exc:
+        return JsonResponse({"status": "error", "error_code": "AI_LIMIT_REACHED", "message": f"Hệ thống AI hiện đã đạt giới hạn/Quota lượt gọi API: {exc}"}, status=429)
     except LLMServiceError as exc:
         return JsonResponse({"status": "error", "message": f"Dịch vụ AI gặp sự cố: {exc}"}, status=500)
     except Exception as exc:
-        return JsonResponse({"status": "error", "message": f"Không thể trích xuất khái niệm từ tài liệu (có thể hết token hoặc lỗi kết nối AI Engine): {exc}"}, status=500)
+        return JsonResponse({"status": "error", "message": f"Không thể kết nối với AI Engine (có thể hết token hoặc lỗi mạng): {exc}"}, status=500)
+
+
+def extract_text_from_file_obj(uploaded_file):
+    filename = uploaded_file.name.lower()
+    file_bytes = uploaded_file.read()
+
+    extracted_text = ""
+    if filename.endswith(".pdf"):
+        try:
+            import io
+            import pypdf
+            reader = pypdf.PdfReader(io.BytesIO(file_bytes))
+            pages = [p.extract_text() for p in reader.pages if p.extract_text()]
+            extracted_text = "\n".join(pages).strip()
+        except Exception:
+            extracted_text = ""
+    else:
+        try:
+            raw = file_bytes.decode("utf-8", errors="ignore")
+            extracted_text = "".join(c for c in raw if c.isprintable() or c in ("\n", "\r", "\t")).strip()
+        except Exception:
+            extracted_text = ""
+
+    if not extracted_text or extracted_text.startswith("%PDF-"):
+        extracted_text = ""
+
+    return extracted_text
 
 
 @csrf_exempt
@@ -110,7 +143,7 @@ def onboarding_view(request):
 def create_material_view(request):
     """
     Endpoint tạo LearningMaterial + gọi analyze_material.
-    Input: {"title": "...", "content": "...", "goal_title": "..."}
+    Input: {"title": "...", "content": "...", "goal_title": "..."} hoặc multipart/form-data
     """
     try:
         if request.content_type and request.content_type.startswith("multipart/form-data"):
@@ -126,12 +159,14 @@ def create_material_view(request):
                 if not goal_title:
                     goal_title = title
                 if not content:
-                    content = uploaded_document.read().decode("utf-8", errors="ignore")
+                    content = extract_text_from_file_obj(uploaded_document)
+                    if not content:
+                        content = f"Nội dung môn học và chủ đề từ tài liệu: {title}"
             elif not title or not content:
                 return JsonResponse(
                     {
                         "status": "error",
-                        "message": "document file or content is required.",
+                        "message": "Cần chọn file tài liệu hoặc nhập nội dung chủ đề học tập.",
                     },
                     status=400,
                 )
@@ -141,21 +176,15 @@ def create_material_view(request):
             content = data.get("content", "")
             goal_title = data.get("goal_title", "")
 
-        service = LearningApplicationService()
-        material, analysis = service.process_and_create_material(title, content, goal_title)
-
         student = get_current_student(request)
         if not student:
-            student, _ = UsersUser.objects.get_or_create(
-                username="demo_student",
-                defaults={
-                    "email": "demo@lumina.ai",
-                    "display_name": "Alex Learner",
-                    "password_hash": "demo_hash"
-                }
+            return JsonResponse(
+                {"status": "error", "message": "Authentication required."},
+                status=401,
             )
-            request.session["user_id"] = student.id
-            request.session.save()
+
+        service = LearningApplicationService()
+        material, analysis = service.process_and_create_material(title, content, goal_title, user=student)
 
         ProgressStudentMaterialProgress.objects.get_or_create(
             student=student,
@@ -181,10 +210,107 @@ def create_material_view(request):
         })
     except (LLMEmptyInputError, ValueError) as exc:
         return JsonResponse({"status": "error", "message": str(exc)}, status=400)
+    except LLMRateLimitError as exc:
+        return JsonResponse({"status": "error", "error_code": "AI_LIMIT_REACHED", "message": f"Hệ thống AI hiện đã đạt giới hạn/Quota lượt gọi API: {exc}"}, status=429)
     except LLMServiceError as exc:
         return JsonResponse({"status": "error", "message": f"Dịch vụ AI gặp sự cố: {exc}"}, status=500)
     except Exception as exc:
         return JsonResponse({"status": "error", "message": f"Không thể trích xuất khái niệm từ tài liệu (có thể hết token hoặc lỗi kết nối AI Engine): {exc}"}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["DELETE", "POST"])
+def delete_material_view(request, material_id):
+    """
+    API xóa LearningMaterial cùng toàn bộ tiến trình học tập liên quan.
+    DELETE /material/<material_id>/delete/
+    """
+    try:
+        student = get_current_student(request)
+        if not student:
+            return JsonResponse({"status": "error", "message": "Authentication required."}, status=401)
+
+        service = LearningApplicationService()
+        success = service.delete_material(material_id=material_id, student_id=student.id)
+
+        if success:
+            return JsonResponse({"status": "success", "message": "Xóa khóa học thành công."})
+        else:
+            return JsonResponse({"status": "error", "message": "Không tìm thấy khóa học để xóa."}, status=404)
+    except Exception as exc:
+        return JsonResponse({"status": "error", "message": f"Không thể xóa khóa học: {exc}"}, status=500)
+
+
+@require_http_methods(["GET"])
+def list_courses_view(request):
+    """
+    API lấy danh sách các khóa học (Learning Goal / Learning Journeys) của học viên từ DB.
+    """
+    try:
+        student = get_current_student(request)
+        if not student:
+            return JsonResponse({"status": "error", "message": "Authentication required."}, status=401)
+
+        from django.db.models import Q
+        progress_qs = ProgressStudentMaterialProgress.objects.filter(student=student).select_related("material")
+        material_ids = [p.material_id for p in progress_qs]
+        materials = list(LearningMaterial.objects.filter(Q(user=student) | Q(id__in=material_ids)).distinct().order_by("-created_at"))
+
+        courses = []
+        for mat in materials:
+            goal = mat.goals.first()
+            concepts = list(LearningConcept.objects.filter(goal__material=mat))
+            steps = list(ProgressPathStep.objects.filter(material=mat).order_by("order_index", "id"))
+
+            progress_record = None
+            if student:
+                progress_record = ProgressStudentMaterialProgress.objects.filter(student=student, material=mat).first()
+
+            completion_percent = int(progress_record.completion_percent) if progress_record else mat.progress
+
+            # Determine course status
+            status = "in_progress"
+            if progress_record and progress_record.status:
+                status = progress_record.status
+            elif completion_percent >= 100:
+                status = "completed"
+            elif completion_percent == 0 and not steps:
+                status = "not_started"
+
+            # Find active step to resume
+            current_step = None
+            for step in steps:
+                if step.status != "completed":
+                    current_step = step
+                    break
+            if not current_step and steps:
+                current_step = steps[0]
+
+            course_title = goal.title if (goal and goal.title) else (mat.subject or mat.title)
+
+            courses.append({
+                "id": mat.id,
+                "course_id": mat.id,
+                "material_id": mat.id,
+                "title": course_title,
+                "material_name": mat.title,
+                "has_material": bool(mat.content and len(mat.content.strip()) > 0),
+                "created_at": mat.created_at.strftime("%Y-%m-%d %H:%M:%S") if mat.created_at else "",
+                "progress": completion_percent,
+                "status": status,
+                "concepts_count": len(concepts),
+                "lessons_count": len(steps),
+                "current_step_id": current_step.id if current_step else None,
+                "current_step_title": current_step.title if current_step else None
+            })
+
+        return JsonResponse({
+            "status": "success",
+            "courses": courses,
+            "materials": courses
+        })
+    except Exception as exc:
+        return JsonResponse({"status": "error", "message": str(exc)}, status=500)
 
 
 @require_http_methods(["GET"])
@@ -192,38 +318,7 @@ def list_materials_view(request):
     """
     API lấy danh sách các tài liệu học tập (Material History) từ DB.
     """
-    try:
-        student = get_current_student(request)
-        if student:
-            progress_qs = ProgressStudentMaterialProgress.objects.filter(student=student).select_related("material")
-            material_ids = [p.material_id for p in progress_qs]
-            materials = list(LearningMaterial.objects.filter(id__in=material_ids).order_by("-created_at"))
-            if not materials:
-                materials = list(LearningMaterial.objects.order_by("-created_at"))
-        else:
-            materials = list(LearningMaterial.objects.order_by("-created_at"))
-
-        results = []
-        for mat in materials:
-            goal = mat.goals.first()
-            concepts_count = LearningConcept.objects.filter(goal__material=mat).count()
-            results.append({
-                "id": mat.id,
-                "material_id": mat.id,
-                "title": mat.title,
-                "goal_title": goal.title if goal else mat.title,
-                "created_at": mat.created_at.strftime("%Y-%m-%d %H:%M:%S") if mat.created_at else "",
-                "progress": mat.progress or 0,
-                "subject": mat.subject or mat.title,
-                "concepts_count": concepts_count
-            })
-
-        return JsonResponse({
-            "status": "success",
-            "materials": results
-        })
-    except Exception as exc:
-        return JsonResponse({"status": "error", "message": str(exc)}, status=500)
+    return list_courses_view(request)
 
 
 @require_http_methods(["GET"])
@@ -232,21 +327,42 @@ def get_material_detail_view(request, material_id):
     API lấy chi tiết tài liệu học tập và danh sách khái niệm từ DB theo material_id.
     """
     try:
-        material = get_object_or_404(LearningMaterial, id=material_id)
+        student = get_current_student(request)
+        if not student:
+            return JsonResponse({"status": "error", "message": "Authentication required."}, status=401)
+
+        from django.db.models import Q
+        material = LearningMaterial.objects.filter(
+            Q(user=student) | Q(progressstudentmaterialprogress__student=student),
+            id=material_id
+        ).distinct().first()
+
+        if not material:
+            return JsonResponse({"status": "error", "message": "Không tìm thấy thông tin bài học hoặc bạn không có quyền truy cập."}, status=404)
+
         goal = material.goals.first()
         concepts = LearningConcept.objects.filter(goal__material=material).order_by("order_index", "id")
 
         steps = ProgressPathStep.objects.filter(material=material).order_by("order_index", "id")
+
+        student_statuses = {}
+        if student:
+            statuses = ProgressStudentStepStatus.objects.filter(student=student, step__material=material)
+            student_statuses = {s.step_id: s.status for s in statuses}
+
         step_list = [
             {
                 "id": s.id,
                 "order_index": s.order_index,
                 "title": s.title,
                 "status": s.status,
+                "student_status": student_statuses.get(s.id, "unlocked" if s.order_index == 1 else "locked"),
                 "concept_id": s.concept_id
             }
             for s in steps
         ]
+
+        completed_steps_count = sum(1 for st in step_list if st["student_status"] == "completed")
 
         return JsonResponse({
             "status": "success",
@@ -257,6 +373,8 @@ def get_material_detail_view(request, material_id):
             "subject": material.subject or material.title,
             "created_at": material.created_at.strftime("%Y-%m-%d %H:%M:%S") if material.created_at else "",
             "progress": material.progress or 0,
+            "total_concepts_count": concepts.count(),
+            "completed_steps_count": completed_steps_count,
             "concepts": [
                 {
                     "id": c.external_id or str(c.id),
@@ -292,18 +410,8 @@ def generate_path_view(request):
 
         # Get current student from session
         student = get_current_student(request)
-
-        if student is None:
-            student, _ = UsersUser.objects.get_or_create(
-                username="demo_student",
-                defaults={
-                    "email": "demo@lumina.ai",
-                    "display_name": "Alex Learner",
-                    "password_hash": "demo_hash"
-                }
-            )
-            request.session["user_id"] = student.id
-            request.session.save()
+        if not student:
+            return JsonResponse({"status": "error", "message": "Authentication required."}, status=401)
 
         material = get_object_or_404(
             LearningMaterial,
@@ -352,12 +460,20 @@ def generate_path_view(request):
             },
             status=400,
         )
-
+    except LLMRateLimitError as exc:
+        return JsonResponse(
+            {
+                "status": "error",
+                "error_code": "AI_LIMIT_REACHED",
+                "message": f"Hệ thống AI hiện đã đạt giới hạn/Quota lượt gọi API: {exc}",
+            },
+            status=429,
+        )
     except LLMServiceError as exc:
         return JsonResponse(
             {
                 "status": "error",
-                "message": f"LLM Error: {exc}",
+                "message": f"Dịch vụ AI gặp sự cố: {exc}",
             },
             status=500,
         )
@@ -435,27 +551,58 @@ def get_step_quiz_view(request, step_id):
     """
     try:
         step = ProgressPathStep.objects.filter(id=step_id).first()
-        question = None
         lesson_obj = None
 
         if step:
             lesson_obj = getattr(step, "lesson", None)
-            if lesson_obj:
-                question = QuizQuestion.objects.filter(lesson=lesson_obj).first()
 
-        if not question:
-            # Fallback: find any QuizQuestion created in the system or for recent lesson
-            question = QuizQuestion.objects.order_by("-id").first()
-            if question and question.lesson:
-                lesson_obj = question.lesson
+        questions_list = []
+        if lesson_obj:
+            q_models = list(QuizQuestion.objects.filter(lesson=lesson_obj).order_by("after_card_order", "id"))
+            for q in q_models:
+                options = list(QuizOption.objects.filter(question=q))
+                questions_list.append({
+                    "id": q.id,
+                    "question_type": q.question_type,
+                    "after_card_order": q.after_card_order,
+                    "question_text": q.question_text,
+                    "explanation": q.explanation,
+                    "options": [
+                        {
+                            "id": opt.id,
+                            "option_text": opt.option_text,
+                        }
+                        for opt in options
+                    ]
+                })
 
-        if not question:
+        if not questions_list:
+            # Fallback: find any QuizQuestion created in the system
+            fallback_q = QuizQuestion.objects.order_by("-id").first()
+            if fallback_q:
+                if not lesson_obj and fallback_q.lesson:
+                    lesson_obj = fallback_q.lesson
+                options = list(QuizOption.objects.filter(question=fallback_q))
+                questions_list.append({
+                    "id": fallback_q.id,
+                    "question_type": fallback_q.question_type,
+                    "after_card_order": fallback_q.after_card_order,
+                    "question_text": fallback_q.question_text,
+                    "explanation": fallback_q.explanation,
+                    "options": [
+                        {
+                            "id": opt.id,
+                            "option_text": opt.option_text,
+                        }
+                        for opt in options
+                    ]
+                })
+
+        if not questions_list:
             return JsonResponse({
                 "status": "error",
                 "message": "Chưa có câu hỏi checkpoint trong hệ thống."
             }, status=404)
-
-        options = list(QuizOption.objects.filter(question=question))
 
         lesson_data = None
         if lesson_obj:
@@ -475,23 +622,22 @@ def get_step_quiz_view(request, step_id):
                 ]
             }
 
+        student = get_current_student(request)
+        student_status = "unlocked" if (step and step.order_index == 1) else "locked"
+        if student and step:
+            st = ProgressStudentStepStatus.objects.filter(student=student, step=step).first()
+            if st:
+                student_status = st.status
+
         return JsonResponse({
             "status": "success",
             "step_id": step.id if step else step_id,
+            "order_index": step.order_index if step else 1,
             "step_title": step.title if step else "Kiểm tra kiến thức",
+            "student_status": student_status,
             "lesson": lesson_data,
-            "question": {
-                "id": question.id,
-                "question_text": question.question_text,
-                "explanation": question.explanation,
-                "options": [
-                    {
-                        "id": opt.id,
-                        "option_text": opt.option_text,
-                    }
-                    for opt in options
-                ]
-            }
+            "questions": questions_list,
+            "question": questions_list[0] if questions_list else None
         })
     except Exception as exc:
         return JsonResponse({"status": "error", "message": f"Lỗi hệ thống: {exc}"}, status=500)
@@ -527,13 +673,18 @@ def get_hint_view(request, question_id, level):
 def chat_view(request):
     """
     Endpoint tương tác chat AI theo scope.
-    Input: {"student_id": 1, "thread_id": 1, "message": "...", "scope": "material"}
+    Input: {"student_id": 1, "thread_id": 1, "message": "...", "scope": "goal", "goal_id": 1, "material_id": 1, "concept_id": 2, "lesson_id": 3}
     """
     try:
         data = json.loads(request.body)
         thread_id = data.get("thread_id")
         message = data.get("message", "")
-        scope_str = data.get("scope", "material")
+        scope_str = data.get("scope", "goal")
+
+        goal_id = data.get("goal_id")
+        material_id = data.get("material_id")
+        concept_id = data.get("concept_id")
+        lesson_id = data.get("lesson_id") or data.get("step_id")
 
         scope = ChatScope(scope_str)
 
@@ -548,12 +699,61 @@ def chat_view(request):
                 status=401,
             )
 
+        # Validate and resolve context relationships from Database
+        current_goal_title = None
+        current_concept_title = None
+        current_lesson_text = None
+
+        if lesson_id:
+            lesson_obj = ProgressLesson.objects.select_related(
+                "concept", "concept__goal", "concept__goal__material", "step"
+            ).filter(id=lesson_id).first()
+            if not lesson_obj:
+                lesson_obj = ProgressLesson.objects.select_related(
+                    "concept", "concept__goal", "concept__goal__material", "step"
+                ).filter(step_id=lesson_id).first()
+
+            if lesson_obj:
+                step_title = lesson_obj.step.title if lesson_obj.step else "Lesson"
+                current_lesson_text = f"{step_title}: {lesson_obj.explanation}"
+                if lesson_obj.concept:
+                    current_concept_title = lesson_obj.concept.title
+                    if lesson_obj.concept.goal:
+                        current_goal_title = lesson_obj.concept.goal.title
+
+        if not current_concept_title and concept_id:
+            concept_obj = LearningConcept.objects.select_related("goal", "goal__material").filter(id=concept_id).first()
+            if concept_obj:
+                current_concept_title = concept_obj.title
+                if concept_obj.goal and not current_goal_title:
+                    current_goal_title = concept_obj.goal.title
+
+        if not current_goal_title and goal_id:
+            goal_obj = LearningGoal.objects.select_related("material").filter(id=goal_id).first()
+            if goal_obj:
+                current_goal_title = goal_obj.title
+
+        if not current_goal_title and material_id:
+            material_obj = LearningMaterial.objects.filter(id=material_id).first()
+            if material_obj:
+                first_goal = material_obj.goals.first()
+                current_goal_title = first_goal.title if first_goal else material_obj.title
+
+        learning_context = None
+        if current_goal_title or current_concept_title or current_lesson_text:
+            learning_context = LearningContextDTO(
+                current_goal=current_goal_title,
+                current_concept=current_concept_title,
+                current_lesson=current_lesson_text,
+            )
+
         service = LearningApplicationService()
         ai_msg = service.send_chat_message(
             student=student,
             thread_id=thread_id,
             user_message=message,
             scope=scope,
+            learning_context=learning_context,
         )
 
         return JsonResponse({
@@ -572,13 +772,16 @@ def chat_view(request):
 
 
 @csrf_exempt
-@require_http_methods(["POST"])
+@require_http_methods(["GET", "POST"])
 def create_chat_thread_view(request):
     try:
-        data = json.loads(request.body)
-
-        scope_str = data.get("scope", "material")
-        scope_id = data.get("scope_id")
+        if request.method == "GET":
+            scope_str = request.GET.get("scope", "goal")
+            scope_id = request.GET.get("scope_id")
+        else:
+            data = json.loads(request.body)
+            scope_str = data.get("scope", "goal")
+            scope_id = data.get("scope_id")
 
         if scope_id is None:
             return JsonResponse(
@@ -609,11 +812,23 @@ def create_chat_thread_view(request):
             scope_id=int(scope_id),
         )
 
+        messages = service.get_thread_messages(student=student, thread_id=thread.id)
+        messages_data = [
+            {
+                "id": msg.id,
+                "role": msg.role,
+                "content": msg.content,
+                "created_at": msg.created_at.isoformat(),
+            }
+            for msg in messages
+        ]
+
         return JsonResponse({
             "status": "success",
             "thread_id": thread.id,
             "scope": thread.scope_type,
             "scope_id": thread.scope_id,
+            "messages": messages_data,
         }, status=201)
 
     except (json.JSONDecodeError, ValueError) as exc:
@@ -624,6 +839,134 @@ def create_chat_thread_view(request):
             },
             status=400,
         )
+
+
+@require_http_methods(["GET"])
+def list_user_chat_threads_view(request):
+    """
+    API lấy danh sách các ChatThread có tin nhắn của học viên hiện tại (tự động dọn dẹp thread rỗng).
+    GET /chat/threads/
+    """
+    try:
+        student = get_current_student(request)
+        if not student:
+            return JsonResponse({"status": "error", "message": "Authentication required."}, status=401)
+
+        # Xóa các thread rỗng chưa từng có tin nhắn nào của học viên
+        ChatThread.objects.filter(student=student, chatmessage__isnull=True).delete()
+
+        threads = ChatThread.objects.filter(student=student).order_by("-created_at")
+        threads_data = []
+
+        for t in threads:
+            last_msg = ChatMessage.objects.filter(thread=t).order_by("-created_at").first()
+            if not last_msg:
+                continue
+
+            title = f"Đoạn chat #{t.id}"
+
+            if t.scope_type == ChatThread.ScopeType.GOAL:
+                goal_obj = LearningGoal.objects.filter(id=t.scope_id).first()
+                if goal_obj:
+                    title = goal_obj.title
+            elif t.scope_type == ChatThread.ScopeType.MATERIAL:
+                mat_obj = LearningMaterial.objects.filter(id=t.scope_id).first()
+                if mat_obj:
+                    title = mat_obj.title
+
+            if title.startswith("Đoạn chat #"):
+                title = last_msg.content[:40] + ("..." if len(last_msg.content) > 40 else "")
+
+            threads_data.append({
+                "id": t.id,
+                "scope_type": t.scope_type,
+                "scope_id": t.scope_id,
+                "title": title,
+                "created_at": t.created_at.strftime("%H:%M %d/%m/%Y"),
+                "last_message": last_msg.content[:60] if last_msg else ""
+            })
+
+        return JsonResponse({
+            "status": "success",
+            "threads": threads_data
+        })
+    except Exception as exc:
+        return JsonResponse({"status": "error", "message": str(exc)}, status=500)
+
+
+@require_http_methods(["GET"])
+def get_chat_thread_detail_view(request, thread_id):
+    """
+    API lấy danh sách tin nhắn của một ChatThread theo thread_id.
+    GET /chat/thread/<thread_id>/
+    """
+    try:
+        student = get_current_student(request)
+        if not student:
+            return JsonResponse({"status": "error", "message": "Authentication required."}, status=401)
+
+        thread = get_object_or_404(ChatThread, id=thread_id, student=student)
+        messages = ChatMessage.objects.filter(thread=thread).order_by("created_at")
+
+        messages_data = [
+            {
+                "id": msg.id,
+                "role": msg.role,
+                "content": msg.content,
+                "created_at": msg.created_at.isoformat(),
+            }
+            for msg in messages
+        ]
+
+        return JsonResponse({
+            "status": "success",
+            "thread_id": thread.id,
+            "scope": thread.scope_type,
+            "scope_id": thread.scope_id,
+            "messages": messages_data
+        })
+    except Exception as exc:
+        return JsonResponse({"status": "error", "message": str(exc)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def create_new_chat_thread_view(request):
+    """
+    API khởi tạo đoạn chat mới cho học viên (xóa tin nhắn cũ nếu đã có thread để dọn hội thoại).
+    POST /chat/thread/new/
+    """
+    try:
+        data = json.loads(request.body)
+        scope_str = data.get("scope", "goal")
+        scope_id = data.get("scope_id", 1)
+
+        student = get_current_student(request)
+        if not student:
+            return JsonResponse({"status": "error", "message": "Authentication required."}, status=401)
+
+        scope_type = ChatThread.ScopeType.GOAL if scope_str == "goal" else ChatThread.ScopeType.MATERIAL
+        
+        # Purge empty threads before creating new thread
+        ChatThread.objects.filter(student=student, chatmessage__isnull=True).delete()
+
+        thread, created = ChatThread.objects.get_or_create(
+            student=student,
+            scope_type=scope_type,
+            scope_id=int(scope_id),
+        )
+        if not created:
+            ChatMessage.objects.filter(thread=thread).delete()
+
+        return JsonResponse({
+            "status": "success",
+            "thread_id": thread.id,
+            "scope": thread.scope_type,
+            "scope_id": thread.scope_id,
+            "messages": []
+        }, status=201)
+    except Exception as exc:
+        return JsonResponse({"status": "error", "message": f"Không thể tạo đoạn chat mới: {exc}"}, status=500)
 
 
 @csrf_exempt
@@ -676,6 +1019,10 @@ def register_view(request):
             password_hash=make_password(password),
             display_name=display_name or username,
         )
+
+        request.session.flush()
+        request.session["user_id"] = user.id
+        request.session.save()
 
         return JsonResponse(
             {

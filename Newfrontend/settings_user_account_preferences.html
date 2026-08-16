@@ -3,7 +3,7 @@
 <html class="light" lang="en"><head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Settings - Lumina AI</title>
+<title>Settings - TempName AI</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Manrope:wght@400;600&amp;display=swap" rel="stylesheet"/>
@@ -193,8 +193,8 @@
 <!-- SideNavBar (from JSON) -->
 <aside class="fixed left-0 top-0 h-full w-[280px] bg-surface-container-lowest dark:bg-inverse-surface shadow-[0px_4px_20px_rgba(94,92,230,0.08)] dark:shadow-none flex flex-col py-8 px-6 z-20">
 <!-- Brand Header -->
-<div class="mb-10 pl-2">
-<h1 class="font-display-lg text-headline-md text-primary dark:text-primary-fixed-dim tracking-tight">Lumina AI</h1>
+<div class="mb-12">
+<h1 class="font-display-lg text-headline-md text-primary dark:text-primary-fixed-dim tracking-tight">TempName AI</h1>
 <p class="font-body-md text-body-md text-outline">Enlightened Learning</p>
 </div>
 <!-- Navigation Links -->
@@ -250,25 +250,27 @@
                     Profile Settings
                 </h3>
 <div class="flex items-center justify-between flex-wrap gap-6">
-<div class="flex items-center gap-6">
-<div class="relative">
-<img class="w-20 h-20 rounded-full object-cover border-4 border-surface shadow-sm" data-alt="A highly detailed, professional headshot of a young male professional named Alex Miller, used as an avatar in a modern AI learning platform. He has a friendly, intelligent expression, wearing smart casual attire. The background is a clean, bright, subtle gradient matching the light-mode aesthetic of the application, emphasizing a premium, organized, and focused learning environment. The lighting is soft and flattering, creating a polished, corporate yet approachable look. High resolution, clear details." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDVtkfIqDyjjFqchf2wcUZCV9d6bzZCycDjSXIdvWLmugeD-XP2LK-ef34E3ZdGYNxw0edMLCo5s3KA0698gzLEWO2z4NUfrA4swGmt8RXDWsvpK0UFL9NCSGooM1LhWbSn1jq9BEOK_C-3k7nVfPA5wXyUVvAPE60NXbk6n6QeemGx7TxLa3DPD72gXlaL-xFA8BOFaJra3nc_ArwgrD5EcGZvag2ND2v2qEZ_5i8PidFFplcyYHBe"/>
+<div class="flex items-center gap-6 min-w-0 max-w-full">
+<div class="relative shrink-0">
+<div class="w-20 h-20 rounded-full bg-primary text-on-primary text-2xl font-bold flex items-center justify-center border-4 border-surface shadow-sm" id="settings-avatar-badge" data-user-initials>
+  AM
+</div>
 <button class="absolute bottom-0 right-0 w-8 h-8 bg-surface-container-lowest rounded-full shadow border border-surface-variant flex items-center justify-center text-primary hover:bg-surface-container transition-colors" title="Change Avatar">
 <span class="material-symbols-outlined text-[16px]" data-icon="edit">edit</span>
 </button>
 </div>
-<div>
-<h4 class="font-headline-md text-[20px] text-on-surface m-0 leading-tight">Alex Miller</h4>
+<div class="min-w-0 flex-1 overflow-hidden">
+<h4 class="font-headline-md text-[20px] text-on-surface m-0 leading-tight truncate" id="settings-profile-name" data-user-display-name>Alex Miller</h4>
 <div class="flex items-center gap-2 mt-1 mb-1">
-<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-container/20 text-secondary font-label-sm text-label-sm border border-secondary/20">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary-container/20 text-secondary font-label-sm text-label-sm border border-secondary/20 shrink-0">
 <span class="material-symbols-outlined text-[14px] mr-1" data-icon="school">school</span>
-                                    Level 12 Learner
+                                    TempName Learner
                                 </span>
 </div>
-<p class="font-body-md text-body-md text-outline">alex.miller@example.com</p>
+<p class="font-body-md text-body-md text-outline truncate" id="settings-profile-email" data-user-email>alex.miller@example.com</p>
 </div>
 </div>
-<button class="px-6 py-2.5 bg-transparent border-2 border-primary text-primary font-button text-button rounded-lg hover:bg-primary/5 transition-colors hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+<button id="edit-profile-btn" data-no-nav="true" type="button" class="px-6 py-2.5 bg-transparent border-2 border-primary text-primary font-button text-button rounded-lg hover:bg-primary/5 transition-colors hover:-translate-y-1 hover:shadow-md transition-all duration-300">
                         Edit Profile
                     </button>
 </div>
@@ -393,5 +395,82 @@
 </div>
 </div>
 </main>
+<!-- Edit Profile Modal -->
+<div id="edit-profile-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+  <div class="bg-surface-container-lowest dark:bg-inverse-surface p-6 rounded-2xl max-w-md w-full shadow-2xl border border-surface-variant/50 space-y-4 animate-fade-in">
+    <div class="flex justify-between items-center pb-3 border-b border-surface-variant/40">
+      <h3 class="font-headline-md text-lg text-on-surface font-bold flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary">edit</span>
+        <span>Edit Profile</span>
+      </h3>
+      <button type="button" id="close-modal-btn" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined text-xl">close</span>
+      </button>
+    </div>
+    <div class="space-y-4 pt-2">
+      <div>
+        <label class="block font-label-sm text-xs text-on-surface-variant uppercase mb-1" for="modal-input-name">Display Name</label>
+        <input type="text" id="modal-input-name" class="w-full p-3 bg-surface-container border border-outline-variant rounded-xl text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:outline-none" placeholder="Your Display Name">
+      </div>
+      <div>
+        <label class="block font-label-sm text-xs text-on-surface-variant uppercase mb-1" for="modal-input-email">Email Address</label>
+        <input type="email" id="modal-input-email" class="w-full p-3 bg-surface-container border border-outline-variant rounded-xl text-on-surface font-body-md focus:ring-2 focus:ring-primary focus:outline-none" placeholder="your.email@example.com">
+      </div>
+    </div>
+    <div class="flex justify-end gap-3 pt-4 border-t border-surface-variant/40">
+      <button type="button" id="cancel-profile-btn" class="px-5 py-2.5 bg-surface-container hover:bg-surface-variant text-on-surface font-button text-sm rounded-xl transition-colors">Cancel</button>
+      <button type="button" id="save-profile-btn" class="px-5 py-2.5 bg-primary hover:bg-primary/90 text-on-primary font-button text-sm font-bold rounded-xl shadow-md transition-all">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script src="./api.js"></script>
 <script src="./navigation.js?v=10"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const editBtn = document.getElementById("edit-profile-btn");
+  const modal = document.getElementById("edit-profile-modal");
+  const closeBtn = document.getElementById("close-modal-btn");
+  const cancelBtn = document.getElementById("cancel-profile-btn");
+  const saveBtn = document.getElementById("save-profile-btn");
+  const inputName = document.getElementById("modal-input-name");
+  const inputEmail = document.getElementById("modal-input-email");
+
+  function openModal() {
+    const user = window.API?.storage?.getUser();
+    if (user) {
+      inputName.value = user.display_name || user.username || "";
+      inputEmail.value = user.email || "";
+    }
+    modal.classList.remove("hidden");
+  }
+
+  function closeModal() {
+    modal.classList.add("hidden");
+  }
+
+  if (editBtn) editBtn.addEventListener("click", openModal);
+  if (closeBtn) closeBtn.addEventListener("click", closeModal);
+  if (cancelBtn) cancelBtn.addEventListener("click", closeModal);
+
+  if (saveBtn) {
+    saveBtn.addEventListener("click", function () {
+      const user = window.API?.storage?.getUser() || {};
+      const newName = inputName.value.trim();
+      const newEmail = inputEmail.value.trim();
+      if (!newName) return;
+
+      const updatedUser = {
+        ...user,
+        display_name: newName,
+        email: newEmail
+      };
+
+      window.API?.storage?.setUser(updatedUser);
+      closeModal();
+      location.reload();
+    });
+  }
+});
+</script>
 </body></html>

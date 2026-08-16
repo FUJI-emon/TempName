@@ -16,6 +16,97 @@
     return cookieValue;
   }
 
+  function showAILimitNotificationModal(msg) {
+    if (document.getElementById("ai-limit-modal")) return;
+    const standardKey = "AI System (OpenRouter) has reached the API rate limit or ran out of token quota. Please wait a few minutes and try again.";
+    const modalHtml = `
+      <div id="ai-limit-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-zinc-900 p-6 rounded-2xl max-w-md w-full shadow-2xl border border-rose-500/30 space-y-4 text-center animate-fade-in-up">
+          <div class="w-16 h-16 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto text-3xl">
+            <span class="material-symbols-outlined" style="font-size: 36px;">warning</span>
+          </div>
+          <h2 class="text-xl font-bold text-zinc-900 dark:text-zinc-100">AI API Limit Reached</h2>
+          <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">${escapeHtml(standardKey)}</p>
+          <div class="flex flex-col gap-2 pt-2">
+            <button id="close-ai-limit-modal-btn" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition-all">
+              <span>Got it</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML("beforeend", modalHtml);
+    window.LuminaNav?.translatePage?.();
+    const closeBtn = document.getElementById("close-ai-limit-modal-btn");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => {
+        const el = document.getElementById("ai-limit-modal");
+        if (el) el.remove();
+      });
+    }
+  }
+
+  function showDeleteCourseConfirmModal(courseTitle, onConfirm) {
+    const existing = document.getElementById("delete-course-confirm-modal");
+    if (existing) existing.remove();
+
+    const titleText = courseTitle ? escapeHtml(courseTitle) : "This Course";
+    const modalHtml = `
+      <div id="delete-course-confirm-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">
+        <div class="bg-white dark:bg-zinc-900 p-6 rounded-2xl max-w-md w-full shadow-2xl border border-indigo-500/20 space-y-4 text-center animate-fade-in-up">
+          <div class="w-14 h-14 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto text-2xl">
+            <span class="material-symbols-outlined" style="font-size: 32px;">delete</span>
+          </div>
+          <h2 class="text-lg font-bold text-zinc-900 dark:text-zinc-100">Are you sure you want to delete this course?</h2>
+          <div class="bg-indigo-50 dark:bg-indigo-950/40 p-3 rounded-xl border border-indigo-500/20 font-bold text-xs text-indigo-700 dark:text-indigo-300 truncate max-w-full">
+            📖 ${titleText}
+          </div>
+          <p class="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+            This action will remove all learning progress and AI materials. This cannot be undone.
+          </p>
+          <div class="flex items-center justify-end gap-3 pt-3 border-t border-zinc-200 dark:border-zinc-800">
+            <button id="cancel-delete-course-btn" type="button" class="px-4 py-2.5 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 font-bold text-xs rounded-xl transition-all border border-zinc-300 dark:border-zinc-700">
+              Cancel
+            </button>
+            <button id="confirm-delete-course-btn" type="button" class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 hover:opacity-80 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm">delete</span>
+              <span>Confirm Delete</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.body.insertAdjacentHTML("beforeend", modalHtml);
+    window.LuminaNav?.translatePage?.();
+
+    const modal = document.getElementById("delete-course-confirm-modal");
+    const cancelBtn = document.getElementById("cancel-delete-course-btn");
+    const confirmBtn = document.getElementById("confirm-delete-course-btn");
+
+    if (cancelBtn) {
+      cancelBtn.addEventListener("click", () => {
+        if (modal) modal.remove();
+      });
+    }
+
+    if (confirmBtn) {
+      confirmBtn.addEventListener("click", () => {
+        if (modal) modal.remove();
+        if (typeof onConfirm === "function") {
+          onConfirm();
+        } else {
+          alert("Tính năng xóa khóa học đã được tiếp nhận và sẽ sớm đồng bộ dữ liệu.");
+        }
+      });
+    }
+  }
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
   async function request(endpoint, options = {}) {
     const url = endpoint.startsWith("http") ? endpoint : `${API_BASE}${endpoint}`;
     const headers = options.headers || {};
@@ -52,9 +143,24 @@
 
       if (!response.ok || data.status === "error") {
         const errorMsg = data.message || `Request failed with status ${response.status}`;
+
+        if (response.status === 401) {
+          API.storage.clearUser();
+          const page = window.location.pathname.split("/").pop().toLowerCase();
+          if (page && page !== "lumina_learning_login_screen.html" && page !== "lumina_learning_landing_page.html") {
+            window.location.href = "lumina_learning_login_screen.html";
+          }
+        }
+
+        const isLimit = response.status === 429 || data.error_code === "AI_LIMIT_REACHED" ||
+                        /giới hạn|quota|token|Rate Limit|429|402/i.test(errorMsg);
+        if (isLimit) {
+          showAILimitNotificationModal(errorMsg);
+        }
         const error = new Error(errorMsg);
         error.status = response.status;
         error.data = data;
+        error.isAILimit = isLimit;
         throw error;
       }
 
@@ -199,8 +305,15 @@
       async logout() {
         try {
           await request("/auth/logout/", { method: "POST" });
+        } catch (e) {
+          console.warn("Logout API warning:", e);
         } finally {
           API.storage.clearUser();
+          API.storage.clearMaterial();
+          const page = window.location.pathname.split("/").pop().toLowerCase();
+          if (page !== "lumina_learning_login_screen.html" && page !== "lumina_learning_landing_page.html") {
+            window.location.href = "lumina_learning_login_screen.html";
+          }
         }
       }
     },
@@ -229,9 +342,21 @@
         });
       },
 
+      async getCourses() {
+        return request("/courses/", {
+          method: "GET"
+        });
+      },
+
       async getMaterialDetail(materialId) {
         return request(`/material/${materialId}/`, {
           method: "GET"
+        });
+      },
+
+      async deleteMaterial(materialId) {
+        return request(`/material/${materialId}/delete/`, {
+          method: "DELETE"
         });
       },
 
@@ -240,6 +365,7 @@
           method: "POST",
           body: payload
         });
+      },
       async getStepQuiz(stepId) {
         return request(`/step/${stepId}/quiz/`, {
           method: "GET"
@@ -266,13 +392,40 @@
         });
       },
 
+      async getChatThread(scope, scopeId) {
+        return request(`/chat/thread/?scope=${encodeURIComponent(scope)}&scope_id=${encodeURIComponent(scopeId)}`, {
+          method: "GET"
+        });
+      },
+
+      async getChatThreads() {
+        return request("/chat/threads/", {
+          method: "GET"
+        });
+      },
+
+      async getChatThreadDetail(threadId) {
+        return request(`/chat/thread/${threadId}/`, {
+          method: "GET"
+        });
+      },
+
+      async createNewChatThread(payload) {
+        return request("/chat/thread/new/", {
+          method: "POST",
+          body: payload
+        });
+      },
+
       async chat(payload) {
         return request("/chat/", {
           method: "POST",
           body: payload
         });
       }
-    }
+    },
+    showAILimitModal: showAILimitNotificationModal,
+    showDeleteConfirmModal: showDeleteCourseConfirmModal
   };
 
   window.API = API;
