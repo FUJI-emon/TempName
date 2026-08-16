@@ -121,6 +121,7 @@ class QuestionDTO:
     options: List[QuestionOptionDTO]
     explanation: str
     purpose: QuestionPurpose = QuestionPurpose.CHECKPOINT
+    after_card_order: Optional[int] = None
 
 
 @dataclass

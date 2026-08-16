@@ -489,16 +489,76 @@ def generate_path_view(request):
 
 @csrf_exempt
 @require_http_methods(["POST"])
+def submit_question_answer_view(request, question_id=None):
+    """
+    API nộp đáp án cho bất kỳ câu hỏi nào (Checkpoint hoặc Final Exam).
+    POST /question/<question_id>/answer/
+    Payload: {"student_id": 1, "option_id": 301} hoặc {"selected_option_id": 301}
+    """
+    try:
+        data = json.loads(request.body)
+        q_id = question_id or data.get("question_id")
+        option_id = data.get("option_id") or data.get("selected_option_id")
+        hints_used = data.get("hints_used", 0)
+
+        if not q_id:
+            return JsonResponse({"status": "error", "message": "question_id is required."}, status=400)
+        if not option_id:
+            return JsonResponse({"status": "error", "message": "option_id is required."}, status=400)
+
+        student_id = data.get("student_id")
+        if not student_id:
+            student = get_current_student(request)
+            if not student:
+                student, _ = UsersUser.objects.get_or_create(
+                    username="demo_student",
+                    defaults={
+                        "email": "demo@lumina.ai",
+                        "display_name": "Alex Learner",
+                        "password_hash": "demo_hash"
+                    }
+                )
+        else:
+            student = get_object_or_404(UsersUser, id=student_id)
+
+        service = LearningApplicationService()
+        result = service.submit_question_answer(
+            student=student,
+            question_id=int(q_id),
+            selected_option_id=int(option_id),
+            hints_used=int(hints_used),
+        )
+
+        return JsonResponse({
+            "status": "success",
+            "question_id": int(q_id),
+            "selected_option_id": int(option_id),
+            "is_correct": result["is_correct"],
+            "explanation": result["explanation"],
+            "question_type": result["question_type"],
+            "step_id": result["step_id"],
+            "step_status": result["step_status"],
+            "step_completed": result["step_completed"],
+            "next_step_unlocked": result["next_step_unlocked"],
+        })
+    except (LLMEmptyInputError, ValueError) as exc:
+        return JsonResponse({"status": "error", "message": str(exc)}, status=400)
+    except Exception as exc:
+        return JsonResponse({"status": "error", "message": f"Lỗi hệ thống: {exc}"}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
 def submit_checkpoint_view(request):
     """
-    Endpoint nộp đáp án checkpoint question.
+    Endpoint nộp đáp án checkpoint question (backward compatible).
     Input: {"student_id": 1, "question_id": 1, "selected_option_id": 2, "hints_used": 0}
     """
     try:
         data = json.loads(request.body)
         student_id = data.get("student_id")
         question_id = data.get("question_id")
-        selected_option_id = data.get("selected_option_id")
+        selected_option_id = data.get("selected_option_id") or data.get("option_id")
         hints_used = data.get("hints_used", 0)
 
         if not student_id:
@@ -516,7 +576,6 @@ def submit_checkpoint_view(request):
             student = get_object_or_404(UsersUser, id=student_id)
 
         service = LearningApplicationService()
-
         attempt, next_action_res = service.submit_checkpoint_answer(
             student=student,
             question_id=question_id,
@@ -544,100 +603,138 @@ def submit_checkpoint_view(request):
 
 
 @require_http_methods(["GET"])
+def get_hint_view(request, question_id, level):
+    """
+    API lấy gợi ý phân cấp cho 1 câu hỏi.
+    GET /hint/<question_id>/<level>/
+    """
+    try:
+        service = LearningApplicationService()
+        hint_res = service.get_question_hint(question_id=int(question_id), level=int(level))
+        return JsonResponse({
+            "status": "success",
+            "question_id": int(question_id),
+            "level": hint_res.level,
+            "hint": hint_res.text,
+        })
+    except ValueError as exc:
+        return JsonResponse({"status": "error", "message": str(exc)}, status=404)
+    except Exception as exc:
+        return JsonResponse({"status": "error", "message": f"Lỗi hệ thống: {exc}"}, status=500)
+
+
+@require_http_methods(["GET"])
+def get_student_learning_progress_view(request, student_id=None):
+    """
+    API lấy tiến trình học tập cá nhân hóa của học viên.
+    GET /student/<student_id>/learning-progress/ hoặc GET /student/learning-progress/
+    """
+    try:
+        s_id = student_id or request.GET.get("student_id")
+        if not s_id:
+            student = get_current_student(request)
+            if not student:
+                student = UsersUser.objects.filter(username="demo_student").first()
+                if not student:
+                    return JsonResponse({"status": "error", "message": "Authentication required."}, status=401)
+        else:
+            student = get_object_or_404(UsersUser, id=s_id)
+
+        material_id = request.GET.get("material_id")
+        mat_id_int = int(material_id) if material_id else None
+
+        service = LearningApplicationService()
+        progress_data = service.get_student_learning_progress(student=student, material_id=mat_id_int)
+        return JsonResponse(progress_data)
+    except Exception as exc:
+        return JsonResponse({"status": "error", "message": f"Lỗi hệ thống: {exc}"}, status=500)
+
+
+@require_http_methods(["GET"])
 def get_step_quiz_view(request, step_id):
     """
-    Endpoint lấy câu hỏi checkpoint, danh sách bài học và các lựa chọn cho 1 step.
+    Endpoint lấy toàn bộ cấu trúc lesson, cards, checkpoint questions, final exam questions và student_status cho 1 step.
     GET /step/<step_id>/quiz/
     """
     try:
         step = ProgressPathStep.objects.filter(id=step_id).first()
-        lesson_obj = None
-
-        if step:
-            lesson_obj = getattr(step, "lesson", None)
-
-        questions_list = []
-        if lesson_obj:
-            q_models = list(QuizQuestion.objects.filter(lesson=lesson_obj).order_by("after_card_order", "id"))
-            for q in q_models:
-                options = list(QuizOption.objects.filter(question=q))
-                questions_list.append({
-                    "id": q.id,
-                    "question_type": q.question_type,
-                    "after_card_order": q.after_card_order,
-                    "question_text": q.question_text,
-                    "explanation": q.explanation,
-                    "options": [
-                        {
-                            "id": opt.id,
-                            "option_text": opt.option_text,
-                        }
-                        for opt in options
-                    ]
-                })
-
-        if not questions_list:
-            # Fallback: find any QuizQuestion created in the system
-            fallback_q = QuizQuestion.objects.order_by("-id").first()
-            if fallback_q:
-                if not lesson_obj and fallback_q.lesson:
-                    lesson_obj = fallback_q.lesson
-                options = list(QuizOption.objects.filter(question=fallback_q))
-                questions_list.append({
-                    "id": fallback_q.id,
-                    "question_type": fallback_q.question_type,
-                    "after_card_order": fallback_q.after_card_order,
-                    "question_text": fallback_q.question_text,
-                    "explanation": fallback_q.explanation,
-                    "options": [
-                        {
-                            "id": opt.id,
-                            "option_text": opt.option_text,
-                        }
-                        for opt in options
-                    ]
-                })
-
-        if not questions_list:
+        if not step:
             return JsonResponse({
                 "status": "error",
-                "message": "Chưa có câu hỏi checkpoint trong hệ thống."
+                "message": f"Không tìm thấy PathStep với ID {step_id}"
             }, status=404)
 
-        lesson_data = None
-        if lesson_obj:
-            cards = list(ProgressLessonCard.objects.filter(lesson=lesson_obj).order_by("order_index"))
-            lesson_data = {
-                "id": lesson_obj.id,
-                "explanation": lesson_obj.explanation,
-                "example": lesson_obj.example,
-                "cards": [
+        lesson_obj = getattr(step, "lesson", None)
+        if not lesson_obj:
+            return JsonResponse({
+                "status": "error",
+                "message": f"Step {step_id} chưa có nội dung bài học trong database."
+            }, status=404)
+
+        cards = list(ProgressLessonCard.objects.filter(lesson=lesson_obj).order_by("order_index"))
+        lesson_data = {
+            "id": lesson_obj.id,
+            "explanation": lesson_obj.explanation,
+            "example": lesson_obj.example,
+            "cards": [
+                {
+                    "id": c.id,
+                    "order_index": c.order_index,
+                    "heading": c.heading,
+                    "body": c.body,
+                }
+                for c in cards
+            ]
+        }
+
+        all_q_models = list(QuizQuestion.objects.filter(lesson=lesson_obj).order_by("id"))
+        checkpoint_questions = []
+        final_exam_questions = []
+        all_questions_list = []
+
+        for q in all_q_models:
+            options = list(QuizOption.objects.filter(question=q))
+            q_dict = {
+                "id": q.id,
+                "question_type": q.question_type,
+                "after_card_order": q.after_card_order,
+                "question_text": q.question_text,
+                "explanation": q.explanation,
+                "options": [
                     {
-                        "id": c.id,
-                        "order_index": c.order_index,
-                        "heading": c.heading,
-                        "body": c.body
+                        "id": opt.id,
+                        "option_text": opt.option_text,
+                        "is_correct": opt.is_correct,
                     }
-                    for c in cards
+                    for opt in options
                 ]
             }
+            all_questions_list.append(q_dict)
+            if q.question_type == "checkpoint":
+                checkpoint_questions.append(q_dict)
+            elif q.question_type == "lesson_wrapup":
+                final_exam_questions.append(q_dict)
+
+        checkpoint_questions.sort(key=lambda x: (x["after_card_order"] if x["after_card_order"] is not None else 999, x["id"]))
 
         student = get_current_student(request)
-        student_status = "unlocked" if (step and step.order_index == 1) else "locked"
-        if student and step:
+        student_status = "unlocked" if step.order_index == 1 else "locked"
+        if student:
             st = ProgressStudentStepStatus.objects.filter(student=student, step=step).first()
             if st:
                 student_status = st.status
 
         return JsonResponse({
             "status": "success",
-            "step_id": step.id if step else step_id,
-            "order_index": step.order_index if step else 1,
-            "step_title": step.title if step else "Kiểm tra kiến thức",
+            "step_id": step.id,
+            "order_index": step.order_index,
+            "step_title": step.title,
             "student_status": student_status,
             "lesson": lesson_data,
-            "questions": questions_list,
-            "question": questions_list[0] if questions_list else None
+            "checkpoints": checkpoint_questions,
+            "final_exam": final_exam_questions,
+            "questions": all_questions_list,
+            "question": all_questions_list[0] if all_questions_list else None,
         })
     except Exception as exc:
         return JsonResponse({"status": "error", "message": f"Lỗi hệ thống: {exc}"}, status=500)
