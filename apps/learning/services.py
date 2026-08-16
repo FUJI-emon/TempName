@@ -207,6 +207,7 @@ class LearningApplicationService:
                 concept=concept_model,
             ).first()
             if step is None:
+                order_idx = existing_step_count + idx + 1
                 step, _ = ProgressPathStep.objects.get_or_create(
                     material=material,
                     concept=concept_model,
@@ -216,6 +217,9 @@ class LearningApplicationService:
                         "status": "generated",
                     },
                 )
+            else:
+                order_idx = step.order_index
+
             if step.concept_id != concept_model.id or step.title != concept.title:
                 step.concept = concept_model
                 step.title = concept.title
@@ -224,8 +228,19 @@ class LearningApplicationService:
 
             lesson_model = ProgressLesson.objects.filter(step=step).first()
             if not lesson_model or not lesson_model.cards.exists():
-                # Phase 1: Generate Lesson Content (Cards, Explanation, Example)
-                lesson = self.llm_service.generate_lesson(concept, mastery_ctx)
+                goal_ctx = {
+                    "title": goal.title,
+                    "description": goal.description or "",
+                }
+                mat_content = material.content or ""
+
+                # Step 1: Generate Lesson Content (Cards, Explanation, Example)
+                lesson = self.llm_service.generate_lesson(
+                    concept=concept,
+                    mastery_context=mastery_ctx,
+                    goal_context=goal_ctx,
+                    material_context=mat_content,
+                )
                 lesson_model, _ = ProgressLesson.objects.update_or_create(
                     step=step,
                     defaults={
@@ -245,18 +260,22 @@ class LearningApplicationService:
                         },
                     )
 
-                # Phase 2: Generate Quiz Questions (Checkpoint & Final Test) using generated Lesson Cards
-                mid_card_order = max(0, (len(lesson.cards) // 2) - 1) if lesson.cards else 0
+                # Step 2: Generate Checkpoint Questions (1-based after_card_order) using generated Lesson Cards
                 checkpoint_res = self.llm_service.generate_check_question(
                     concept=concept,
                     lesson=lesson,
                     purpose=QuestionPurpose.CHECKPOINT,
                 )
+                total_cards = len(lesson.cards) if lesson.cards else 1
                 for question_dto in checkpoint_res.questions:
+                    after_order = question_dto.after_card_order
+                    if after_order is None:
+                        after_order = max(1, total_cards // 2)
+
                     q_model = QuizQuestion.objects.create(
                         lesson=lesson_model,
                         question_type=question_dto.purpose.value,
-                        after_card_order=mid_card_order,
+                        after_card_order=after_order,
                         question_text=question_dto.text,
                         explanation=question_dto.explanation,
                     )
@@ -267,7 +286,7 @@ class LearningApplicationService:
                             is_correct=opt_dto.is_correct,
                         )
 
-                last_card_order = max(0, len(lesson.cards) - 1) if lesson.cards else 0
+                # Step 3: Generate Final Exam (after_card_order = None) using generated Lesson Cards
                 wrapup_res = self.llm_service.generate_check_question(
                     concept=concept,
                     lesson=lesson,
@@ -277,7 +296,7 @@ class LearningApplicationService:
                     q_model = QuizQuestion.objects.create(
                         lesson=lesson_model,
                         question_type=question_dto.purpose.value,
-                        after_card_order=last_card_order,
+                        after_card_order=None,
                         question_text=question_dto.text,
                         explanation=question_dto.explanation,
                     )
@@ -316,13 +335,16 @@ class LearningApplicationService:
         return path_batch, created_steps
 
     @transaction.atomic
-    def submit_checkpoint_answer(
+    def submit_question_answer(
         self,
         student: UsersUser,
         question_id: int,
         selected_option_id: int,
         hints_used: int = 0,
-    ) -> Tuple[QuizAttempt, NextActionResult]:
+    ) -> dict:
+        """
+        Unified service method to process student answer for any QuizQuestion (Checkpoint or Final Exam).
+        """
         try:
             question_model = QuizQuestion.objects.select_related(
                 "lesson__step__material",
@@ -339,23 +361,13 @@ class LearningApplicationService:
         if not selected_option:
             raise ValueError(f"Lựa chọn ID {selected_option_id} không hợp lệ")
 
-        selected_index = options.index(selected_option)
-        question_dto = QuestionDTO(
-            text=question_model.question_text,
-            options=[
-                QuestionOptionDTO(text=o.option_text, is_correct=o.is_correct)
-                for o in options
-            ],
-            explanation=question_model.explanation,
-            purpose=QuestionPurpose.CHECKPOINT,
-        )
+        is_correct = selected_option.is_correct
 
-        eval_result = self.llm_service.evaluate_answer(question_dto, selected_index)
         attempt = QuizAttempt.objects.create(
             student=student,
             question=question_model,
             selected_option=selected_option,
-            is_correct=eval_result.is_correct,
+            is_correct=is_correct,
             hints_used=hints_used,
         )
 
@@ -363,40 +375,85 @@ class LearningApplicationService:
         material = step.material
         concept = step.concept
 
-        attempts = QuizAttempt.objects.filter(
-            student=student, question__lesson__step=step
-        ).order_by("created_at")
-        eval_history = [
-            AnswerEvaluationResult(
-                is_correct=att.is_correct,
-                misconception=None if att.is_correct else "Cần ôn tập thêm",
+        # Concept Skill Mastery Update
+        skills = list(AssessmentSkill.objects.filter(concept=concept))
+        if skills and is_correct:
+            for skill in skills:
+                AssessmentSkillCheck.objects.update_or_create(
+                    student=student,
+                    skill=skill,
+                    defaults={"is_known": True},
+                )
+
+        step_completed = False
+        next_step_unlocked = False
+
+        # Step Completion Evaluation Contract:
+        # Checkpoint questions (question_type == "checkpoint") DO NOT mark step as COMPLETED.
+        # Final Exam questions (question_type == "lesson_wrapup") trigger step completion check.
+        wrapup_questions = QuizQuestion.objects.filter(
+            lesson__step=step,
+            question_type=QuestionPurpose.LESSON_WRAPUP.value,
+        )
+        total_wrapup_count = wrapup_questions.count()
+
+        if total_wrapup_count > 0:
+            if question_model.question_type == QuestionPurpose.LESSON_WRAPUP.value:
+                attempted_wrapup_ids = (
+                    QuizAttempt.objects.filter(
+                        student=student,
+                        question__lesson__step=step,
+                        question__question_type=QuestionPurpose.LESSON_WRAPUP.value,
+                    )
+                    .values_list("question_id", flat=True)
+                    .distinct()
+                )
+                if len(attempted_wrapup_ids) >= total_wrapup_count:
+                    step_completed = True
+        else:
+            # Fallback if step has 0 wrapup questions: complete when all questions in step attempted
+            total_step_questions = QuizQuestion.objects.filter(lesson__step=step).count()
+            attempted_step_questions = (
+                QuizAttempt.objects.filter(student=student, question__lesson__step=step)
+                .values_list("question_id", flat=True)
+                .distinct()
+                .count()
             )
-            for att in attempts
-        ]
+            if total_step_questions > 0 and attempted_step_questions >= total_step_questions:
+                step_completed = True
 
-        concept_dto = self._concept_dto_from_model(concept)
-        next_action_res = self.llm_service.decide_next_action(concept_dto, eval_history)
-
-        if eval_result.is_correct or next_action_res.action == NextAction.MOVE_NEXT:
-            ProgressStudentStepStatus.objects.update_or_create(
+        if step_completed:
+            step_status_record, _ = ProgressStudentStepStatus.objects.get_or_create(
                 student=student,
                 step=step,
-                defaults={
-                    "status": ProgressStudentStepStatus.StepStatus.COMPLETED,
-                    "completed_at": timezone.now(),
-                },
+                defaults={"status": ProgressStudentStepStatus.StepStatus.COMPLETED},
             )
+            if step_status_record.status != ProgressStudentStepStatus.StepStatus.COMPLETED:
+                step_status_record.status = ProgressStudentStepStatus.StepStatus.COMPLETED
+                step_status_record.completed_at = timezone.now()
+                step_status_record.save(update_fields=["status", "completed_at", "updated_at"])
 
-            next_step = ProgressPathStep.objects.filter(
-                material=material, order_index=step.order_index + 1
-            ).first()
+            # Find next step safely using order_index__gt
+            next_step = (
+                ProgressPathStep.objects.filter(
+                    material=material,
+                    order_index__gt=step.order_index,
+                )
+                .order_by("order_index")
+                .first()
+            )
             if next_step:
-                ProgressStudentStepStatus.objects.update_or_create(
+                next_status_record, _ = ProgressStudentStepStatus.objects.get_or_create(
                     student=student,
                     step=next_step,
                     defaults={"status": ProgressStudentStepStatus.StepStatus.UNLOCKED},
                 )
+                if next_status_record.status == ProgressStudentStepStatus.StepStatus.LOCKED:
+                    next_status_record.status = ProgressStudentStepStatus.StepStatus.UNLOCKED
+                    next_status_record.save(update_fields=["status", "updated_at"])
+                next_step_unlocked = True
 
+        # Calculate Material Progress
         all_steps_count = ProgressPathStep.objects.filter(material=material).count()
         completed_steps_count = ProgressStudentStepStatus.objects.filter(
             student=student,
@@ -426,7 +483,58 @@ class LearningApplicationService:
             },
         )
 
+        current_step_status_obj = ProgressStudentStepStatus.objects.filter(
+            student=student, step=step
+        ).first()
+        current_step_status = (
+            current_step_status_obj.status
+            if current_step_status_obj
+            else ("unlocked" if step.order_index == 1 else "locked")
+        )
+
+        return {
+            "attempt": attempt,
+            "is_correct": is_correct,
+            "explanation": question_model.explanation,
+            "question_type": question_model.question_type,
+            "step_id": step.id,
+            "step_status": current_step_status,
+            "step_completed": step_completed,
+            "next_step_unlocked": next_step_unlocked,
+        }
+
+    @transaction.atomic
+    def submit_checkpoint_answer(
+        self,
+        student: UsersUser,
+        question_id: int,
+        selected_option_id: int,
+        hints_used: int = 0,
+    ) -> Tuple[QuizAttempt, NextActionResult]:
+        result = self.submit_question_answer(
+            student=student,
+            question_id=question_id,
+            selected_option_id=selected_option_id,
+            hints_used=hints_used,
+        )
+        attempt = result["attempt"]
+        step = attempt.question.lesson.step
+        concept_dto = self._concept_dto_from_model(step.concept)
+
+        attempts = QuizAttempt.objects.filter(
+            student=student, question__lesson__step=step
+        ).order_by("created_at")
+        eval_history = [
+            AnswerEvaluationResult(
+                is_correct=att.is_correct,
+                misconception=None if att.is_correct else "Cần ôn tập thêm",
+            )
+            for att in attempts
+        ]
+
+        next_action_res = self.llm_service.decide_next_action(concept_dto, eval_history)
         if next_action_res.needs_next_batch:
+            material = step.material
             remaining_concepts = [
                 self._concept_dto_from_model(step_item.concept)
                 for step_item in ProgressPathStep.objects.filter(material=material).exclude(
@@ -445,8 +553,65 @@ class LearningApplicationService:
                     student=student,
                     batch_size=3,
                 )
-
         return attempt, next_action_res
+
+    def get_student_learning_progress(
+        self, student: UsersUser, material_id: Optional[int] = None
+    ) -> dict:
+        progress_qs = ProgressStudentMaterialProgress.objects.filter(student=student)
+        if material_id:
+            progress_qs = progress_qs.filter(material_id=material_id)
+
+        material_ids = list(progress_qs.values_list("material_id", flat=True))
+        materials = list(
+            LearningMaterial.objects.filter(id__in=material_ids).order_by("-created_at")
+        )
+        if not materials and material_id:
+            mat = LearningMaterial.objects.filter(id=material_id).first()
+            if mat:
+                materials = [mat]
+
+        result_materials = []
+        for mat in materials:
+            steps = ProgressPathStep.objects.filter(material=mat).order_by("order_index", "id")
+            statuses = {
+                s.step_id: s.status
+                for s in ProgressStudentStepStatus.objects.filter(student=student, step__material=mat)
+            }
+            mat_progress = ProgressStudentMaterialProgress.objects.filter(
+                student=student, material=mat
+            ).first()
+
+            step_items = [
+                {
+                    "step_id": step.id,
+                    "order_index": step.order_index,
+                    "title": step.title,
+                    "status": statuses.get(
+                        step.id,
+                        ProgressStudentStepStatus.StepStatus.UNLOCKED
+                        if step.order_index == 1
+                        else ProgressStudentStepStatus.StepStatus.LOCKED,
+                    ),
+                    "concept_id": step.concept_id,
+                }
+                for step in steps
+            ]
+
+            result_materials.append({
+                "material_id": mat.id,
+                "title": mat.title,
+                "completion_percent": float(mat_progress.completion_percent) if mat_progress else 0.0,
+                "status": mat_progress.status if mat_progress else "not_started",
+                "steps": step_items,
+            })
+
+        return {
+            "status": "success",
+            "student_id": student.id,
+            "materials": result_materials,
+            "steps": result_materials[0]["steps"] if len(result_materials) == 1 else [],
+        }
 
     def get_question_hint(
         self, question_id: int, level: int, previous_hints: Optional[List[str]] = None

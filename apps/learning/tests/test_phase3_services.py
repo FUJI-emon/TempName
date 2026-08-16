@@ -75,27 +75,74 @@ class Phase3ServicesTestCase(TestCase):
         concepts = [
             ConceptDTO(id="c1", title="Function monotonicity"),
             ConceptDTO(id="c2", title="Extrema"),
+            ConceptDTO(id="c3", title="Asymptotes"),
         ]
 
         batch_res, steps = self.service.generate_and_save_learning_path_batch(
             material=material,
             concepts=concepts,
             student=self.student,
-            batch_size=2,
+            batch_size=3,
         )
 
-        self.assertEqual(len(steps), 2)
+        self.assertEqual(len(steps), 3)
         self.assertFalse(batch_res.is_final_batch is None)
-        self.assertEqual(ProgressPathStep.objects.filter(material=material).count(), 2)
-        self.assertGreater(ProgressLesson.objects.filter(step=steps[0]).count(), 0)
-        self.assertGreater(ProgressLessonCard.objects.filter(lesson=steps[0].lesson).count(), 0)
-        self.assertGreater(QuizQuestion.objects.filter(lesson=steps[0].lesson).count(), 0)
+        self.assertEqual(ProgressPathStep.objects.filter(material=material).count(), 3)
+
+        for idx, step in enumerate(steps, start=1):
+            self.assertEqual(step.order_index, idx)
+            lesson = step.lesson
+            self.assertIsNotNone(lesson)
+            cards = list(lesson.cards.order_index_list if hasattr(lesson.cards, "order_index_list") else lesson.cards.order_by("order_index"))
+            self.assertGreater(len(cards), 0)
+            self.assertEqual(cards[0].order_index, 1)
+
+            checkpoints = QuizQuestion.objects.filter(lesson=lesson, question_type="checkpoint")
+            self.assertGreater(checkpoints.count(), 0)
+            for cp in checkpoints:
+                self.assertIsNotNone(cp.after_card_order)
+                self.assertGreaterEqual(cp.after_card_order, 1)
+
+            final_exams = QuizQuestion.objects.filter(lesson=lesson, question_type="lesson_wrapup")
+            self.assertGreater(final_exams.count(), 0)
+            for fe in final_exams:
+                self.assertIsNone(fe.after_card_order)
 
         prog = ProgressStudentMaterialProgress.objects.get(student=self.student, material=material)
         self.assertEqual(
             prog.status,
             ProgressStudentMaterialProgress.MaterialStatus.IN_PROGRESS,
         )
+
+    def test_phase1_regeneration_no_duplicates(self):
+        material = LearningMaterial.objects.create(
+            title="Physics 12",
+            content="Optics content...",
+            subject="Physics",
+        )
+        concepts = [
+            ConceptDTO(id="c1", title="Reflection"),
+            ConceptDTO(id="c2", title="Refraction"),
+            ConceptDTO(id="c3", title="Diffraction"),
+        ]
+
+        batch1, steps1 = self.service.generate_and_save_learning_path_batch(
+            material=material, concepts=concepts, student=self.student, batch_size=3
+        )
+        step_count_1 = ProgressPathStep.objects.filter(material=material).count()
+        card_count_1 = ProgressLessonCard.objects.count()
+        question_count_1 = QuizQuestion.objects.count()
+
+        batch2, steps2 = self.service.generate_and_save_learning_path_batch(
+            material=material, concepts=concepts, student=self.student, batch_size=3
+        )
+        step_count_2 = ProgressPathStep.objects.filter(material=material).count()
+        card_count_2 = ProgressLessonCard.objects.count()
+        question_count_2 = QuizQuestion.objects.count()
+
+        self.assertEqual(step_count_1, step_count_2)
+        self.assertEqual(card_count_1, card_count_2)
+        self.assertEqual(question_count_1, question_count_2)
 
     def test_submit_checkpoint_answer_updates_progress(self):
         material = LearningMaterial.objects.create(
@@ -276,6 +323,9 @@ class Phase3ViewsTestCase(TestCase):
             password_hash="pw",
             display_name="View Student",
         )
+        session = self.client.session
+        session["user_id"] = self.student.id
+        session.save()
 
     def test_onboarding_view(self):
         response = self.client.post(
@@ -314,7 +364,7 @@ class Phase3ViewsTestCase(TestCase):
             question_text="Q?",
             explanation="E",
         )
-        QuizOption.objects.create(question=q, option_text="A", is_correct=True)
+        QuizOption.objects.create(question=q, option_text="Lựa chọn 1", is_correct=True)
 
         url = reverse("learning:get_hint", kwargs={"question_id": q.id, "level": 1})
         response = self.client.get(url)
@@ -322,3 +372,44 @@ class Phase3ViewsTestCase(TestCase):
         data = response.json()
         self.assertEqual(data["status"], "success")
         self.assertIn("hint", data)
+
+    def test_get_step_quiz_view(self):
+        material = LearningMaterial.objects.create(title="Math Material", content="Calculus", subject="Math")
+        goal = LearningGoal.objects.create(material=material, title="Math Goal")
+        concept = LearningConcept.objects.create(goal=goal, external_id="c1", title="Limits", order_index=1)
+        step = ProgressPathStep.objects.create(material=material, concept=concept, order_index=1, title="Limits Step")
+        lesson = ProgressLesson.objects.create(step=step, concept=concept, explanation="Exp", example="Ex")
+        card1 = ProgressLessonCard.objects.create(lesson=lesson, order_index=1, heading="Card 1", body="Body 1")
+        card2 = ProgressLessonCard.objects.create(lesson=lesson, order_index=2, heading="Card 2", body="Body 2")
+
+        q_cp = QuizQuestion.objects.create(
+            lesson=lesson,
+            question_type="checkpoint",
+            after_card_order=1,
+            question_text="Checkpoint Q?",
+            explanation="Explanation CP",
+        )
+        opt_cp = QuizOption.objects.create(question=q_cp, option_text="Option CP 1", is_correct=True)
+
+        q_wrap = QuizQuestion.objects.create(
+            lesson=lesson,
+            question_type="lesson_wrapup",
+            after_card_order=None,
+            question_text="Final Exam Q?",
+            explanation="Explanation Final",
+        )
+        opt_wrap = QuizOption.objects.create(question=q_wrap, option_text="Option Final 1", is_correct=True)
+
+        url = reverse("learning:get_step_quiz", kwargs={"step_id": step.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data["status"], "success")
+        self.assertEqual(data["step_id"], step.id)
+        self.assertEqual(data["lesson"]["id"], lesson.id)
+        self.assertEqual(len(data["lesson"]["cards"]), 2)
+        self.assertEqual(len(data["checkpoints"]), 1)
+        self.assertEqual(data["checkpoints"][0]["after_card_order"], 1)
+        self.assertEqual(len(data["final_exam"]), 1)
+        self.assertIsNone(data["final_exam"][0]["after_card_order"])
+

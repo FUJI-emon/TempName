@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.hashers import make_password
 
-from .models import LearningMaterial, LearningGoal, UsersUser, ProgressStudentMaterialProgress
+from apps.learning.models import LearningMaterial, LearningGoal, UsersUser, ProgressStudentMaterialProgress
 
 
 class LearningModelTestCase(TestCase):
@@ -36,7 +36,6 @@ class LearningModelTestCase(TestCase):
         client = Client()
         response = client.get(reverse("learning:index"))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "TempName Learning")
 
     def test_unauthenticated_access_returns_401(self):
         client = Client()

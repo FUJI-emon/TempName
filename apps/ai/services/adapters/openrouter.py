@@ -30,6 +30,7 @@ from ..dto import (
     NextActionResult,
     QuestionDTO,
     QuestionOptionDTO,
+    QuestionPurpose,
 )
 from ..exceptions import LLMEmptyInputError, LLMInvalidResponseError, LLMRateLimitError, LLMServiceError
 from ..guardrail import assert_no_leak, assert_no_leak_chat
@@ -156,9 +157,11 @@ class OpenRouterAdapter(LLMService):
             raise LLMInvalidResponseError(f"Response thiếu/lỗi field trong generate_learning_path: {exc}") from exc
 
 
-    def generate_lesson(self, concept, mastery_context):
+    def generate_lesson(self, concept, mastery_context, goal_context=None, material_context=None):
         system_prompt = generate_lesson_prompts.SYSTEM_PROMPT
-        user_prompt = generate_lesson_prompts.build_user_prompt(concept, mastery_context)
+        user_prompt = generate_lesson_prompts.build_user_prompt(
+            concept, mastery_context, goal_context, material_context
+        )
         data = self._call(system_prompt, user_prompt)
 
         try:
@@ -168,7 +171,7 @@ class OpenRouterAdapter(LLMService):
             ]
             cards = [
                 LessonCardDTO(
-                    order_index=c.get("order_index", idx),
+                    order_index=c.get("order_index", idx + 1),
                     heading=c["heading"],
                     body=c["body"],
                 )
@@ -212,6 +215,14 @@ class OpenRouterAdapter(LLMService):
                 if options and not has_correct:
                     options[0].is_correct = True
 
+                after_card_order = None
+                purpose_val = purpose.value if hasattr(purpose, "value") else str(purpose)
+                if purpose_val == QuestionPurpose.CHECKPOINT.value:
+                    after_card_order = q_data.get("after_card_order")
+                    if after_card_order is None:
+                        total_cards = len(getattr(lesson, "cards", [])) if hasattr(lesson, "cards") else (len(lesson.get("cards", [])) if isinstance(lesson, dict) else 1)
+                        after_card_order = max(1, total_cards // 2)
+
                 if options:
                     questions.append(
                         QuestionDTO(
@@ -219,6 +230,7 @@ class OpenRouterAdapter(LLMService):
                             options=options,
                             explanation=q_data.get("explanation", "Lời giải thích đáp án."),
                             purpose=purpose,
+                            after_card_order=after_card_order,
                         )
                     )
             return CheckQuestionResult(questions=questions)
