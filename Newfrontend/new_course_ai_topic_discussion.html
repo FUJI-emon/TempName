@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Lumina AI - AI Tutor Chat</title>
+<title>TempName AI - AI Tutor Chat</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Manrope:wght@400;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
@@ -172,7 +172,7 @@
 <nav class="hidden md:flex flex-col h-full py-8 px-6 bg-surface-container-lowest shadow-[0px_4px_20px_rgba(94,92,230,0.08)] fixed left-0 top-0 w-[280px] z-50">
 <!-- Brand Header -->
 <div class="mb-12">
-<h1 class="font-display-lg text-headline-md text-primary tracking-tight">Lumina AI</h1>
+<h1 class="font-display-lg text-headline-md text-primary tracking-tight">TempName AI</h1>
 <p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Enlightened Learning</p>
 </div>
 <!-- Navigation Links -->
@@ -218,84 +218,73 @@
 </nav>
 <!-- Main Content Area -->
 <main class="flex-1 md:ml-[280px] h-full flex flex-col relative max-w-[1440px] mx-auto w-full">
+<!-- Left Edge Toggle Button (Hover / Click to Slide Out Chat History) -->
+<button type="button" id="chat-history-toggle-btn" class="fixed left-4 md:left-[296px] top-24 z-50 w-10 h-10 rounded-full bg-primary text-on-primary shadow-lg hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center border border-primary-container cursor-pointer group" title="Xem lịch sử chat">
+  <span class="material-symbols-outlined transition-transform duration-300 group-hover:translate-x-0.5" id="history-toggle-icon">chevron_right</span>
+</button>
+
+<!-- Backdrop Overlay for Chat History Drawer -->
+<div id="chat-sidebar-backdrop" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[55] hidden transition-opacity duration-300"></div>
+
+<!-- Slide-Out Chat History Sidebar Drawer (ChatGPT Style) -->
+<aside id="chat-history-sidebar" class="fixed left-0 top-0 h-full w-[320px] bg-surface-container-lowest dark:bg-inverse-surface border-r border-surface-variant/50 shadow-2xl z-[60] transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col p-6">
+  <!-- Sidebar Header -->
+  <div class="flex items-center justify-between pb-4 border-b border-surface-variant/40 mb-4">
+    <div class="flex items-center gap-2 text-primary font-bold">
+      <span class="material-symbols-outlined text-xl">history</span>
+      <span class="font-headline-md text-base">Lịch Sử Chat</span>
+    </div>
+    <button type="button" id="close-sidebar-btn" class="w-8 h-8 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined text-xl">close</span>
+    </button>
+  </div>
+
+  <!-- New Chat Button -->
+  <button type="button" id="new-chat-btn" class="w-full py-3 px-4 bg-primary text-on-primary font-button text-sm font-bold rounded-xl shadow-md hover:bg-primary/90 transition-all flex items-center justify-center gap-2 mb-4 hover:shadow-lg active:scale-95">
+    <span class="material-symbols-outlined text-lg">add</span>
+    <span>Đoạn chat mới</span>
+  </button>
+
+  <!-- Thread List -->
+  <div class="font-label-sm text-xs text-on-surface-variant uppercase tracking-wider mb-2">Các cuộc trò chuyện gần đây</div>
+  <div id="chat-history-list" class="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
+    <div class="p-4 text-xs text-on-surface-variant text-center">Đang tải lịch sử chat...</div>
+  </div>
+</aside>
+
 <!-- Mobile Header Overlay (if accessed on small screens) -->
 <header class="md:hidden sticky top-0 w-full z-40 bg-surface/80 backdrop-blur-xl h-20 flex justify-between items-center px-6">
-<h1 class="font-display-lg text-headline-lg text-primary tracking-tight">Lumina AI</h1>
+<h1 class="font-display-lg text-headline-lg text-primary tracking-tight">TempName AI</h1>
 <button class="text-on-surface-variant p-2 rounded-full hover:bg-surface-container">
 <span class="material-symbols-outlined" data-icon="menu">menu</span>
 </button>
 </header>
 <!-- Chat Container -->
-<div class="flex-1 overflow-y-auto px-container-padding py-section-margin pb-32 flex flex-col items-center">
-<div class="w-full max-w-3xl space-y-8 flex flex-col">
-<!-- Initial AI Greeting & Suggestions -->
-<div class="flex flex-col items-center text-center space-y-6 mt-12 mb-12">
-<div class="w-20 h-20 rounded-full bg-primary-container/20 flex items-center justify-center border-2 border-primary/10 shadow-sm">
-<span class="material-symbols-outlined text-4xl text-primary" data-icon="psychology">psychology</span>
+<div class="flex-1 overflow-y-auto px-container-padding py-section-margin pb-64 flex flex-col items-center" id="chat-scroll-view">
+<div class="w-full max-w-3xl space-y-6 flex flex-col" id="chat-messages-container">
+<!-- Messages will be rendered dynamically from backend -->
 </div>
-<div>
-<h2 class="font-headline-md text-headline-md text-on-background mb-2">What would you like to learn today?</h2>
-<p class="font-body-lg text-body-lg text-on-surface-variant max-w-lg mx-auto">Start a new study session or pick up where we left off. I'm ready when you are.</p>
-</div>
-<!-- Suggestion Chips -->
-<div class="flex flex-wrap justify-center gap-4 mt-6">
-<button class="px-5 py-2.5 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-body-md hover:border-primary hover:text-primary hover:shadow-sm transition-all duration-200 flex items-center gap-2 hover:-translate-y-1 hover:shadow-md duration-300 hover:shadow-lg">
-<span class="material-symbols-outlined text-sm" data-icon="science">science</span>
-                            Quantum Mechanics
-                        </button>
-<button class="px-5 py-2.5 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-body-md hover:border-primary hover:text-primary hover:shadow-sm transition-all duration-200 flex items-center gap-2 hover:-translate-y-1 hover:shadow-md duration-300 hover:shadow-lg">
-<span class="material-symbols-outlined text-sm" data-icon="experiment">experiment</span>
-                            Organic Chemistry
-                        </button>
-<button class="px-5 py-2.5 rounded-full border border-outline-variant bg-surface-container-lowest text-on-surface font-body-md hover:border-primary hover:text-primary hover:shadow-sm transition-all duration-200 flex items-center gap-2 hover:-translate-y-1 hover:shadow-md duration-300 hover:shadow-lg">
-<span class="material-symbols-outlined text-sm" data-icon="data_exploration">data_exploration</span>
-                            Data Science
-                        </button>
-</div>
-</div>
-<!-- Example of an ongoing conversation block (Hidden by default in a new session, shown for UI completeness) -->
-<!-- User Message -->
-<div class="flex justify-end w-full">
-<div class="max-w-[80%] bg-surface-container-lowest p-6 rounded-2xl rounded-tr-sm shadow-[0px_4px_20px_rgba(94,92,230,0.08)] border border-surface-variant/50 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-<p class="font-body-md text-on-surface">I'd like to start with Data Science, specifically focusing on building a simple linear regression model in Python.</p>
-</div>
-</div>
-<!-- AI Message -->
-<div class="flex justify-start w-full gap-4">
-<div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center mt-1 border border-primary/10">
+<!-- AI Typing Indicator -->
+<div class="hidden flex justify-start w-full gap-4 opacity-80 mt-4 max-w-3xl" id="typing-indicator">
+<div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center border border-primary/10">
 <span class="material-symbols-outlined text-[20px] text-primary" data-icon="psychology">psychology</span>
 </div>
-<div class="max-w-[85%] chat-ai-bg p-6 rounded-2xl rounded-tl-sm shadow-[0px_4px_20px_rgba(94,92,230,0.08)] border border-primary/10 space-y-4 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-<p class="font-body-md text-on-surface">Excellent choice! Linear regression is a foundational algorithm in Data Science.</p>
-<p class="font-body-md text-on-surface">Before we dive into the Python code using `scikit-learn`, let's make sure we understand the core concept. In simple terms, linear regression tries to draw the "best fit" straight line through a set of data points to predict a continuous outcome.</p>
-<!-- AI Learning Card inside chat -->
-<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 mt-4 hover:-translate-y-1 hover:shadow-md transition-all duration-300 hover:shadow-lg">
-<div class="flex items-center gap-3 mb-3">
-<span class="material-symbols-outlined text-primary" data-icon="lightbulb">lightbulb</span>
-<h4 class="font-headline-md text-body-lg font-semibold text-on-surface">Core Concept Check</h4>
-</div>
-<p class="font-body-md text-on-surface-variant mb-4">Are you familiar with the terms "independent variable" (features) and "dependent variable" (target)?</p>
-<div class="flex gap-3">
-<button class="px-4 py-2 bg-primary/10 text-primary font-button text-button rounded-lg hover:bg-primary/20 transition-colors hover:-translate-y-1 hover:shadow-md transition-all duration-300">Yes, I know them</button>
-<button class="px-4 py-2 border border-outline-variant text-on-surface-variant font-button text-button rounded-lg hover:bg-surface-container transition-colors hover:-translate-y-1 hover:shadow-md transition-all duration-300">Explain briefly</button>
-</div>
-</div>
-</div>
-</div>
-<!-- AI Thinking Indicator -->
-<div class="flex justify-start w-full gap-4 opacity-70">
-<div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center mt-1">
-<span class="material-symbols-outlined text-[20px] text-primary/50" data-icon="psychology">psychology</span>
-</div>
-<div class="flex items-center p-4">
+<div class="flex items-center p-4 bg-surface-container-lowest rounded-2xl border border-primary/10 shadow-sm">
 <p class="font-label-sm text-label-sm text-primary animate-pulse flex items-center gap-2">
-<span class="w-1.5 h-1.5 bg-primary rounded-full inline-block"></span>
-<span class="w-1.5 h-1.5 bg-primary rounded-full inline-block animation-delay-150"></span>
-<span class="w-1.5 h-1.5 bg-primary rounded-full inline-block animation-delay-300"></span>
-                            AI is structuring lesson...
-                        </p>
+<span class="w-2 h-2 bg-primary rounded-full inline-block"></span>
+<span class="w-2 h-2 bg-primary rounded-full inline-block animation-delay-150"></span>
+<span class="w-2 h-2 bg-primary rounded-full inline-block animation-delay-300"></span>
+<span class="font-medium text-xs ml-1">TempName AI đang suy nghĩ...</span>
+</p>
 </div>
 </div>
+<!-- Error Display Box -->
+<div class="hidden w-full max-w-3xl mt-4 p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-800 dark:text-rose-200 text-sm flex items-center justify-between" id="chat-error-banner">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-rose-600">error</span>
+<span id="chat-error-text">Đã xảy ra lỗi khi gửi tin nhắn.</span>
+</div>
+<button type="button" onclick="document.getElementById('chat-error-banner').classList.add('hidden')" class="text-xs text-rose-700 hover:underline">Đóng</button>
 </div>
 </div>
 <!-- Sticky Input Area & Actions -->
@@ -303,31 +292,351 @@
 <div class="max-w-3xl mx-auto w-full relative flex flex-col gap-4">
 <!-- Action Prompts -->
 <div class="flex justify-between items-center px-2">
-<button class="flex items-center gap-2 text-primary hover:text-primary-container transition-colors font-button text-button">
+<a href="lumina_learning_upload_document_desktop.html" class="flex items-center gap-2 text-primary hover:text-primary-container transition-colors font-button text-button">
 <span class="material-symbols-outlined text-xl" data-icon="upload_file">upload_file</span>
-                        Upload study materials
-                    </button>
-<div class="text-on-surface-variant font-label-sm text-label-sm">
-                        Session: New
-                    </div>
+Upload study materials
+</a>
+<div class="text-on-surface-variant font-label-sm text-label-sm" id="session-info-badge">
+Session: Loading...
+</div>
 </div>
 <!-- Input Box -->
 <div class="relative bg-surface-container-lowest rounded-2xl shadow-[0px_8px_30px_rgba(94,92,230,0.12)] border border-outline-variant/50 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary-container transition-all duration-200 flex items-end p-2 pl-4 hover:-translate-y-1 hover:shadow-lg duration-300">
-<button class="p-2 text-outline hover:text-primary transition-colors mb-1">
-<span class="material-symbols-outlined" data-icon="add_circle">add_circle</span>
-</button>
-<textarea class="w-full bg-transparent border-none focus:ring-0 resize-none font-body-lg text-on-surface placeholder:text-outline/70 py-3 px-2 max-h-32" placeholder="Message Lumina AI or choose a topic above..." rows="1" style="min-height: 52px;"></textarea>
-<button class="p-3 bg-primary text-on-primary rounded-xl hover:shadow-md transition-shadow mb-1 ml-2 flex items-center justify-center">
+<textarea id="chat-input" class="w-full bg-transparent border-none focus:ring-0 resize-none font-body-lg text-on-surface placeholder:text-outline/70 py-3 px-2 max-h-32" placeholder="Nhập câu hỏi cho AI Tutor..." rows="1" style="min-height: 52px;"></textarea>
+<button id="send-btn" type="button" class="p-3 bg-primary text-on-primary rounded-xl hover:shadow-md transition-shadow mb-1 ml-2 flex items-center justify-center disabled:opacity-50">
 <span class="material-symbols-outlined hover:-translate-y-1 hover:shadow-lg transition-all duration-300" data-icon="send">send</span>
 </button>
 </div>
-<p class="text-center font-label-sm text-label-sm text-outline mt-1">Lumina AI can make mistakes. Verify important information.</p>
+<p class="text-center font-label-sm text-label-sm text-outline mt-1">TempName AI can make mistakes. Verify important information.</p>
 </div>
 </div>
 </main>
 
-
-
-
+<script src="./api.js"></script>
 <script src="./navigation.js?v=10"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+  const chatMessagesContainer = document.getElementById("chat-messages-container");
+  const chatScrollView = document.getElementById("chat-scroll-view");
+  const chatInput = document.getElementById("chat-input");
+  const sendBtn = document.getElementById("send-btn");
+  const typingIndicator = document.getElementById("typing-indicator");
+  const errorBanner = document.getElementById("chat-error-banner");
+  const errorText = document.getElementById("chat-error-text");
+  const sessionInfoBadge = document.getElementById("session-info-badge");
+
+  const chatHistoryToggleBtn = document.getElementById("chat-history-toggle-btn");
+  const chatSidebarBackdrop = document.getElementById("chat-sidebar-backdrop");
+  const chatHistorySidebar = document.getElementById("chat-history-sidebar");
+  const closeSidebarBtn = document.getElementById("close-sidebar-btn");
+  const newChatBtn = document.getElementById("new-chat-btn");
+  const chatHistoryList = document.getElementById("chat-history-list");
+
+  function openSidebar() {
+    if (chatHistorySidebar) chatHistorySidebar.classList.remove("-translate-x-full");
+    if (chatSidebarBackdrop) chatSidebarBackdrop.classList.remove("hidden");
+    loadChatHistorySidebar();
+  }
+
+  function closeSidebar() {
+    if (chatHistorySidebar) chatHistorySidebar.classList.add("-translate-x-full");
+    if (chatSidebarBackdrop) chatSidebarBackdrop.classList.add("hidden");
+  }
+
+  if (chatHistoryToggleBtn) {
+    chatHistoryToggleBtn.addEventListener("mouseenter", openSidebar);
+    chatHistoryToggleBtn.addEventListener("click", openSidebar);
+  }
+
+  if (closeSidebarBtn) closeSidebarBtn.addEventListener("click", closeSidebar);
+  if (chatSidebarBackdrop) chatSidebarBackdrop.addEventListener("click", closeSidebar);
+
+  // Extract Context Parameters from URL search query or LocalStorage
+  const urlParams = new URLSearchParams(window.location.search);
+  const goalIdParam = urlParams.get("goal_id");
+  const materialIdParam = urlParams.get("material_id");
+  const conceptIdParam = urlParams.get("concept_id");
+  const lessonIdParam = urlParams.get("lesson_id") || urlParams.get("step_id");
+
+  let material = window.API?.storage?.getMaterial();
+  let activeStep = null;
+  try {
+    activeStep = JSON.parse(localStorage.getItem("lumina.activeStep"));
+  } catch (e) {}
+
+  const currentMaterialId = materialIdParam || material?.id || material?.material_id || window.API?.storage?.getLastMaterialId();
+  const currentGoalId = goalIdParam || (material && material.goals && material.goals[0] ? material.goals[0].id : null);
+  const currentConceptId = conceptIdParam || activeStep?.concept_id || activeStep?.id;
+  const currentLessonId = lessonIdParam || activeStep?.id;
+
+  // Determine chat thread scope: prefer GOAL, fallback to MATERIAL
+  let currentScope = "goal";
+  let currentScopeId = currentGoalId;
+
+  if (!currentScopeId && currentMaterialId) {
+    currentScope = "material";
+    currentScopeId = currentMaterialId;
+  }
+
+  if (!currentScopeId) {
+    // Default fallback if no course is active
+    currentScope = "material";
+    currentScopeId = 1;
+  }
+
+  let currentThreadId = null;
+
+  // Update session badge text
+  let courseTitle = material?.title || material?.goal_title || "Course Session";
+  sessionInfoBadge.textContent = `Course: ${courseTitle}`;
+
+  // Load Real Chat History Sidebar List
+  async function loadChatHistorySidebar() {
+    if (!chatHistoryList) return;
+    try {
+      chatHistoryList.innerHTML = `<div class="p-4 text-xs text-on-surface-variant text-center">Đang tải lịch sử...</div>`;
+      const res = await window.API.learning.getChatThreads();
+      if (res.status === "success" && res.threads && res.threads.length > 0) {
+        chatHistoryList.innerHTML = "";
+        res.threads.forEach((t) => {
+          const isSelected = t.id === currentThreadId;
+          const item = document.createElement("div");
+          item.className = `flex flex-col p-3 rounded-xl transition-all cursor-pointer border ${
+            isSelected
+              ? "bg-primary/15 border-primary/40 text-primary font-bold shadow-sm"
+              : "bg-surface-container-low hover:bg-primary/10 border-transparent text-on-surface hover:text-primary"
+          }`;
+          item.innerHTML = `
+            <div class="flex items-center justify-between gap-2 mb-1">
+              <span class="font-body-md text-xs truncate font-bold flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-sm">chat_bubble_outline</span>
+                ${escapeHtml(t.title)}
+              </span>
+              <span class="text-[10px] text-on-surface-variant opacity-70 shrink-0">${escapeHtml(t.created_at || "")}</span>
+            </div>
+            ${t.last_message ? `<p class="text-[11px] text-on-surface-variant line-clamp-1 opacity-80">${escapeHtml(t.last_message)}</p>` : ""}
+          `;
+
+          item.addEventListener("click", async () => {
+            currentThreadId = t.id;
+            closeSidebar();
+            try {
+              const detail = await window.API.learning.getChatThreadDetail(t.id);
+              if (detail && detail.status === "success") {
+                renderChatHistory(detail.messages || []);
+              }
+            } catch (err) {
+              showError("Không thể tải tin nhắn của đoạn chat này.");
+            }
+          });
+
+          chatHistoryList.appendChild(item);
+        });
+      } else {
+        chatHistoryList.innerHTML = `<div class="p-4 text-xs text-on-surface-variant text-center">Chưa có lịch sử đoạn chat nào.</div>`;
+      }
+    } catch (err) {
+      chatHistoryList.innerHTML = `<div class="p-4 text-xs text-on-surface-variant text-center">Không thể tải danh sách cuộc trò chuyện.</div>`;
+    } finally {
+      window.LuminaNav?.translatePage?.();
+    }
+  }
+
+  // Handle "+ Đoạn chat mới" Button
+  if (newChatBtn) {
+    newChatBtn.addEventListener("click", async () => {
+      closeSidebar();
+      try {
+        const newThreadRes = await window.API.learning.createNewChatThread({
+          scope: currentScope,
+          scope_id: parseInt(currentScopeId)
+        });
+        if (newThreadRes && newThreadRes.thread_id) {
+          currentThreadId = newThreadRes.thread_id;
+          renderChatHistory([]);
+        }
+      } catch (err) {
+        showError("Không thể khởi tạo đoạn chat mới.");
+      }
+    });
+  }
+
+  // Initialize Chat Thread & Load History
+  try {
+    const threadRes = await window.API.learning.createChatThread({
+      scope: currentScope,
+      scope_id: parseInt(currentScopeId)
+    });
+
+    if (threadRes && threadRes.thread_id) {
+      currentThreadId = threadRes.thread_id;
+      renderChatHistory(threadRes.messages || []);
+    } else {
+      showError("Không thể tạo hoặc tải chat thread từ server.");
+    }
+  } catch (err) {
+    console.error("Failed to initialize chat thread:", err);
+    showError("Lỗi kết nối backend AI Chat. Vui lòng thử lại.");
+  }
+
+  function renderChatHistory(messages) {
+    chatMessagesContainer.innerHTML = "";
+
+    if (!messages || messages.length === 0) {
+      // Welcome banner for empty session asking about topic or document upload
+      const welcomeBox = document.createElement("div");
+      welcomeBox.className = "w-full max-w-xl flex flex-col items-center text-center space-y-5 my-6 p-8 bg-surface-container-lowest rounded-3xl border border-primary/20 shadow-lg animate-fade-in mx-auto";
+      welcomeBox.innerHTML = `
+        <div class="w-20 h-20 rounded-full bg-primary-container/20 flex items-center justify-center border-2 border-primary/20 shadow-inner">
+          <span class="material-symbols-outlined text-4xl text-primary" data-icon="psychology">psychology</span>
+        </div>
+        <div>
+          <h2 class="font-headline-md text-2xl text-on-background font-bold mb-2">Xin chào! Bạn muốn học về chủ đề gì hôm nay?</h2>
+          <p class="font-body-md text-sm text-on-surface-variant max-w-md mx-auto leading-relaxed">
+            Hãy trò chuyện với AI Tutor về chủ đề hoặc mục tiêu học tập của bạn, hoặc tải ngay tài liệu bài học lên để AI phân tích và tạo lộ trình cá nhân hóa!
+          </p>
+        </div>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 w-full pt-2">
+          <a href="lumina_learning_upload_document_desktop.html" class="w-full sm:w-auto px-6 py-3 bg-primary text-on-primary font-button text-sm font-bold rounded-xl shadow-md hover:bg-primary/90 hover:shadow-lg transition-all flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-lg">cloud_upload</span>
+            <span>Upload tài liệu ngay</span>
+          </a>
+          <button type="button" onclick="document.getElementById('chat-input').focus()" class="w-full sm:w-auto px-6 py-3 bg-surface-container hover:bg-surface-variant text-on-surface font-button text-sm font-semibold rounded-xl border border-outline-variant/40 transition-colors flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-lg">chat</span>
+            <span>Trò chuyện về chủ đề</span>
+          </button>
+        </div>
+      `;
+      chatMessagesContainer.appendChild(welcomeBox);
+      window.LuminaNav?.translatePage?.();
+      return;
+    }
+
+    messages.forEach((msg) => {
+      appendMessageToUI(msg.role, msg.content);
+    });
+
+    scrollToBottom();
+    window.LuminaNav?.translatePage?.();
+  }
+
+  function appendMessageToUI(role, content) {
+    const msgWrapper = document.createElement("div");
+
+    if (role === "student" || role === "user") {
+      msgWrapper.className = "flex justify-end w-full animate-fade-in";
+      msgWrapper.innerHTML = `
+        <div class="max-w-[80%] bg-primary text-on-primary p-5 rounded-2xl rounded-tr-sm shadow-md border border-primary/20 break-words">
+          <p class="font-body-md text-sm leading-relaxed whitespace-pre-wrap break-words">${escapeHtml(content)}</p>
+        </div>
+      `;
+    } else {
+      msgWrapper.className = "flex justify-start w-full gap-4 animate-fade-in";
+      msgWrapper.innerHTML = `
+        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center mt-1 border border-primary/10">
+          <span class="material-symbols-outlined text-[20px] text-primary" data-icon="psychology">psychology</span>
+        </div>
+        <div class="max-w-[85%] chat-ai-bg p-6 rounded-2xl rounded-tl-sm shadow-[0px_4px_20px_rgba(94,92,230,0.08)] border border-primary/10 space-y-3 break-words">
+          <div class="font-body-md text-on-surface text-sm leading-relaxed whitespace-pre-wrap break-words">${formatMessageText(content)}</div>
+        </div>
+      `;
+    }
+
+    chatMessagesContainer.appendChild(msgWrapper);
+    scrollToBottom();
+  }
+
+  async function handleSend() {
+    const text = chatInput.value.trim();
+    if (!text || !currentThreadId) return;
+
+    chatInput.value = "";
+    chatInput.style.height = "52px";
+    hideError();
+
+    // Render user message immediately
+    appendMessageToUI("student", text);
+
+    // Show typing state
+    typingIndicator.classList.remove("hidden");
+    sendBtn.disabled = true;
+    scrollToBottom();
+
+    try {
+      const payload = {
+        thread_id: currentThreadId,
+        message: text,
+        scope: currentScope,
+        goal_id: currentGoalId ? parseInt(currentGoalId) : null,
+        material_id: currentMaterialId ? parseInt(currentMaterialId) : null,
+        concept_id: currentConceptId ? parseInt(currentConceptId) : null,
+        lesson_id: currentLessonId ? parseInt(currentLessonId) : null
+      };
+
+      const res = await window.API.learning.chat(payload);
+
+      if (res && res.status === "success") {
+        appendMessageToUI("ai", res.content);
+      } else {
+        showError(res?.message || "Không thể nhận phản hồi từ AI.");
+      }
+    } catch (err) {
+      console.error("Chat API error:", err);
+      showError(err.message || "Lỗi kết nối API Chat. Vui lòng kiểm tra lại.");
+    } finally {
+      typingIndicator.classList.add("hidden");
+      sendBtn.disabled = false;
+      scrollToBottom();
+    }
+  }
+
+  sendBtn.addEventListener("click", handleSend);
+
+  chatInput.addEventListener("keydown", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  });
+
+  // Auto-expand textarea height as user types
+  chatInput.addEventListener("input", function () {
+    this.style.height = "auto";
+    this.style.height = Math.min(this.scrollHeight, 128) + "px";
+  });
+
+  function showError(msg) {
+    errorText.textContent = msg;
+    errorBanner.classList.remove("hidden");
+    window.LuminaNav?.translatePage?.();
+  }
+
+  function hideError() {
+    errorBanner.classList.add("hidden");
+  }
+
+  function scrollToBottom() {
+    requestAnimationFrame(() => {
+      chatScrollView.scrollTop = chatScrollView.scrollHeight;
+      setTimeout(() => {
+        chatScrollView.scrollTop = chatScrollView.scrollHeight;
+      }, 50);
+    });
+  }
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function formatMessageText(text) {
+    if (!text) return "";
+    let safe = escapeHtml(text);
+    // Basic Markdown support for bold and linebreaks
+    safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    safe = safe.replace(/`([^`]+)`/g, '<code class="bg-primary/10 px-1.5 py-0.5 rounded font-mono text-xs text-primary">$1</code>');
+    return safe;
+  }
+});
+</script>
 </body></html>

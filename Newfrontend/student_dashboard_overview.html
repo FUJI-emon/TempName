@@ -1,503 +1,750 @@
 <!DOCTYPE html>
 
-<html class="light" lang="en"><head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Lumina Learning - Student Dashboard</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Manrope:wght@400;600&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<script id="tailwind-config">
-      tailwind.config = {
-        darkMode: "class",
-        theme: {
-          extend: {
-            "colors": {
-                    "primary-fixed": "#e2dfff",
-                    "surface-variant": "#e2e2e7",
-                    "surface-container-high": "#e8e8ed",
-                    "on-primary-fixed": "#0c006b",
-                    "secondary-container": "#cb66fe",
-                    "secondary-fixed": "#f6d9ff",
-                    "tertiary-container": "#006dd6",
-                    "on-tertiary": "#ffffff",
-                    "on-error-container": "#93000a",
-                    "on-primary-container": "#ffffff",
-                    "inverse-on-surface": "#f0f0f5",
-                    "surface-container-highest": "#e2e2e7",
-                    "on-secondary-fixed-variant": "#7200a3",
-                    "on-secondary-fixed": "#310048",
-                    "secondary": "#9026c3",
-                    "error-container": "#ffdad6",
-                    "background": "#f9f9fe",
-                    "inverse-surface": "#2e3034",
-                    "surface-bright": "#f9f9fe",
-                    "on-surface-variant": "#464554",
-                    "on-primary": "#ffffff",
-                    "surface-dim": "#d9dade",
-                    "on-error": "#ffffff",
-                    "on-tertiary-fixed-variant": "#00468d",
-                    "error": "#ba1a1a",
-                    "secondary-fixed-dim": "#e9b3ff",
-                    "on-background": "#1a1c1f",
-                    "primary": "#5e5ce6",
-                    "on-primary-fixed-variant": "#332dbc",
-                    "outline": "#777586",
-                    "primary-container": "#5e5ce6",
-                    "on-tertiary-fixed": "#001b3e",
-                    "outline-variant": "#c7c4d7",
-                    "on-tertiary-container": "#f0f3ff",
-                    "on-surface": "#1a1c1f",
-                    "surface-container-low": "#f3f3f8",
-                    "surface-container-lowest": "#ffffff",
-                    "on-secondary-container": "#4a006b",
-                    "surface-container": "#ededf2",
-                    "surface-tint": "#4d4ad5",
-                    "tertiary-fixed-dim": "#aac7ff",
-                    "inverse-primary": "#c2c1ff",
-                    "tertiary": "#0055a9",
-                    "primary-fixed-dim": "#c2c1ff",
-                    "on-secondary": "#ffffff",
-                    "tertiary-fixed": "#d6e3ff",
-                    "surface": "#f9f9fe"
-            },
-            "borderRadius": {
-                    "DEFAULT": "0.25rem",
-                    "lg": "0.5rem",
-                    "xl": "0.75rem",
-                    "full": "9999px"
-            },
-            "spacing": {
-                    "card-gap": "24px",
-                    "base": "8px",
-                    "container-padding": "32px",
-                    "section-margin": "48px",
-                    "gutter": "24px"
-            },
-            "fontFamily": {
-                    "label-sm": [
-                            "JetBrains Mono"
-                    ],
-                    "headline-md": [
-                            "Hanken Grotesk"
-                    ],
-                    "body-lg": [
-                            "Manrope"
-                    ],
-                    "display-lg": [
-                            "Hanken Grotesk"
-                    ],
-                    "body-md": [
-                            "Manrope"
-                    ],
-                    "button": [
-                            "Manrope"
-                    ],
-                    "headline-lg": [
-                            "Hanken Grotesk"
-                    ]
-            },
-            "fontSize": {
-                    "label-sm": [
-                            "12px",
-                            {
-                                    "lineHeight": "16px",
-                                    "letterSpacing": "0.05em",
-                                    "fontWeight": "500"
-                            }
-                    ],
-                    "headline-md": [
-                            "24px",
-                            {
-                                    "lineHeight": "32px",
-                                    "fontWeight": "600"
-                            }
-                    ],
-                    "body-lg": [
-                            "18px",
-                            {
-                                    "lineHeight": "28px",
-                                    "fontWeight": "400"
-                            }
-                    ],
-                    "display-lg": [
-                            "48px",
-                            {
-                                    "lineHeight": "56px",
-                                    "letterSpacing": "-0.02em",
-                                    "fontWeight": "700"
-                            }
-                    ],
-                    "body-md": [
-                            "16px",
-                            {
-                                    "lineHeight": "24px",
-                                    "fontWeight": "400"
-                            }
-                    ],
-                    "button": [
-                            "16px",
-                            {
-                                    "lineHeight": "20px",
-                                    "fontWeight": "600"
-                            }
-                    ],
-                    "headline-lg": [
-                            "32px",
-                            {
-                                    "lineHeight": "40px",
-                                    "fontWeight": "600"
-                            }
-                    ]
-            }
-    },
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>TempName Learning - Student Dashboard</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Manrope:wght@400;600&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet" />
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-fixed": "#e2dfff",
+            "surface-variant": "#e2e2e7",
+            "surface-container-high": "#e8e8ed",
+            "on-primary-fixed": "#0c006b",
+            "secondary-container": "#cb66fe",
+            "secondary-fixed": "#f6d9ff",
+            "tertiary-container": "#006dd6",
+            "on-tertiary": "#ffffff",
+            "on-error-container": "#93000a",
+            "on-primary-container": "#ffffff",
+            "inverse-on-surface": "#f0f0f5",
+            "surface-container-highest": "#e2e2e7",
+            "on-secondary-fixed-variant": "#7200a3",
+            "on-secondary-fixed": "#310048",
+            "secondary": "#9026c3",
+            "error-container": "#ffdad6",
+            "background": "#f9f9fe",
+            "inverse-surface": "#2e3034",
+            "surface-bright": "#f9f9fe",
+            "on-surface-variant": "#464554",
+            "on-primary": "#ffffff",
+            "surface-dim": "#d9dade",
+            "on-error": "#ffffff",
+            "on-tertiary-fixed-variant": "#00468d",
+            "error": "#ba1a1a",
+            "secondary-fixed-dim": "#e9b3ff",
+            "on-background": "#1a1c1f",
+            "primary": "#5e5ce6",
+            "on-primary-fixed-variant": "#332dbc",
+            "outline": "#777586",
+            "primary-container": "#5e5ce6",
+            "on-tertiary-fixed": "#001b3e",
+            "outline-variant": "#c7c4d7",
+            "on-tertiary-container": "#f0f3ff",
+            "on-surface": "#1a1c1f",
+            "surface-container-low": "#f3f3f8",
+            "surface-container-lowest": "#ffffff",
+            "on-secondary-container": "#4a006b",
+            "surface-container": "#ededf2",
+            "surface-tint": "#4d4ad5",
+            "tertiary-fixed-dim": "#aac7ff",
+            "inverse-primary": "#c2c1ff",
+            "tertiary": "#0055a9",
+            "primary-fixed-dim": "#c2c1ff",
+            "on-secondary": "#ffffff",
+            "tertiary-fixed": "#d6e3ff",
+            "surface": "#f9f9fe"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "card-gap": "24px",
+            "base": "8px",
+            "container-padding": "32px",
+            "section-margin": "48px",
+            "gutter": "24px"
+          },
+          "fontFamily": {
+            "label-sm": [
+              "JetBrains Mono"
+            ],
+            "headline-md": [
+              "Hanken Grotesk"
+            ],
+            "body-lg": [
+              "Manrope"
+            ],
+            "display-lg": [
+              "Hanken Grotesk"
+            ],
+            "body-md": [
+              "Manrope"
+            ],
+            "button": [
+              "Manrope"
+            ],
+            "headline-lg": [
+              "Hanken Grotesk"
+            ]
+          },
+          "fontSize": {
+            "label-sm": [
+              "12px",
+              {
+                "lineHeight": "16px",
+                "letterSpacing": "0.05em",
+                "fontWeight": "500"
+              }
+            ],
+            "headline-md": [
+              "24px",
+              {
+                "lineHeight": "32px",
+                "fontWeight": "600"
+              }
+            ],
+            "body-lg": [
+              "18px",
+              {
+                "lineHeight": "28px",
+                "fontWeight": "400"
+              }
+            ],
+            "display-lg": [
+              "48px",
+              {
+                "lineHeight": "56px",
+                "letterSpacing": "-0.02em",
+                "fontWeight": "700"
+              }
+            ],
+            "body-md": [
+              "16px",
+              {
+                "lineHeight": "24px",
+                "fontWeight": "400"
+              }
+            ],
+            "button": [
+              "16px",
+              {
+                "lineHeight": "20px",
+                "fontWeight": "600"
+              }
+            ],
+            "headline-lg": [
+              "32px",
+              {
+                "lineHeight": "40px",
+                "fontWeight": "600"
+              }
+            ]
+          }
         },
+      },
+    }
+  </script>
+  <style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    .material-symbols-outlined[data-weight="fill"] {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+
+    /* Smooth scrolling and transitions */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Glassmorphism utilities */
+    .glass {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    /* Entrance Animation */
+    @keyframes fade-in {
+      0% {
+        opacity: 0;
+        transform: translateY(10px);
       }
-    </script>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        .material-symbols-outlined[data-weight="fill"] {
-            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        
-        /* Smooth scrolling and transitions */
-        html { scroll-behavior: smooth; }
-        body { 
-            -webkit-font-smoothing: antialiased; 
-            -moz-osx-font-smoothing: grayscale; 
-        }
-        
-        /* Glassmorphism utilities */
-        .glass {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      @keyframes fade-in {
+        0% {
+          opacity: 0;
+          transform: translateY(0);
         }
 
-        /* Entrance Animation */
-        @keyframes fade-in {
-            0% {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
         }
+      }
+    }
 
-        @media (prefers-reduced-motion: reduce) {
-            @keyframes fade-in {
-                0% {
-                    opacity: 0;
-                    transform: translateY(0);
-                }
-                100% {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-        }
-
-        .animate-fade-in {
-            animation: fade-in 600ms ease-out forwards;
-        }
-    </style>
+    .animate-fade-in {
+      animation: fade-in 600ms ease-out forwards;
+    }
+  </style>
 </head>
-<body class="animate-fade-in bg-background text-on-background font-body-md text-body-md selection:bg-primary-container selection:text-on-primary-container min-h-screen flex" data-mode="connect">
-<!-- SideNavBar (from JSON) -->
-<nav class="fixed left-0 top-0 h-full w-[280px] hidden lg:flex flex-col bg-surface-container-lowest shadow-lg shadow-[0px_4px_20px_rgba(94,92,230,0.08)] z-40 p-6 gap-2">
-<!-- Brand Logo -->
-<div class="font-headline-md text-headline-md font-bold text-primary mb-8 px-4 flex items-center gap-3">
-<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
-            Lumina Learning
+
+<body
+  class="animate-fade-in bg-background text-on-background font-body-md text-body-md selection:bg-primary-container selection:text-on-primary-container min-h-screen flex"
+  data-mode="connect">
+  <!-- SideNavBar (from JSON) -->
+  <nav
+    class="fixed left-0 top-0 h-full w-[280px] hidden lg:flex flex-col bg-surface-container-lowest shadow-lg shadow-[0px_4px_20px_rgba(94,92,230,0.08)] z-40 p-6 gap-2">
+    <!-- Brand Logo -->
+    <div class="font-headline-md text-headline-md font-bold text-primary mb-8 px-4 flex items-center gap-3">
+      <span class="material-symbols-outlined" data-weight="fill"
+        style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+      TempName Learning
+    </div>
+    <!-- User Profile Header -->
+    <div class="flex items-center gap-4 mb-6 px-4 max-w-full">
+      <img alt="User profile"
+        class="w-12 h-12 rounded-full object-cover shadow-sm border border-outline-variant shrink-0"
+        src="https://lh3.googleusercontent.com/aida-public/AB6AXuCW2KE8WbGrxAzu9WxUBX-_SlXKUM4S5ESiAHuVD2cWRWrhxQwiElyVfFu4Xxa3YhLVwu1PCZtX3lpO75d7ALabXwbQCehb_SFWoaugszfQ2Wvp93bXgOku7LLVCNGoZdvbuCYnRXyE6gr591LyxZJzIbTkBrPUGPncMV5DjwbgC0eSqX4uZqF8HnLFAcYQ4Vpe1uiK47ei-VgE5KibYeGwHC_d0_fCR2nXfLqF7LOFV2SbR7bjCq7o" />
+      <div class="flex flex-col min-w-0 flex-1 overflow-hidden">
+        <h3 class="font-button text-button text-on-surface truncate" id="sidebar-user-name" data-user-display-name>Alex
+          Learner</h3>
+        <p class="font-label-sm text-label-sm text-on-surface-variant truncate" id="sidebar-user-email" data-user-email>
+          TempName Learner</p>
+      </div>
+    </div>
+    <!-- Primary Action CTA -->
+    <a href="new_course_ai_topic_discussion.html"
+      class="w-full py-3 px-4 mb-6 bg-primary text-on-primary font-button text-button rounded-xl hover:shadow-lg transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 hover:-translate-y-1 duration-300">
+      <span class="material-symbols-outlined">add</span>
+      New Study Session
+    </a>
+    <!-- Navigation Links -->
+    <div class="flex-1 flex flex-col gap-1">
+      <!-- Active Tab: Dashboard -->
+      <a class="flex items-center gap-4 px-4 py-3 bg-primary-container text-on-primary-container font-bold rounded-xl transition-colors duration-300"
+        href="#">
+        <span class="material-symbols-outlined" data-weight="fill"
+          style="font-variation-settings: 'FILL' 1;">dashboard</span>
+        Dashboard
+      </a>
+      <a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-colors hover:translate-x-1 transition-transform hover:-translate-y-1 duration-300"
+        href="course_history_my_learning_journeys_1.html">
+        <span class="material-symbols-outlined">school</span>
+        My Courses
+      </a>
+      <a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-colors hover:translate-x-1 transition-transform hover:-translate-y-1 duration-300"
+        href="new_course_ai_topic_discussion.html">
+        <span class="material-symbols-outlined">smart_toy</span>
+        AI Tutor
+      </a>
+    </div>
+    <!-- Footer Links -->
+    <div class="mt-auto flex flex-col gap-1 border-t border-surface-variant pt-4">
+      <a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-colors"
+        href="settings_user_account_preferences.html">
+        <span class="material-symbols-outlined">settings</span>
+        Settings
+      </a>
+      <a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-colors"
+        href="#">
+        <span class="material-symbols-outlined">help</span>
+        Help
+      </a>
+    </div>
+  </nav>
+  <!-- Main Content Area -->
+  <main class="flex-1 lg:ml-[280px] min-h-screen w-full relative">
+    <!-- Mobile Header (Visible only on small screens) -->
+    <header
+      class="lg:hidden flex items-center justify-between p-4 bg-surface-container-lowest shadow-sm sticky top-0 z-30">
+      <div class="font-headline-md text-headline-md font-bold text-primary flex items-center gap-2">
+        <span class="material-symbols-outlined" data-weight="fill"
+          style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+        TempName
+      </div>
+      <button class="text-on-surface-variant p-2 rounded-lg hover:bg-surface-container-low">
+        <span class="material-symbols-outlined">menu</span>
+      </button>
+    </header>
+    <div class="p-container-padding max-w-[1440px] mx-auto pb-24">
+      <!-- Page Header -->
+      <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-section-margin">
+        <div class="">
+          <h1 class="font-display-lg text-display-lg text-on-surface mb-2">
+            <span>Welcome back</span>, <span id="welcome-user-name" data-user-display-name>Learner</span>
+          </h1>
+          <p class="text-on-surface-variant text-body-lg font-body-lg">Ready to continue your enlightened learning journey?</p>
         </div>
-<!-- User Profile Header -->
-<div class="flex items-center gap-4 mb-6 px-4">
-<img alt="User profile" class="w-12 h-12 rounded-full object-cover shadow-sm border border-outline-variant" data-alt="A small, professional portrait photograph of an enthusiastic student, brightly lit in a modern learning environment. The subject has a warm smile and is focused. The image has a clean, high-key lighting style typical of modern corporate or educational branding, with a soft, blurred background to keep focus on the subject. Minimalist light mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCW2KE8WbGrxAzu9WxUBX-_SlXKUM4S5ESiAHuVD2cWRWrhxQwiElyVfFu4Xxa3YhLVwu1PCZtX3lpO75d7ALabXwbQCehb_SFWoaugszfQ2Wvp93bXgOku7LLVCNGoZdvbuCYnRXyE6gr591LyxZJzIbTkBrPUGPncMV5DjwbgC0eSqX4uZqF8HnLFAcYQ4Vpe1uiK47ei-VgE5KibYeGwHC_d0_fCR2nXfLqF7LOFV2SbR7bjCq7o"/>
-<div>
-<h3 class="font-button text-button text-on-surface">Alex Miller</h3>
-<p class="font-label-sm text-label-sm text-on-surface-variant">Level 12 Learner</p>
-</div>
-</div>
-<!-- Primary Action CTA -->
-<button class="w-full py-3 px-4 mb-6 bg-primary text-on-primary font-button text-button rounded-xl hover:shadow-lg transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 hover:-translate-y-1 duration-300">
-<span class="material-symbols-outlined">add</span>
-            New Study Session
-        </button>
-<!-- Navigation Links -->
-<div class="flex-1 flex flex-col gap-1">
-<!-- Active Tab: Dashboard -->
-<a class="flex items-center gap-4 px-4 py-3 bg-primary-container text-on-primary-container font-bold rounded-xl transition-colors duration-300" href="#">
-<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">dashboard</span>
-                Dashboard
-            </a>
-<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-colors hover:translate-x-1 transition-transform hover:-translate-y-1 duration-300" href="{{DATA:SCREEN:SCREEN_5}}">
-<span class="material-symbols-outlined">school</span>
-                My Courses
-            </a>
-<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-colors hover:translate-x-1 transition-transform hover:-translate-y-1 duration-300" href="#">
-<span class="material-symbols-outlined">smart_toy</span>
-                AI Tutor
-            </a>
-</div>
-<!-- Footer Links -->
-<div class="mt-auto flex flex-col gap-1 border-t border-surface-variant pt-4">
-<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-colors" href="#">
-<span class="material-symbols-outlined">settings</span>
-                Settings
-            </a>
-<a class="flex items-center gap-4 px-4 py-3 text-on-surface-variant hover:bg-surface-container-low rounded-xl transition-colors" href="#">
-<span class="material-symbols-outlined">help</span>
-                Help
-            </a>
-</div>
-</nav>
-<!-- Main Content Area -->
-<main class="flex-1 lg:ml-[280px] min-h-screen w-full relative">
-<!-- Mobile Header (Visible only on small screens) -->
-<header class="lg:hidden flex items-center justify-between p-4 bg-surface-container-lowest shadow-sm sticky top-0 z-30">
-<div class="font-headline-md text-headline-md font-bold text-primary flex items-center gap-2">
-<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
-                Lumina
+        <div
+          class="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-xl shadow-[0px_4px_20px_rgba(94,92,230,0.08)] hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-secondary" data-weight="fill"
+              style="font-variation-settings: 'FILL' 1;">school</span>
+            <div class="flex flex-col">
+              <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Courses</span>
+              <span class="font-headline-md text-headline-md text-on-surface leading-none"
+                id="stat-total-courses">0</span>
             </div>
-<button class="text-on-surface-variant p-2 rounded-lg hover:bg-surface-container-low">
-<span class="material-symbols-outlined">menu</span>
-</button>
-</header>
-<div class="p-container-padding max-w-[1440px] mx-auto pb-24">
-<!-- Page Header -->
-<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-section-margin">
-<div class="">
-<h1 class="font-display-lg text-display-lg text-on-surface mb-2">Welcome back, Alex</h1>
-<p class="text-on-surface-variant text-body-lg font-body-lg">Ready to continue your enlightened learning journey?</p>
-</div>
-<div class="flex items-center gap-4 bg-surface-container-lowest p-4 rounded-xl shadow-[0px_4px_20px_rgba(94,92,230,0.08)] hover:-translate-y-1 hover:shadow-lg transition-all duration-200 duration-300">
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary" data-weight="fill" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
-<div class="flex flex-col">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Streak</span>
-<span class="font-headline-md text-headline-md text-on-surface leading-none">14 Days</span>
-</div>
-</div>
-<div class="w-px h-10 bg-outline-variant mx-2"></div>
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-tertiary" data-weight="fill" style="font-variation-settings: 'FILL' 1;">stars</span>
-<div class="flex flex-col">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Total XP</span>
-<span class="font-headline-md text-headline-md text-on-surface leading-none">2,450</span>
-</div>
-</div>
-</div>
-</div>
-<!-- Dashboard Grid -->
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
-<!-- Main Column (Takes up 2/3 on lg screens) -->
-<div class="lg:col-span-2 flex flex-col gap-section-margin">
-<!-- Continue Learning Bento Box -->
-<section class="">
-<div class="flex items-center justify-between mb-6">
-<h2 class="font-headline-lg text-headline-lg text-on-surface">Continue Learning</h2>
-<button class="text-primary hover:text-primary-fixed-variant font-button text-button flex items-center gap-1 transition-colors">
-                                View all <span class="material-symbols-outlined">arrow_forward</span>
-</button>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-card-gap">
-<!-- Course Card 1 -->
-<div class="bg-surface-container-lowest rounded-xl p-6 shadow-[0px_4px_20px_rgba(94,92,230,0.08)] border border-surface-variant/50 relative overflow-hidden group hover:shadow-lg transition-all duration-200 hover:-translate-y-1 duration-300">
-<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-<span class="material-symbols-outlined text-6xl text-primary">translate</span>
-</div>
-<div class="relative z-10">
-<div class="flex items-center gap-2 mb-4">
-<span class="px-3 py-1 bg-primary-container/20 text-primary font-label-sm text-label-sm rounded-full">Language</span>
-<span class="px-3 py-1 bg-surface-container text-on-surface-variant font-label-sm text-label-sm rounded-full">Intermediate</span>
-</div>
-<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Japanese N3 Grammar</h3>
-<p class="text-on-surface-variant mb-6 line-clamp-2">Mastering conditional forms and advanced sentence structures.</p>
-<div class="mb-4">
-<div class="flex justify-between font-label-sm text-label-sm mb-2">
-<span class="text-on-surface-variant">Progress</span>
-<span class="text-primary font-bold">85%</span>
-</div>
-<div class="w-full bg-surface-container-high rounded-full h-2 overflow-hidden">
-<div class="bg-gradient-to-r from-primary to-secondary h-full rounded-full" style="width: 85%"></div>
-</div>
-</div>
-<button class="w-full py-2 px-4 bg-primary text-on-primary font-button text-button rounded-lg hover:bg-primary-fixed-variant hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 hover:-translate-y-1">
-<span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
-                                        Continue Lesson
-                                    </button>
-</div>
-</div>
-<!-- Course Card 2 -->
-<div class="bg-surface-container-lowest rounded-xl p-6 shadow-[0px_4px_20px_rgba(94,92,230,0.08)] border border-surface-variant/50 relative overflow-hidden group hover:shadow-lg transition-all duration-200 hover:-translate-y-1 duration-300">
-<div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-<span class="material-symbols-outlined text-6xl text-tertiary">code</span>
-</div>
-<div class="relative z-10">
-<div class="flex items-center gap-2 mb-4">
-<span class="px-3 py-1 bg-tertiary-container/20 text-tertiary font-label-sm text-label-sm rounded-full">Computer Science</span>
-<span class="px-3 py-1 bg-surface-container text-on-surface-variant font-label-sm text-label-sm rounded-full">Beginner</span>
-</div>
-<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Data Structures</h3>
-<p class="text-on-surface-variant mb-6 line-clamp-2">Understanding arrays, linked lists, and basic algorithmic complexity.</p>
-<div class="mb-4">
-<div class="flex justify-between font-label-sm text-label-sm mb-2">
-<span class="text-on-surface-variant">Progress</span>
-<span class="text-tertiary font-bold">32%</span>
-</div>
-<div class="w-full bg-surface-container-high rounded-full h-2 overflow-hidden">
-<div class="bg-gradient-to-r from-tertiary to-primary h-full rounded-full" style="width: 32%"></div>
-</div>
-</div>
-<button class="w-full py-2 px-4 border-2 border-primary text-primary font-button text-button rounded-lg hover:bg-primary/5 hover:shadow-lg transition-all duration-200 flex items-center justify-center gap-2 hover:-translate-y-1">
-                                        Continue Lesson
-                                    </button>
-</div>
-</div>
-</div>
-</section>
-<!-- Upcoming Lessons / Weekly Schedule -->
-<section>
-<h2 class="font-headline-lg text-headline-lg text-on-surface mb-6">Upcoming Lessons</h2>
-<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(94,92,230,0.08)] border border-surface-variant/50 overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-200 duration-300">
-<!-- Schedule Item 1 -->
-<div class="flex items-center gap-4 p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors hover:-translate-y-1 hover:shadow-md duration-300 transition-all">
-<div class="flex flex-col items-center justify-center w-16 h-16 bg-primary-container/20 rounded-lg text-primary">
-<span class="font-headline-md text-headline-md leading-none">14</span>
-<span class="font-label-sm text-label-sm uppercase">Oct</span>
-</div>
-<div class="flex-1">
-<h4 class="font-button text-button text-on-surface">Live Q&amp;A: Conditional Forms</h4>
-<p class="text-on-surface-variant text-sm flex items-center gap-1">
-<span class="material-symbols-outlined text-sm">schedule</span> 10:00 AM - 11:30 AM
-                                    </p>
-</div>
-<button class="p-2 text-primary hover:bg-primary-container/30 rounded-full transition-colors" title="Join Session">
-<span class="material-symbols-outlined">video_camera_front</span>
-</button>
-</div>
-<!-- Schedule Item 2 -->
-<div class="flex items-center gap-4 p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors hover:-translate-y-1 hover:shadow-md duration-300 transition-all">
-<div class="flex flex-col items-center justify-center w-16 h-16 bg-surface-container rounded-lg text-on-surface-variant">
-<span class="font-headline-md text-headline-md leading-none">16</span>
-<span class="font-label-sm text-label-sm uppercase">Oct</span>
-</div>
-<div class="flex-1">
-<h4 class="font-button text-button text-on-surface">Quiz: Linked Lists</h4>
-<p class="text-on-surface-variant text-sm flex items-center gap-1">
-<span class="material-symbols-outlined text-sm">assignment</span> Due by 11:59 PM
-                                    </p>
-</div>
-<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors" title="View Details">
-<span class="material-symbols-outlined">chevron_right</span>
-</button>
-</div>
-<!-- Schedule Item 3 -->
-<div class="flex items-center gap-4 p-4 hover:bg-surface-container-low transition-colors hover:-translate-y-1 hover:shadow-md duration-300 transition-all">
-<div class="flex flex-col items-center justify-center w-16 h-16 bg-surface-container rounded-lg text-on-surface-variant">
-<span class="font-headline-md text-headline-md leading-none">18</span>
-<span class="font-label-sm text-label-sm uppercase">Oct</span>
-</div>
-<div class="flex-1">
-<h4 class="font-button text-button text-on-surface">Study Group: Conversational Practice</h4>
-<p class="text-on-surface-variant text-sm flex items-center gap-1">
-<span class="material-symbols-outlined text-sm">group</span> 2:00 PM - 3:00 PM
-                                    </p>
-</div>
-<button class="p-2 text-on-surface-variant hover:bg-surface-container-high rounded-full transition-colors" title="View Details">
-<span class="material-symbols-outlined">chevron_right</span>
-</button>
-</div>
-</div>
-</section>
-</div>
-<!-- Right Column (Sidebar equivalent on desktop) -->
-<div class="flex flex-col gap-section-margin">
-<!-- Start New Topic CTA -->
-<div class="bg-gradient-to-br from-primary-fixed to-secondary-fixed rounded-xl p-6 shadow-[0px_4px_20px_rgba(94,92,230,0.15)] relative overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-200 duration-300">
-<!-- Decorative element -->
-<div class="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-2xl -mr-10 -mt-10"></div>
-<h3 class="font-headline-md text-headline-md text-on-primary-fixed mb-2 relative z-10">Expand Your Horizons</h3>
-<p class="text-on-primary-fixed-variant mb-6 text-sm relative z-10">Discover new subjects tailored to your learning style.</p>
-<button class="w-full py-3 px-4 bg-primary text-on-primary font-button text-button rounded-xl hover:shadow-xl transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 relative z-10 hover:-translate-y-1">
-<span class="material-symbols-outlined">explore</span>
-                            Start New Topic
-                        </button>
-</div>
-<!-- AI Insights / Activity Feed -->
-<section class="bg-surface-container-lowest rounded-xl p-6 shadow-[0px_4px_20px_rgba(94,92,230,0.08)] border border-surface-variant/50 hover:-translate-y-1 hover:shadow-lg transition-all duration-200 duration-300">
-<div class="flex items-center gap-2 mb-6">
-<span class="material-symbols-outlined text-secondary" data-weight="fill" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
-<h2 class="font-headline-md text-headline-md text-on-surface">AI Insights</h2>
-</div>
-<div class="space-y-6">
-<!-- Feed Item 1 -->
-<div class="flex gap-4 hover:-translate-y-1 hover:shadow-sm transition-all duration-300 p-2 rounded-lg">
-<div class="w-8 h-8 rounded-full bg-primary-container/30 flex items-center justify-center shrink-0 mt-1">
-<span class="material-symbols-outlined text-primary text-sm">trending_up</span>
-</div>
-<div>
-<p class="font-button text-button text-on-surface mb-1">Vocabulary Mastery Improved</p>
-<p class="text-on-surface-variant text-sm">You've successfully retained 45 new Kanji this week. Your retention rate is 12% above average.</p>
-<span class="font-label-sm text-label-sm text-outline mt-2 block">2 hours ago</span>
-</div>
-</div>
-<!-- Feed Item 2 -->
-<div class="flex gap-4 hover:-translate-y-1 hover:shadow-sm transition-all duration-300 p-2 rounded-lg">
-<div class="w-8 h-8 rounded-full bg-secondary-container/30 flex items-center justify-center shrink-0 mt-1">
-<span class="material-symbols-outlined text-secondary text-sm">tips_and_updates</span>
-</div>
-<div>
-<p class="font-button text-button text-on-surface mb-1">Study Suggestion</p>
-<p class="text-on-surface-variant text-sm bg-surface-container-low p-3 rounded-lg mt-2 border border-surface-variant/50">
-                                        Consider reviewing <em>"Conditional 'ba' form"</em>. You hesitated on 3 questions during yesterday's review.
-                                    </p>
-<button class="text-primary font-label-sm text-label-sm mt-2 hover:underline">Review Now</button>
-</div>
-</div>
-<!-- Feed Item 3 -->
-<div class="flex gap-4 hover:-translate-y-1 hover:shadow-sm transition-all duration-300 p-2 rounded-lg">
-<div class="w-8 h-8 rounded-full bg-tertiary-container/30 flex items-center justify-center shrink-0 mt-1">
-<span class="material-symbols-outlined text-tertiary text-sm">workspace_premium</span>
-</div>
-<div>
-<p class="font-button text-button text-on-surface mb-1">Achievement Unlocked</p>
-<p class="text-on-surface-variant text-sm">"Night Owl Learner" - Completed 5 sessions after 10 PM.</p>
-<span class="font-label-sm text-label-sm text-outline mt-2 block">Yesterday</span>
-</div>
-</div>
-</div>
-</section>
-</div>
-</div>
-</div>
-</main>
-<!-- Mobile Bottom Navigation Shell (Suppressed based on logic, but structure included for responsiveness if needed on other screens) -->
-<nav class="lg:hidden fixed bottom-0 w-full bg-surface-container-lowest shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-40 pb-safe">
-<div class="flex justify-around items-center h-16">
-<a class="flex flex-col items-center justify-center w-full h-full text-primary" href="#">
-<span class="material-symbols-outlined mb-1" data-weight="fill" style="font-variation-settings: 'FILL' 1;">dashboard</span>
-<span class="font-label-sm text-[10px]">Dashboard</span>
-</a>
-<a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant" href="#">
-<span class="material-symbols-outlined mb-1">school</span>
-<span class="font-label-sm text-[10px]">My Courses</span>
-</a>
-<a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant" href="#">
-<span class="material-symbols-outlined mb-1">history</span>
-<span class="font-label-sm text-[10px]">History</span>
-</a>
-<a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant" href="#">
-<span class="material-symbols-outlined mb-1">smart_toy</span>
-<span class="font-label-sm text-[10px]">AI Tutor</span>
-</a>
-</div>
-</nav>
-<script src="./navigation.js?v=10"></script>
-</body></html>
+          </div>
+          <div class="w-px h-10 bg-outline-variant mx-2"></div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-emerald-600" data-weight="fill"
+              style="font-variation-settings: 'FILL' 1;">check_circle</span>
+            <div class="flex flex-col">
+              <span
+                class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Completed</span>
+              <span class="font-headline-md text-headline-md text-on-surface leading-none"
+                id="stat-completed-courses">0</span>
+            </div>
+          </div>
+          <div class="w-px h-10 bg-outline-variant mx-2"></div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-tertiary" data-weight="fill"
+              style="font-variation-settings: 'FILL' 1;">trending_up</span>
+            <div class="flex flex-col">
+              <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Avg Progress</span>
+              <span class="font-headline-md text-headline-md text-on-surface leading-none"
+                id="stat-avg-progress">0%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Dashboard Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+        <!-- Main Column (Takes up 2/3 on lg screens) -->
+        <div class="lg:col-span-2 flex flex-col gap-section-margin">
+          <!-- Continue Learning Bento Box -->
+          <section class="">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="font-headline-lg text-headline-lg text-on-surface">Continue Learning</h2>
+              <a href="course_history_my_learning_journeys_1.html"
+                class="text-primary hover:text-primary-fixed-variant font-button text-button flex items-center gap-1 transition-colors">
+                View all <span class="material-symbols-outlined">arrow_forward</span>
+              </a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-card-gap" id="dashboard-courses-container">
+              <div class="col-span-full py-12 text-center text-on-surface-variant bg-surface-container-lowest rounded-xl border border-surface-variant/50 animate-pulse">
+                <span class="material-symbols-outlined text-4xl animate-spin mb-2 text-primary">progress_activity</span>
+                <p class="text-sm font-body-md">Đang tải các khóa học của bạn...</p>
+              </div>
+            </div>
+          </section>
+          <!-- Upcoming Lessons / Weekly Schedule -->
+          <section>
+            <h2 class="font-headline-lg text-headline-lg text-on-surface mb-6">Upcoming Lessons</h2>
+            <div id="upcoming-lessons-container"
+              class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(94,92,230,0.08)] border border-surface-variant/50 overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+              <div class="p-6 text-center text-on-surface-variant text-sm font-body-md">Đang tải lịch bài học...</div>
+            </div>
+          </section>
+        </div>
+        <!-- Right Column (Sidebar equivalent on desktop) -->
+        <div class="flex flex-col gap-section-margin">
+          <!-- Start New Topic CTA -->
+          <div
+            class="bg-gradient-to-br from-primary-fixed to-secondary-fixed rounded-xl p-6 shadow-[0px_4px_20px_rgba(94,92,230,0.15)] relative overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+            <!-- Decorative element -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-2xl -mr-10 -mt-10"></div>
+            <h3 class="font-headline-md text-headline-md text-on-primary-fixed mb-2 relative z-10">Expand Your Horizons
+            </h3>
+            <p class="text-on-primary-fixed-variant mb-6 text-sm relative z-10">Discover new subjects tailored to your
+              learning style.</p>
+            <a href="new_course_ai_topic_discussion.html"
+              class="w-full py-3 px-4 bg-primary text-on-primary font-button text-button rounded-xl hover:shadow-xl transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 relative z-10 hover:-translate-y-1">
+              <span class="material-symbols-outlined">explore</span>
+              Start New Topic
+            </a>
+          </div>
+          <!-- AI Insights / Activity Feed -->
+          <section
+            class="bg-surface-container-lowest rounded-xl p-6 shadow-[0px_4px_20px_rgba(94,92,230,0.08)] border border-surface-variant/50 hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+            <div class="flex items-center gap-2 mb-6">
+              <span class="material-symbols-outlined text-secondary" data-weight="fill"
+                style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+              <h2 class="font-headline-md text-headline-md text-on-surface">AI Insights</h2>
+            </div>
+            <div id="ai-insights-container" class="space-y-6">
+              <div class="p-4 text-center text-on-surface-variant text-sm font-body-md">Đang tải gợi ý từ AI...</div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+  <!-- Mobile Bottom Navigation Shell -->
+  <nav
+    class="lg:hidden fixed bottom-0 w-full bg-surface-container-lowest shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-40 pb-safe">
+    <div class="flex justify-around items-center h-16">
+      <a class="flex flex-col items-center justify-center w-full h-full text-primary" href="student_dashboard_overview.html">
+        <span class="material-symbols-outlined mb-1" data-weight="fill"
+          style="font-variation-settings: 'FILL' 1;">dashboard</span>
+        <span class="font-label-sm text-[10px]">Dashboard</span>
+      </a>
+      <a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant" href="personalized_learning_path.html">
+        <span class="material-symbols-outlined mb-1">school</span>
+        <span class="font-label-sm text-[10px]">My Courses</span>
+      </a>
+      <a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant" href="course_history_my_learning_journeys_1.html">
+        <span class="material-symbols-outlined mb-1">history</span>
+        <span class="font-label-sm text-[10px]">History</span>
+      </a>
+      <a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant" href="new_course_ai_topic_discussion.html">
+        <span class="material-symbols-outlined mb-1">smart_toy</span>
+        <span class="font-label-sm text-[10px]">AI Tutor</span>
+      </a>
+    </div>
+  </nav>
+  <script src="./api.js"></script>
+  <script src="./navigation.js?v=10"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      const sidebarUserName = document.getElementById("sidebar-user-name");
+      const welcomeUserName = document.getElementById("welcome-user-name");
+
+      const statTotalCourses = document.getElementById("stat-total-courses");
+      const statCompletedCourses = document.getElementById("stat-completed-courses");
+      const statAvgProgress = document.getElementById("stat-avg-progress");
+
+      const coursesContainer = document.getElementById("dashboard-courses-container");
+
+      // 1. Fetch current user info from API.auth.me()
+      try {
+        const user = await window.API.auth.me();
+        if (user) {
+          const displayName = user.display_name || user.username || "Learner";
+          if (sidebarUserName) sidebarUserName.textContent = displayName;
+          if (welcomeUserName) welcomeUserName.textContent = displayName;
+          window.LuminaNav?.translatePage?.();
+        }
+      } catch (err) {
+        console.error("Failed to load user info", err);
+      }
+
+      // 2. Fetch real course list from API.learning.getCourses()
+      try {
+        const res = await window.API.learning.getCourses();
+        if (res.status === "success" && res.courses) {
+          updateDashboardStats(res.courses);
+          renderUpcomingLessons(res.courses);
+          renderAIInsights(res.courses);
+          if (res.courses.length > 0) {
+            renderDashboardCourses(res.courses);
+          } else {
+            renderEmptyState();
+          }
+        } else {
+          renderEmptyState();
+          renderUpcomingLessons([]);
+          renderAIInsights([]);
+        }
+      } catch (err) {
+        console.error("Failed to load dashboard courses", err);
+        renderEmptyState();
+        renderUpcomingLessons([]);
+        renderAIInsights([]);
+      }
+
+      function updateDashboardStats(courses) {
+        const total = courses.length;
+        const completed = courses.filter(c => c.status === "completed" || (c.progress && c.progress >= 100)).length;
+        const avg = total > 0 ? Math.round(courses.reduce((acc, c) => acc + (c.progress || 0), 0) / total) : 0;
+
+        if (statTotalCourses) statTotalCourses.textContent = total;
+        if (statCompletedCourses) statCompletedCourses.textContent = completed;
+        if (statAvgProgress) statAvgProgress.textContent = `${avg}%`;
+      }
+
+      function renderUpcomingLessons(courses) {
+        const upcomingContainer = document.getElementById("upcoming-lessons-container");
+        if (!upcomingContainer) return;
+
+        if (!courses || courses.length === 0) {
+          upcomingContainer.innerHTML = `
+            <div class="flex items-center gap-4 p-4 border-b border-surface-variant hover:bg-surface-container-low transition-colors cursor-pointer" onclick="window.location.href='lumina_learning_upload_document_desktop.html'">
+              <div class="flex flex-col items-center justify-center w-12 h-12 bg-primary-container/20 rounded-xl text-primary shrink-0">
+                <span class="material-symbols-outlined">upload_file</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-button text-button text-on-surface truncate">Upload new study material</h4>
+                <p class="text-on-surface-variant text-xs truncate">Upload PDF or Word documents for AI to analyze and generate a learning path</p>
+              </div>
+              <span class="material-symbols-outlined text-outline">chevron_right</span>
+            </div>
+            <div class="flex items-center gap-4 p-4 hover:bg-surface-container-low transition-colors cursor-pointer" onclick="window.location.href='new_course_ai_topic_discussion.html'">
+              <div class="flex flex-col items-center justify-center w-12 h-12 bg-secondary-container/20 rounded-xl text-secondary shrink-0">
+                <span class="material-symbols-outlined">smart_toy</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-button text-button text-on-surface truncate">Chat with AI Tutor</h4>
+                <p class="text-on-surface-variant text-xs truncate">Discuss learning topics you want to explore</p>
+              </div>
+              <span class="material-symbols-outlined text-outline">chevron_right</span>
+            </div>
+          `;
+          window.LuminaNav?.translatePage?.();
+          return;
+        }
+
+        let html = "";
+        courses.slice(0, 3).forEach((course, idx) => {
+          const borderClass = idx < Math.min(courses.length, 3) - 1 ? "border-b border-surface-variant" : "";
+          const targetUrl = `personalized_learning_path.html?material_id=${course.material_id}`;
+          html += `
+            <div class="flex items-center gap-4 p-4 ${borderClass} hover:bg-surface-container-low transition-colors cursor-pointer" onclick="window.location.href='${targetUrl}'">
+              <div class="flex flex-col items-center justify-center w-12 h-12 bg-primary-container/20 rounded-xl text-primary shrink-0">
+                <span class="material-symbols-outlined">menu_book</span>
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-button text-button text-on-surface truncate">${escapeHtml(course.title)}</h4>
+                <p class="text-on-surface-variant text-xs flex items-center gap-1 mt-0.5">
+                  <span class="material-symbols-outlined text-xs">auto_awesome</span>
+                  ${course.concepts_count || 0} Concepts • Progress ${course.progress || 0}%
+                </p>
+              </div>
+              <button class="p-2 text-primary hover:bg-primary-container/30 rounded-full transition-colors" title="Continue Lesson">
+                <span class="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+          `;
+        });
+        upcomingContainer.innerHTML = html;
+        window.LuminaNav?.translatePage?.();
+      }
+
+      function renderAIInsights(courses) {
+        const insightsContainer = document.getElementById("ai-insights-container");
+        if (!insightsContainer) return;
+
+        if (!courses || courses.length === 0) {
+          insightsContainer.innerHTML = `
+            <div class="flex gap-4 p-2 rounded-lg">
+              <div class="w-8 h-8 rounded-full bg-primary-container/30 flex items-center justify-center shrink-0 mt-1">
+                <span class="material-symbols-outlined text-primary text-sm">auto_awesome</span>
+              </div>
+              <div>
+                <p class="font-button text-button text-on-surface mb-1">AI Path Suggestion</p>
+                <p class="text-on-surface-variant text-sm">Upload study materials or chat with AI Tutor to receive a personalized learning path!</p>
+              </div>
+            </div>
+          `;
+          window.LuminaNav?.translatePage?.();
+          return;
+        }
+
+        const topCourse = courses[0];
+        insightsContainer.innerHTML = `
+          <div class="flex gap-4 p-2 rounded-lg hover:bg-surface-container-low transition-colors">
+            <div class="w-8 h-8 rounded-full bg-primary-container/30 flex items-center justify-center shrink-0 mt-1">
+              <span class="material-symbols-outlined text-primary text-sm">trending_up</span>
+            </div>
+            <div>
+              <p class="font-button text-button text-on-surface mb-1">Learning Path Analysis</p>
+              <p class="text-on-surface-variant text-sm">Your course <strong>${escapeHtml(topCourse.title)}</strong> has reached <strong>${topCourse.progress || 0}%</strong> progress.</p>
+              <span class="font-label-sm text-label-sm text-outline mt-1 block">Just updated</span>
+            </div>
+          </div>
+          <div class="flex gap-4 p-2 rounded-lg hover:bg-surface-container-low transition-colors">
+            <div class="w-8 h-8 rounded-full bg-secondary-container/30 flex items-center justify-center shrink-0 mt-1">
+              <span class="material-symbols-outlined text-secondary text-sm">tips_and_updates</span>
+            </div>
+            <div>
+              <p class="font-button text-button text-on-surface mb-1">AI Tutor Tip</p>
+              <p class="text-on-surface-variant text-sm bg-surface-container-low p-3 rounded-lg mt-1 border border-surface-variant/50">
+                Spend 15 minutes daily reviewing core concepts for long-term retention!
+              </p>
+              <a href="personalized_learning_path.html?material_id=${topCourse.material_id}" class="text-primary font-label-sm text-label-sm mt-2 inline-block hover:underline">Review Now</a>
+            </div>
+          </div>
+        `;
+        window.LuminaNav?.translatePage?.();
+      }
+
+      function renderDashboardCourses(courses) {
+        if (!coursesContainer) return;
+        coursesContainer.innerHTML = "";
+
+        // Show up to recent 4 courses
+        const recentCourses = courses.slice(0, 4);
+
+        recentCourses.forEach((course) => {
+          const card = document.createElement("div");
+          card.className = "bg-surface-container-lowest rounded-xl p-6 shadow-[0px_4px_20px_rgba(94,92,230,0.08)] border border-surface-variant/50 relative overflow-hidden group hover:shadow-lg transition-all duration-200 hover:-translate-y-1 duration-300 cursor-pointer";
+
+          const progress = course.progress || 0;
+          const isCompleted = course.status === "completed" || progress >= 100;
+
+          let materialSubtitle = "";
+          if (course.has_material && course.material_name) {
+            materialSubtitle = `
+          <p class="text-on-surface-variant mb-6 text-sm line-clamp-2 flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">description</span>
+            File: ${escapeHtml(course.material_name)}
+          </p>
+        `;
+          } else {
+            materialSubtitle = `
+          <p class="text-on-surface-variant mb-6 text-sm line-clamp-2">
+            ${course.concepts_count || 0} Concepts • ${course.lessons_count || 0} Lessons
+          </p>
+        `;
+          }
+
+          let buttonText = "Resume Lesson";
+          let buttonIcon = "play_arrow";
+          if (isCompleted) {
+            buttonText = "Review Course";
+            buttonIcon = "check_circle";
+          }
+
+          card.innerHTML = `
+        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+          <span class="material-symbols-outlined text-6xl text-primary">school</span>
+        </div>
+        <!-- Centered Delete Button Overlay on Box Hover -->
+        <div class="absolute inset-0 z-30 flex items-center justify-center bg-black/30 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none group-hover:pointer-events-auto rounded-xl">
+          <button type="button" class="delete-course-btn px-4 py-2.5 bg-primary text-on-primary hover:bg-primary/90 hover:opacity-80 active:scale-95 rounded-xl border border-primary/30 shadow-xl flex items-center gap-2 text-xs font-bold transition-all duration-200" title="Xóa khóa học này">
+            <span class="material-symbols-outlined text-lg">delete</span>
+            <span>Xóa khóa học</span>
+          </button>
+        </div>
+        <div class="relative z-10">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="px-3 py-1 bg-primary-container/20 text-primary font-label-sm text-label-sm rounded-full">${escapeHtml(course.subject || "AI Course")}</span>
+            <span class="px-3 py-1 bg-surface-container text-on-surface-variant font-label-sm text-label-sm rounded-full">${course.concepts_count || 0} Concepts</span>
+          </div>
+          <h3 class="font-headline-md text-headline-md text-on-surface mb-2 font-bold">${escapeHtml(course.title)}</h3>
+          ${materialSubtitle}
+          <div class="mb-4">
+            <div class="flex justify-between font-label-sm text-label-sm mb-2">
+              <span class="text-on-surface-variant">Progress</span>
+              <span class="text-primary font-bold">${progress}%</span>
+            </div>
+            <div class="w-full bg-surface-container-high rounded-full h-2 overflow-hidden">
+              <div class="bg-gradient-to-r from-primary to-secondary h-full rounded-full" style="width: ${Math.max(progress, 10)}%"></div>
+            </div>
+          </div>
+          <button type="button" class="resume-btn w-full py-2 px-4 bg-primary text-on-primary font-button text-button rounded-lg hover:bg-primary/90 transition-all flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">${buttonIcon}</span>
+            ${buttonText}
+          </button>
+        </div>
+      `;
+
+          // Card click opens learning path
+          const openLearningPath = async (e) => {
+            e.stopPropagation();
+            try {
+              const detailRes = await window.API.learning.getMaterialDetail(course.material_id);
+              if (detailRes.status === "success") {
+                window.API.storage.setMaterial(detailRes);
+              }
+            } catch (e) { }
+            window.location.href = `personalized_learning_path.html?material_id=${course.material_id}`;
+          };
+
+          // Resume button opens active lesson step
+          const resumeActiveLesson = async (e) => {
+            e.stopPropagation();
+            try {
+              const detailRes = await window.API.learning.getMaterialDetail(course.material_id);
+              if (detailRes.status === "success") {
+                window.API.storage.setMaterial(detailRes);
+              }
+            } catch (e) { }
+
+            if (course.current_step_id && !isCompleted) {
+              window.location.href = `interactive_lesson_linear_regression_with_sidebar.html?step_id=${course.current_step_id}`;
+            } else {
+              window.location.href = `personalized_learning_path.html?material_id=${course.material_id}`;
+            }
+          };
+
+          card.addEventListener("click", openLearningPath);
+          const resumeBtn = card.querySelector(".resume-btn");
+          if (resumeBtn) resumeBtn.addEventListener("click", resumeActiveLesson);
+
+          const deleteBtn = card.querySelector(".delete-course-btn");
+          if (deleteBtn) {
+            deleteBtn.addEventListener("click", (e) => {
+              e.stopPropagation();
+              if (window.API?.showDeleteConfirmModal) {
+                window.API.showDeleteConfirmModal(course.title, async () => {
+                  try {
+                    const res = await window.API.learning.deleteMaterial(course.material_id);
+                    if (res.status === "success") {
+                      card.remove();
+                    } else {
+                      alert(res.message || "Không thể xóa khóa học.");
+                    }
+                  } catch (err) {
+                    alert("Đã xảy ra lỗi khi xóa khóa học: " + (err.message || err));
+                  }
+                });
+              } else {
+                alert("Bạn có chắc chắn muốn xóa khóa học này?");
+              }
+            });
+          }
+
+          coursesContainer.appendChild(card);
+        });
+        window.LuminaNav?.translatePage?.();
+      }
+
+      function renderEmptyState() {
+        if (!coursesContainer) return;
+        coursesContainer.innerHTML = `
+      <div class="col-span-full p-8 text-center bg-surface-container-lowest rounded-xl border border-surface-variant/50 space-y-4">
+        <span class="material-symbols-outlined text-5xl text-outline">school</span>
+        <h4 class="font-headline-md text-on-surface text-lg">No Active Courses Found</h4>
+        <p class="text-sm text-on-surface-variant max-w-md mx-auto">Upload a study material or topic to get started with your personalized AI learning journey!</p>
+        <a href="new_course_ai_topic_discussion.html" class="inline-block px-5 py-2.5 bg-primary text-on-primary rounded-xl text-sm font-button shadow-md hover:bg-primary/90 transition-all hover:-translate-y-1">Start New Course</a>
+      </div>
+    `;
+        window.LuminaNav?.translatePage?.();
+      }
+
+      function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html><html class="light" lang="en"><head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Lumina Learning - Linear Regression</title>
+<title>TempName Learning - Linear Regression</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Manrope:wght@400;600&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
@@ -208,7 +208,7 @@
 <!-- Background Layer: Simulated "Personalized Learning Path" Dashboard (Blurred out) -->
 <div class="absolute inset-0 z-0 opacity-40 pointer-events-none select-none flex flex-col p-container-padding gap-section-margin pl-[calc(16rem+32px)]">
 <header class="flex justify-between items-center h-16 w-full max-w-[1440px] mx-auto">
-<div class="font-headline-md text-headline-md font-bold text-primary">Lumina Learning</div>
+<div class="font-headline-md text-headline-md font-bold text-primary">TempName Learning</div>
 </header>
 <div class="flex max-w-[1440px] mx-auto w-full gap-gutter">
 <!-- Simulated Sidebar -->
@@ -235,38 +235,26 @@
 <div class="w-full max-w-2xl relative">
 <!-- Overall Progress Indicator (Above Card) -->
 <div class="flex items-center justify-between mb-4 px-2">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Module: Linear Regression</span>
-<span class="font-label-sm text-label-sm text-primary font-bold">38% Complete</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider" id="module-header-title">Module: Interactive Lesson</span>
+<span class="font-label-sm text-label-sm text-primary font-bold" id="step-progress-percent">In Progress</span>
 </div>
 <!-- The Learning Card -->
 <article class="bg-surface-container-lowest rounded-xl soft-shadow overflow-hidden flex flex-col relative transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
 <!-- Linear Progress Bar -->
 <div class="h-1 w-full bg-surface-variant relative">
-<div class="absolute top-0 left-0 h-full w-3/8 progress-gradient rounded-r-full" style="width: 37.5%;"></div>
+<div class="absolute top-0 left-0 h-full w-3/8 progress-gradient rounded-r-full" style="width: 50%;"></div>
 </div>
 <div class="p-8 flex flex-col gap-6">
 <!-- Card Header -->
 <header>
-<h2 class="font-label-sm text-label-sm text-secondary uppercase mb-2">Card 3 / 8</h2>
-<h1 class="font-headline-lg text-headline-lg text-on-surface">The Hypothesis Function</h1>
+<h2 class="font-label-sm text-label-sm text-secondary uppercase mb-2" id="lesson-card-index">Lesson Concept</h2>
+<h1 class="font-headline-lg text-headline-lg text-on-surface" id="lesson-card-title">Loading Lesson...</h1>
 </header>
 <!-- Card Body -->
-<div class="flex flex-col gap-4 text-on-surface-variant">
+<div class="flex flex-col gap-4 text-on-surface-variant" id="lesson-card-body">
 <p class="font-body-md text-body-md">
-                            In simple linear regression, we try to draw a straight line that best fits our data. This line is defined by the <strong>Hypothesis Function</strong>.
+                            Loading AI Lesson content from backend...
                         </p>
-<!-- Equation Callout -->
-<div class="bg-primary-fixed/20 p-4 rounded-lg flex items-center justify-center my-2 border border-primary-fixed">
-<span class="font-display-lg text-display-lg text-on-primary-fixed-variant italic">y = mx + c</span>
-</div>
-<p class="font-body-md text-body-md">
-                            Here, <em>y</em> is the predicted value, <em>x</em> is our input feature, <em>m</em> is the slope (weight), and <em>c</em> is the y-intercept (bias).
-                        </p>
-<!-- Simulated Diagram Placeholder -->
-<div class="w-full h-48 bg-surface-container rounded-lg border border-outline-variant flex items-center justify-center mt-2 relative overflow-hidden">
-<img class="absolute inset-0 w-full h-full object-cover opacity-50 mix-blend-multiply" data-alt="A clean, modern 2D line graph illustration showing a straight diagonal line passing through a scatter plot of data points on an x and y axis. The line is bold purple, the points are subtle dots. The style is minimalist corporate flat design, on a light background, suitable for an educational textbook." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB92TuHGfQZ6hAbm6W2Ws6krl6gjKMINViNDnoeiGcfqvXOomMilU4vV5uEBTdYmrueLSVAXIyMaHbC8keY2RKUBEm__RzFVc5_hhcnQ_Rc3ogm0S4AN58lqxnSXCvYjgkYYa-MBFYBfTHglBvOvbUgwqlFe-3SiQKWeJW5RxA7i7HzFuWAFut35OJ-rKQlcti9rQT8BT1cU8IQxcI12yzmuiNNXneNm3SgnbuHbvIDr65eHVt8efP8">
-<span class="material-symbols-outlined text-outline-variant text-4xl relative z-10">monitoring</span>
-</div>
 </div>
 </div>
 <!-- Card Footer (Navigation) -->
@@ -277,69 +265,610 @@
                     </button>
 <button class="flex items-center gap-2 px-6 py-2 bg-primary text-on-primary rounded-lg shadow-sm hover:shadow-md transition-shadow font-button text-button hover:-translate-y-1 duration-300">
                         Next
+  Loading AI Checkpoint question...
+</p>
+</div>
+<!-- Multiple Choice Options -->
+<div class="flex flex-col gap-2" id="quiz-options-container">
+  <div class="p-4 text-center text-xs text-on-surface-variant">Fetching options from backend...</div>
+</div>
+
+<!-- Hint Display Box -->
+<div id="hint-text-box" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200"></div>
+
+<!-- Feedback Display Box -->
+<div id="quiz-feedback-box" class="hidden p-4 rounded-xl text-sm font-medium flex flex-col gap-2"></div>
+
+<!-- Action Footer -->
+<div class="flex flex-col gap-2 pt-2 border-t border-surface-variant/50">
+  <div class="flex justify-between items-center">
+    <button id="hint-btn" type="button" class="font-label-sm text-xs text-secondary hover:underline flex items-center gap-1">
+      <span class="material-symbols-outlined text-sm">lightbulb</span>
+      <span id="hint-btn-text">Get Hint (Level 1)</span>
+    </button>
+    <button id="quiz-submit-btn" type="button" class="px-4 py-2 bg-primary text-on-primary font-button text-xs rounded-lg shadow-sm hover:bg-primary/90 transition-all">
+      Submit Answer
+    </button>
+  </div>
+  <button id="next-action-btn" type="button" class="hidden w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-button text-xs rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 mt-1">
+    <span>Continue Learning Path</span>
+    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+  </button>
+</div>
+</div>
+</main>
+
+<style>
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+                      "button": [
+                              "16px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.background'); color: theme('colors.on-surface'); }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .soft-shadow {
+            box-shadow: 0px 4px 20px rgba(94, 92, 230, 0.08);
+        }
+        .progress-gradient {
+            background: linear-gradient(90deg, theme('colors.primary'), theme('colors.secondary'));
+        }
+        /* Background blur effect */
+        .bg-blur-overlay {
+            backdrop-filter: blur(8px);
+            background-color: rgba(249, 249, 254, 0.6); /* background color with opacity */
+        }
+    </style>
+</head>
+<body class="min-h-screen relative overflow-hidden font-body-md text-body-md flex antialiased">
+<!-- Side Navigation -->
+<nav class="w-64 flex flex-col justify-between h-screen bg-surface-container-lowest border-r border-outline-variant/30 py-6 px-4 relative z-30 shrink-0 soft-shadow">
+<div class="flex flex-col gap-8">
+<div class="px-4 font-headline-md text-headline-md font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="lightbulb">lightbulb</span>
+            Lumina
+        </div>
+<div class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span> Dashboard
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span> My Courses
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span> AI Tutor
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span> Settings
+            </a>
+</div>
+</div>
+<div class="flex items-center gap-3 px-4">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold" data-user-initials>AL</div>
+<div class="flex flex-col">
+<span class="font-button text-button text-on-surface" data-user-display-name>Alex Learner</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Pro Plan</span>
+</div>
+</div>
+</nav>
+<!-- Background Layer: Simulated "Personalized Learning Path" Dashboard (Blurred out) -->
+<div class="absolute inset-0 z-0 opacity-40 pointer-events-none select-none flex flex-col p-container-padding gap-section-margin pl-[calc(16rem+32px)]">
+<header class="flex justify-between items-center h-16 w-full max-w-[1440px] mx-auto">
+<div class="font-headline-md text-headline-md font-bold text-primary">TempName Learning</div>
+</header>
+<div class="flex max-w-[1440px] mx-auto w-full gap-gutter">
+<!-- Simulated Sidebar -->
+<div class="w-[280px] hidden lg:flex flex-col gap-2 p-6 bg-surface-container-lowest rounded-xl soft-shadow">
+<div class="h-10 bg-surface-variant rounded"></div>
+<div class="h-10 bg-surface-variant rounded"></div>
+<div class="h-10 bg-surface-variant rounded"></div>
+</div>
+<!-- Simulated Main Content -->
+<div class="flex-1 flex flex-col gap-card-gap">
+<div class="h-32 bg-surface-container-lowest rounded-xl soft-shadow w-full"></div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-card-gap">
+<div class="h-64 bg-surface-container-lowest rounded-xl soft-shadow"></div>
+<div class="h-64 bg-surface-container-lowest rounded-xl soft-shadow"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Global Blur Overlay to dim the background -->
+<div class="absolute inset-0 z-10 bg-blur-overlay ml-64"></div>
+<!-- Main Active Canvas (Z-20) -->
+<main class="relative z-20 flex-1 flex flex-col items-center justify-center p-4 md:p-container-padding min-h-screen">
+<!-- Learning Card Container (Single Column Viewport) -->
+<div class="w-full max-w-2xl relative my-auto">
+<!-- Overall Progress Indicator (Above Card) -->
+<div class="flex items-center justify-between mb-4 px-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider" id="module-header-title">Module: Interactive Lesson</span>
+<span class="font-label-sm text-label-sm text-primary font-bold" id="step-progress-percent">In Progress</span>
+</div>
+
+<!-- The Learning Card Article -->
+<article class="bg-surface-container-lowest rounded-xl soft-shadow overflow-hidden flex flex-col relative transition-all duration-300 border border-outline-variant/30">
+<!-- Linear Progress Bar -->
+<div class="h-1.5 w-full bg-surface-variant relative">
+<div id="lesson-progress-fill" class="absolute top-0 left-0 h-full progress-gradient rounded-r-full transition-all duration-300" style="width: 0%;"></div>
+</div>
+
+<div class="p-6 md:p-8 flex flex-col gap-6">
+<!-- Card Header -->
+<header>
+<h2 class="font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wide mb-1" id="lesson-card-index">Lesson Concept</h2>
+<h1 class="font-headline-lg text-2xl md:text-headline-lg text-on-surface font-bold" id="lesson-card-title">Loading Lesson...</h1>
+</header>
+
+<!-- Card Body (Renders Cards or Inline Checkpoint Question) -->
+<div class="flex flex-col gap-4 text-on-surface-variant" id="lesson-card-body">
+<p class="font-body-md text-body-md">
+                            Loading AI Lesson content from backend...
+                        </p>
+</div>
+</div>
+
+<!-- Card Footer (Navigation) -->
+<footer class="p-6 border-t border-surface-variant flex justify-between items-center bg-surface-bright">
+<button id="prev-card-btn" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-surface-container-low rounded-lg transition-colors font-button text-button disabled:opacity-40 disabled:cursor-not-allowed">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+                        Previous
+                    </button>
+<button id="next-card-btn" class="flex items-center gap-2 px-6 py-2 bg-primary text-on-primary rounded-lg shadow-sm hover:shadow-md transition-shadow font-button text-button hover:-translate-y-0.5 duration-300">
+                        <span>Next</span>
                         <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
 </button>
 </footer>
 </article>
-<!-- Overlay Checkpoint Popup (Messenger Style) -->
-<div class="absolute -right-12 top-24 w-[360px] glass-panel rounded-xl shadow-2xl p-5 flex flex-col gap-4 border border-outline-variant/30 z-30 animate-fade-in-up hover:-translate-y-1 transition-transform duration-300">
-<!-- AI Header -->
-<div class="flex items-center gap-3 border-b border-surface-variant/50 pb-3">
-<div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center shrink-0">
-<span class="material-symbols-outlined text-on-primary-container" data-icon="smart_toy">smart_toy</span>
-</div>
-<div class="flex-1">
-<h3 class="font-button text-button text-on-surface">Knowledge Check</h3>
-<p class="font-label-sm text-label-sm text-on-surface-variant">Lumina AI Tutor</p>
-</div>
-<button class="text-on-surface-variant hover:text-primary transition-colors">
-<span class="material-symbols-outlined" data-icon="close">close</span>
-</button>
-</div>
-<!-- Question -->
-<div class="bg-primary/5 p-4 rounded-lg rounded-tl-none border border-primary/10">
-<p class="font-body-md text-body-md text-on-surface">
-                        Before we move on: In the equation <strong>y = mx + c</strong>, what does <strong>"m"</strong> represent?
-                    </p>
-</div>
-<!-- Multiple Choice Options -->
-<div class="flex flex-col gap-2">
-<button class="text-left p-3 rounded-lg border border-outline-variant hover:border-primary hover:bg-primary/5 transition-colors font-body-md text-body-md text-on-surface flex items-center gap-3 group hover:-translate-y-1 hover:shadow-sm duration-300">
-<div class="w-5 h-5 rounded-full border border-outline group-hover:border-primary flex items-center justify-center"></div>
-                        The predicted output
-                    </button>
-<button class="text-left p-3 rounded-lg border border-outline-variant hover:border-primary hover:bg-primary/5 transition-colors font-body-md text-body-md text-on-surface flex items-center gap-3 group hover:-translate-y-1 hover:shadow-sm duration-300">
-<div class="w-5 h-5 rounded-full border border-outline group-hover:border-primary flex items-center justify-center"></div>
-                        The slope or weight
-                    </button>
-<button class="text-left p-3 rounded-lg border border-outline-variant hover:border-primary hover:bg-primary/5 transition-colors font-body-md text-body-md text-on-surface flex items-center gap-3 group hover:-translate-y-1 hover:shadow-sm duration-300">
-<div class="w-5 h-5 rounded-full border border-outline group-hover:border-primary flex items-center justify-center"></div>
-                        The y-intercept or bias
-                    </button>
-</div>
-<!-- Hints Indicator -->
-<div class="flex justify-between items-center mt-2 pt-2 border-t border-surface-variant/50">
-<span class="font-label-sm text-label-sm text-secondary flex items-center gap-1">
-<span class="material-symbols-outlined text-[16px]" data-icon="lightbulb">lightbulb</span>
-                        Hints: 3/3 remaining
-                    </span>
-<button class="font-label-sm text-label-sm text-primary hover:underline font-medium">
-                        Need help?
-                    </button>
-</div>
-</div>
 </div>
 </main>
+
 <style>
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(10px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .animate-fade-in-up {
-            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-    </style>
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(10px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-fade-in-up {
+    animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+</style>
 
-
+<script src="./api.js"></script>
 <script src="./navigation.js?v=10"></script>
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+  const moduleHeaderTitle = document.getElementById("module-header-title");
+  const lessonCardTitle = document.getElementById("lesson-card-title");
+  const lessonCardIndex = document.getElementById("lesson-card-index");
+  const lessonCardBody = document.getElementById("lesson-card-body");
+  const progressFill = document.getElementById("lesson-progress-fill");
+  const prevCardBtn = document.getElementById("prev-card-btn");
+  const nextCardBtn = document.getElementById("next-card-btn");
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const stepIdFromUrl = urlParams.get("step_id");
+
+  let activeStep = null;
+  let material = null;
+  try {
+    activeStep = JSON.parse(localStorage.getItem("lumina.activeStep"));
+    material = window.API?.storage?.getMaterial();
+  } catch (e) {}
+
+  const currentStepId = stepIdFromUrl || activeStep?.id || 1;
+  let currentQuestion = null;
+  let selectedOptionId = null;
+  let hintsUsed = 0;
+  let isAnswered = false;
+
+  let sequenceItems = [];
+  let currentIndex = 0;
+  let stepData = null;
+
+  if (material && material.title) {
+    moduleHeaderTitle.textContent = `Module: ${material.title}`;
+  }
+
+  // Fetch Step Quiz, Cards, and Questions from Backend
+  try {
+    const res = await window.API.learning.getStepQuiz(currentStepId);
+    if (res.status === "success") {
+      stepData = res;
+      buildSequenceItems(res);
+      if (sequenceItems.length > 0) {
+        renderCurrentItem();
+      }
+    }
+  } catch (err) {
+    console.error("Failed to load step quiz/lesson", err);
+    lessonCardTitle.textContent = "Lỗi tải bài học";
+    lessonCardBody.innerHTML = `<p class="text-rose-500 text-sm font-bold">Không thể kết nối với backend server. Vui lòng thử lại sau.</p>`;
+  }
+
+  function buildSequenceItems(res) {
+    sequenceItems = [];
+    const cards = (res.lesson && res.lesson.cards) ? res.lesson.cards : [];
+    const questions = res.questions || (res.question ? [res.question] : []);
+
+    const checkpointQs = questions.filter(q => q.question_type === "checkpoint" || q.question_type !== "lesson_wrapup");
+    const wrapupQs = questions.filter(q => q.question_type === "lesson_wrapup");
+
+    if (cards.length > 0) {
+      cards.forEach((card, idx) => {
+        sequenceItems.push({
+          type: "card",
+          data: card,
+          cardIndex: idx + 1,
+          totalCards: cards.length
+        });
+
+        // Interleave checkpoint question after specific card
+        const matchingCheckpoints = checkpointQs.filter(q => q.after_card_order === card.order_index || q.after_card_order === idx);
+        matchingCheckpoints.forEach(q => {
+          sequenceItems.push({
+            type: "checkpoint",
+            question: q
+          });
+        });
+      });
+    }
+
+    // Final Test / Wrap-up question(s) at end of lesson
+    if (wrapupQs.length > 0) {
+      wrapupQs.forEach(q => {
+        sequenceItems.push({
+          type: "final_test",
+          question: q
+        });
+      });
+    } else if (checkpointQs.length > 0 && !sequenceItems.some(i => i.type === "checkpoint")) {
+      checkpointQs.forEach(q => {
+        sequenceItems.push({
+          type: "final_test",
+          question: q
+        });
+      });
+    }
+
+    if (sequenceItems.length === 0) {
+      // Fallback card if lesson has no cards yet
+      sequenceItems.push({
+        type: "card",
+        data: {
+          heading: res.step_title || "Tổng quan bài học",
+          body: (res.lesson && res.lesson.explanation) ? res.lesson.explanation : "Bài học đang được biên soạn nội dung."
+        },
+        cardIndex: 1,
+        totalCards: 1
+      });
+    }
+  }
+
+  function renderCurrentItem() {
+    const item = sequenceItems[currentIndex];
+    const total = sequenceItems.length;
+    const progressPct = Math.round(((currentIndex + 1) / total) * 100);
+    if (progressFill) progressFill.style.width = `${progressPct}%`;
+
+    prevCardBtn.disabled = (currentIndex === 0);
+
+    if (item.type === "card") {
+      lessonCardIndex.textContent = `Lesson Card ${item.cardIndex} of ${item.totalCards}`;
+      lessonCardTitle.textContent = item.data.heading || stepData?.step_title || "Lesson Concept";
+
+      lessonCardBody.innerHTML = "";
+      const bodyP = document.createElement("p");
+      bodyP.className = "font-body-md text-body-md text-on-surface-variant leading-relaxed";
+      bodyP.textContent = item.data.body || "";
+      lessonCardBody.appendChild(bodyP);
+
+      if (item.cardIndex === 1 && stepData?.lesson?.example) {
+        const codeBox = document.createElement("div");
+        codeBox.className = "bg-primary/5 p-4 rounded-xl border border-primary/20 text-xs font-mono text-on-surface my-2 space-y-1";
+        codeBox.innerHTML = `<span class="text-primary font-bold block mb-1">💡 Example:</span> ${escapeHtml(stepData.lesson.example)}`;
+        lessonCardBody.appendChild(codeBox);
+      }
+
+      nextCardBtn.querySelector("span").textContent = "Next";
+      nextCardBtn.onclick = () => {
+        if (currentIndex < sequenceItems.length - 1) {
+          currentIndex++;
+          renderCurrentItem();
+        }
+      };
+
+    } else if (item.type === "checkpoint" || item.type === "final_test") {
+      currentQuestion = item.question;
+      selectedOptionId = null;
+      hintsUsed = 0;
+      isAnswered = false;
+
+      const titleText = item.type === "final_test" ? "Final Test / Knowledge Wrap-up" : "Checkpoint Question";
+      lessonCardIndex.textContent = titleText;
+      lessonCardTitle.textContent = stepData?.step_title || "Kiểm tra kiến thức";
+
+      renderInlineQuizUI(item, titleText);
+
+      nextCardBtn.querySelector("span").textContent = item.type === "final_test" ? "Submit Final Test" : "Submit Answer";
+      nextCardBtn.onclick = () => {
+        const quizSubmitBtn = document.getElementById("quiz-submit-btn");
+        if (!selectedOptionId && !isAnswered) {
+          alert("Vui lòng chọn 1 đáp án và bấm Nộp bài trước khi tiếp tục!");
+          return;
+        }
+        if (isAnswered && currentIndex < sequenceItems.length - 1) {
+          currentIndex++;
+          renderCurrentItem();
+        } else if (!isAnswered && quizSubmitBtn) {
+          quizSubmitBtn.click();
+        }
+      };
+    }
+  }
+
+  function renderInlineQuizUI(item, titleText) {
+    const q = item.question;
+    lessonCardBody.innerHTML = `
+      <div class="flex flex-col gap-5">
+        <div class="p-4 bg-primary/5 rounded-xl border border-primary/20 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined">quiz</span>
+          </div>
+          <div>
+            <h3 class="font-button text-sm text-on-surface font-bold">${escapeHtml(titleText)}</h3>
+            <p class="text-xs text-on-surface-variant">TempName AI Knowledge Evaluation</p>
+          </div>
+        </div>
+
+        <div class="p-4 bg-surface-container-low rounded-xl border border-surface-variant/50">
+          <p class="font-body-md text-sm text-on-surface font-medium" id="quiz-question-text">${escapeHtml(q.question_text || "Which statement best describes this concept?")}</p>
+        </div>
+
+        <div class="flex flex-col gap-2.5" id="quiz-options-container"></div>
+
+        <div id="hint-text-box" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200"></div>
+        <div id="quiz-feedback-box" class="hidden p-4 rounded-xl text-sm font-medium flex flex-col gap-2"></div>
+
+        <div class="flex justify-between items-center pt-2 border-t border-surface-variant/50">
+          <button id="hint-btn" type="button" class="font-label-sm text-xs text-secondary hover:underline flex items-center gap-1">
+            <span class="material-symbols-outlined text-sm">lightbulb</span>
+            <span id="hint-btn-text">Get Hint (Level 1)</span>
+          </button>
+          <button id="quiz-submit-btn" type="button" class="px-5 py-2.5 bg-primary text-on-primary font-button text-xs rounded-lg shadow-sm hover:bg-primary/90 transition-all font-bold">
+            Submit Answer
+          </button>
+        </div>
+        <button id="next-action-btn" type="button" class="hidden w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-button text-xs rounded-lg shadow-sm transition-all flex items-center justify-center gap-1">
+          <span>Continue Learning Path</span>
+          <span class="material-symbols-outlined text-sm">arrow_forward</span>
+        </button>
+      </div>
+    `;
+
+    const optionsContainer = document.getElementById("quiz-options-container");
+    const hintBtn = document.getElementById("hint-btn");
+    const hintBtnText = document.getElementById("hint-btn-text");
+    const hintTextBox = document.getElementById("hint-text-box");
+    const quizSubmitBtn = document.getElementById("quiz-submit-btn");
+    const quizFeedbackBox = document.getElementById("quiz-feedback-box");
+    const nextActionBtn = document.getElementById("next-action-btn");
+
+    if (!q.options || q.options.length === 0) {
+      optionsContainer.innerHTML = `<div class="p-3 text-xs text-on-surface-variant text-center">No options available.</div>`;
+      return;
+    }
+
+    q.options.forEach((opt) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "quiz-option-btn text-left p-3.5 rounded-xl border border-outline-variant hover:border-primary hover:bg-primary/5 transition-all text-xs text-on-surface flex items-center gap-3";
+      btn.setAttribute("data-option-id", opt.id);
+
+      btn.innerHTML = `
+        <div class="opt-indicator w-4 h-4 rounded-full border border-outline flex items-center justify-center shrink-0"></div>
+        <span class="font-body-md text-xs select-none">${escapeHtml(opt.option_text)}</span>
+      `;
+
+      btn.addEventListener("click", () => {
+        if (isAnswered) return;
+        document.querySelectorAll(".quiz-option-btn").forEach(b => {
+          b.classList.remove("border-primary", "bg-primary/10", "ring-2", "ring-primary/30");
+          const ind = b.querySelector(".opt-indicator");
+          if (ind) ind.classList.remove("bg-primary", "border-primary");
+        });
+        btn.classList.add("border-primary", "bg-primary/10", "ring-2", "ring-primary/30");
+        const indicator = btn.querySelector(".opt-indicator");
+        if (indicator) indicator.classList.add("bg-primary", "border-primary");
+        selectedOptionId = opt.id;
+      });
+
+      optionsContainer.appendChild(btn);
+    });
+
+    hintBtn.addEventListener("click", async () => {
+      if (!currentQuestion) return;
+      hintsUsed = Math.min(hintsUsed + 1, 3);
+      hintBtnText.textContent = `Get Hint (Level ${Math.min(hintsUsed + 1, 3)})`;
+
+      try {
+        const res = await window.API.learning.getHint(currentQuestion.id, hintsUsed);
+        if (res.status === "success" && res.hint) {
+          hintTextBox.classList.remove("hidden");
+          hintTextBox.innerHTML = `<strong>💡 Hint ${hintsUsed}:</strong> ${escapeHtml(res.hint)}`;
+        } else {
+          hintTextBox.classList.remove("hidden");
+          hintTextBox.innerHTML = `<strong>💡 Hint ${hintsUsed}:</strong> Pay attention to the core concepts in this lesson.`;
+        }
+      } catch {
+        hintTextBox.classList.remove("hidden");
+        hintTextBox.innerHTML = `<strong>💡 Hint ${hintsUsed}:</strong> Pay attention to the core concepts in this lesson.`;
+      }
+    });
+
+    quizSubmitBtn.addEventListener("click", async () => {
+      if (!selectedOptionId) {
+        alert("Vui lòng chọn 1 đáp án trước khi nộp bài!");
+        return;
+      }
+
+      quizSubmitBtn.disabled = true;
+      quizSubmitBtn.textContent = "Checking...";
+
+      try {
+        const payload = {
+          question_id: currentQuestion.id,
+          selected_option_id: selectedOptionId,
+          hints_used: hintsUsed
+        };
+
+        const res = await window.API.learning.submitCheckpoint(payload);
+        isAnswered = true;
+
+        quizFeedbackBox.classList.remove("hidden", "bg-emerald-500/10", "border-emerald-500/30", "text-emerald-900", "bg-rose-500/10", "border-rose-500/30", "text-rose-900");
+
+        if (res.is_correct) {
+          quizFeedbackBox.classList.add("bg-emerald-500/10", "border", "border-emerald-500/30", "text-emerald-900");
+          quizFeedbackBox.innerHTML = `
+            <div class="flex items-center gap-2 font-bold text-emerald-700">
+              <span class="material-symbols-outlined text-lg">check_circle</span>
+              <span>Chính xác! Đã vượt qua checkpoint.</span>
+            </div>
+            <p class="text-xs text-emerald-800/90">${escapeHtml(res.explanation || "Tuyệt vời, bạn đã nắm vững khái niệm này!")}</p>
+          `;
+        } else {
+          quizFeedbackBox.classList.add("bg-rose-500/10", "border", "border-rose-500/30", "text-rose-900");
+          quizFeedbackBox.innerHTML = `
+            <div class="flex items-center gap-2 font-bold text-rose-700">
+              <span class="material-symbols-outlined text-lg">cancel</span>
+              <span>Chưa chính xác.</span>
+            </div>
+            <p class="text-xs text-rose-800/90">${escapeHtml(res.explanation || "Hãy xem lại khái niệm và thử lại nhé!")}</p>
+          `;
+        }
+
+        nextActionBtn.classList.remove("hidden");
+
+        if (res.next_action === "complete" || res.is_final_batch) {
+          nextActionBtn.querySelector("span").textContent = "Complete Learning Journey";
+          nextActionBtn.onclick = () => showTargetAchievedModal();
+        } else if (res.needs_next_batch) {
+          nextActionBtn.querySelector("span").textContent = "Generating Next Batch...";
+          const mat = window.API?.storage?.getMaterial();
+          const selectedConcepts = window.API?.storage?.getSelectedConcepts();
+          if (mat && selectedConcepts) {
+            await window.API.learning.generatePath({
+              material_id: mat.id || mat.material_id,
+              concepts: selectedConcepts
+            }).catch(() => {});
+          }
+          nextActionBtn.querySelector("span").textContent = "Continue to Next Batch";
+          nextActionBtn.onclick = () => {
+            window.location.href = "personalized_learning_path.html";
+          };
+        } else {
+          nextActionBtn.querySelector("span").textContent = "Continue Learning Path";
+          nextActionBtn.onclick = () => {
+            if (currentIndex < sequenceItems.length - 1) {
+              currentIndex++;
+              renderCurrentItem();
+            } else {
+              window.location.href = "personalized_learning_path.html";
+            }
+          };
+        }
+
+      } catch (err) {
+        alert(err.message || "Không thể nộp bài checkpoint. Vui lòng thử lại.");
+      } finally {
+        quizSubmitBtn.disabled = false;
+        quizSubmitBtn.textContent = "Submitted";
+      }
+    });
+  }
+
+  prevCardBtn.addEventListener("click", () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderCurrentItem();
+    }
+  });
+
+  function showTargetAchievedModal() {
+    const modalHtml = `
+      <div id="target-achieved-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-surface-container-lowest p-6 rounded-2xl max-w-md w-full shadow-2xl border border-primary/20 space-y-4 text-center animate-fade-in-up">
+          <div class="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center mx-auto text-3xl">
+            <span class="material-symbols-outlined" style="font-size: 36px;">workspace_premium</span>
+          </div>
+          <h2 class="font-headline-md text-xl font-bold text-on-surface">Mục tiêu học tập đã hoàn thành!</h2>
+          <p class="text-xs text-on-surface-variant leading-relaxed">
+            Chúc mừng bạn đã chinh phục toàn bộ các khái niệm trong mục tiêu này. Bạn có muốn kết thúc lộ trình hay tiếp tục học bài tập bổ sung?
+          </p>
+          <div class="flex flex-col gap-2 pt-2">
+            <button id="modal-finish-btn" class="w-full py-3 bg-primary text-on-primary rounded-xl font-button font-bold text-xs shadow-md hover:bg-primary/90 transition-all flex items-center justify-center gap-1">
+              <span>Hoàn thành lộ trình học</span>
+              <span class="material-symbols-outlined text-base">emoji_events</span>
+            </button>
+            <button id="modal-bonus-btn" class="w-full py-3 bg-surface-container-high text-primary rounded-xl font-button font-bold text-xs hover:bg-surface-variant transition-all border border-primary/20 flex items-center justify-center gap-1">
+              <span>Tiếp tục học bổ sung (Bonus Practice)</span>
+              <span class="material-symbols-outlined text-base">add_circle</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML("beforeend", modalHtml);
+
+    document.getElementById("modal-finish-btn").addEventListener("click", () => {
+      window.location.href = "final_test_result_summary_review.html";
+    });
+
+    document.getElementById("modal-bonus-btn").addEventListener("click", async () => {
+      const mat = window.API?.storage?.getMaterial();
+      const selectedConcepts = window.API?.storage?.getSelectedConcepts();
+      if (mat && selectedConcepts) {
+        await window.API.learning.generatePath({
+          material_id: mat.id || mat.material_id,
+          concepts: selectedConcepts
+        }).catch(() => {});
+      }
+      window.location.href = "personalized_learning_path.html";
+    });
+  }
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+});
+</script>
 </body></html>

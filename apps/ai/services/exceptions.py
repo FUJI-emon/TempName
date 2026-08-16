@@ -8,3 +8,8 @@ class LLMEmptyInputError(LLMServiceError):
 
 class LLMInvalidResponseError(LLMServiceError):
     pass
+
+
+class LLMRateLimitError(LLMServiceError):
+    """Raised when AI API rate limit is exceeded or quota is exhausted."""
+    pass

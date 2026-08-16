@@ -37,6 +37,16 @@ def build_user_prompt(
     lesson_exp = lesson.get("explanation") if isinstance(lesson, dict) else getattr(lesson, "explanation", "")
     purpose_val = purpose.value if hasattr(purpose, "value") else str(purpose)
 
+    cards_list = getattr(lesson, "cards", []) if not isinstance(lesson, dict) else lesson.get("cards", [])
+    cards_text = ""
+    if cards_list:
+        card_items = []
+        for idx, c in enumerate(cards_list):
+            heading = c.heading if hasattr(c, "heading") else c.get("heading", "")
+            body = c.body if hasattr(c, "body") else c.get("body", "")
+            card_items.append(f"  + Thẻ {idx+1} [{heading}]: {body}")
+        cards_text = "\nNội dung các thẻ bài học đã giảng dạy:\n" + "\n".join(card_items)
+
     misconceptions_block = (
         "\nCác điểm hiểu sai trước đó cần kiểm tra lại:\n" + "\n".join(f"- {m}" for m in previous_misconceptions)
         if previous_misconceptions
@@ -45,7 +55,8 @@ def build_user_prompt(
 
     return f"""Khái niệm: {concept_title}
 Bài học tóm tắt: {lesson_exp}
+{cards_text}
 Mục đích câu hỏi (purpose): {purpose_val}
 {misconceptions_block}
 
-Tạo các câu hỏi trắc nghiệm kiểm tra tương ứng theo đúng format JSON."""
+Dựa TRỰC TIẾP vào nội dung các thẻ bài học trên, tạo các câu hỏi trắc nghiệm kiểm tra tương ứng theo đúng format JSON."""

@@ -8,6 +8,7 @@ from typing import List, Optional
 class ChatScope(str, Enum):
     ONBOARDING = "onboarding"
     MATERIAL = "material"
+    GOAL = "goal"
     QUIZ = "quiz"
 
 
@@ -49,6 +50,7 @@ class LearningContextDTO:
     current_goal: Optional[str] = None
     current_concept: Optional[str] = None
     current_lesson_order: Optional[int] = None
+    current_lesson: Optional[str] = None
 
 
 @dataclass
