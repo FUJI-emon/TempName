@@ -37,7 +37,18 @@ def build_user_prompt(
     if learning_context:
         goal = learning_context.get("current_goal") if isinstance(learning_context, dict) else getattr(learning_context, "current_goal", None)
         concept = learning_context.get("current_concept") if isinstance(learning_context, dict) else getattr(learning_context, "current_concept", None)
-        context_str = f"\nBối cảnh học tập hiện tại:\n- Mục tiêu: {goal}\n- Khái niệm đang học: {concept}\n"
+        lesson = learning_context.get("current_lesson") if isinstance(learning_context, dict) else getattr(learning_context, "current_lesson", None)
+
+        parts = []
+        if goal:
+            parts.append(f"- Mục tiêu / Khóa học: {goal}")
+        if concept:
+            parts.append(f"- Khái niệm đang học: {concept}")
+        if lesson:
+            parts.append(f"- Bài học / Nội dung bước hiện tại: {lesson}")
+
+        if parts:
+            context_str = "\nBối cảnh học tập hiện tại:\n" + "\n".join(parts) + "\n"
 
     return f"""Phạm vi cuộc trò chuyện (scope): {scope_val}
 {context_str}

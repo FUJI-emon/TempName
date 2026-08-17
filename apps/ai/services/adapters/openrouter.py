@@ -31,7 +31,7 @@ from ..dto import (
     QuestionDTO,
     QuestionOptionDTO,
 )
-from ..exceptions import LLMEmptyInputError, LLMInvalidResponseError, LLMServiceError
+from ..exceptions import LLMEmptyInputError, LLMInvalidResponseError, LLMRateLimitError, LLMServiceError
 from ..guardrail import assert_no_leak, assert_no_leak_chat
 from ..interface import LLMService
 from ..prompts import analyze_material as analyze_prompts
@@ -74,12 +74,25 @@ class OpenRouterAdapter(LLMService):
                 },
                 timeout=30,
             )
+            if response.status_code in (429, 402):
+                raise LLMRateLimitError(f"Hệ thống AI đã đạt giới hạn gọi API (Rate Limit Exceeded / hết Quota token - Mã lỗi {response.status_code}). Vui lòng thử lại sau.")
+            elif response.status_code in (401, 403):
+                raise LLMRateLimitError(f"API Key AI không hợp lệ hoặc đã hết lượt truy cập (Mã lỗi {response.status_code}).")
             response.raise_for_status()
         except requests.RequestException as exc:
+            if exc.response is not None and exc.response.status_code in (429, 402, 401, 403):
+                raise LLMRateLimitError(f"AI API đã đạt giới hạn/Quota (Mã lỗi {exc.response.status_code}). Vui lòng thử lại sau.") from exc
             raise LLMServiceError(f"Gọi OpenRouter thất bại: {exc}") from exc
 
         try:
-            content = response.json()["choices"][0]["message"]["content"]
+            content = response.json()["choices"][0]["message"]["content"].strip()
+            if content.startswith("```json"):
+                content = content[7:]
+            elif content.startswith("```"):
+                content = content[3:]
+            if content.endswith("```"):
+                content = content[:-3]
+            content = content.strip()
             return json.loads(content)
         except (KeyError, IndexError, json.JSONDecodeError) as exc:
             raise LLMInvalidResponseError(f"OpenRouter trả response không hợp lệ: {exc}") from exc
@@ -182,19 +195,32 @@ class OpenRouterAdapter(LLMService):
 
         try:
             questions = []
-            for q_data in data["questions"]:
-                options = [
-                    QuestionOptionDTO(text=opt["text"], is_correct=bool(opt["is_correct"]))
-                    for opt in q_data["options"]
-                ]
-                questions.append(
-                    QuestionDTO(
-                        text=q_data["text"],
-                        options=options,
-                        explanation=q_data.get("explanation", ""),
-                        purpose=purpose,
+            for q_data in data.get("questions", []):
+                options = []
+                raw_options = q_data.get("options", [])
+                has_correct = False
+                for idx, opt in enumerate(raw_options):
+                    is_corr = bool(opt.get("is_correct", opt.get("correct", False)))
+                    if is_corr:
+                        has_correct = True
+                    options.append(
+                        QuestionOptionDTO(
+                            text=opt.get("text", f"Lựa chọn {idx+1}"),
+                            is_correct=is_corr
+                        )
                     )
-                )
+                if options and not has_correct:
+                    options[0].is_correct = True
+
+                if options:
+                    questions.append(
+                        QuestionDTO(
+                            text=q_data.get("text", "Câu hỏi kiểm tra kiến thức"),
+                            options=options,
+                            explanation=q_data.get("explanation", "Lời giải thích đáp án."),
+                            purpose=purpose,
+                        )
+                    )
             return CheckQuestionResult(questions=questions)
         except (KeyError, TypeError) as exc:
             raise LLMInvalidResponseError(f"Response thiếu/lỗi field trong generate_check_question: {exc}") from exc

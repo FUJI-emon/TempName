@@ -1,0 +1,224 @@
+<!DOCTYPE html><html lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>TempName Learning - Concept Test</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Manrope:wght@400;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f9f9fe",
+                        "tertiary-container": "#006dd6",
+                        "primary": "#4441cc",
+                        "error-container": "#ffdad6",
+                        "surface-container-high": "#e8e8ed",
+                        "secondary-fixed": "#f6d9ff",
+                        "tertiary-fixed": "#d6e3ff",
+                        "outline": "#777586",
+                        "on-error-container": "#93000a",
+                        "surface-container-low": "#f3f3f8",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#7200a3",
+                        "on-secondary-fixed": "#310048",
+                        "secondary-container": "#cb66fe",
+                        "error": "#ba1a1a",
+                        "on-tertiary-fixed": "#001b3e",
+                        "primary-fixed-dim": "#c2c1ff",
+                        "on-primary-fixed-variant": "#332dbc",
+                        "secondary": "#9026c3",
+                        "primary-fixed": "#e2dfff",
+                        "on-tertiary-container": "#f0f3ff",
+                        "on-primary": "#ffffff",
+                        "on-background": "#1a1c1f",
+                        "tertiary-fixed-dim": "#aac7ff",
+                        "surface-container-highest": "#e2e2e7",
+                        "secondary-fixed-dim": "#e9b3ff",
+                        "on-tertiary-fixed-variant": "#00468d",
+                        "inverse-on-surface": "#f0f0f5",
+                        "surface-tint": "#4d4ad5",
+                        "surface": "#f9f9fe",
+                        "on-secondary-container": "#4a006b",
+                        "on-error": "#ffffff",
+                        "background": "#f9f9fe",
+                        "surface-dim": "#d9dade",
+                        "inverse-primary": "#c2c1ff",
+                        "tertiary": "#0055a9",
+                        "inverse-surface": "#2e3034",
+                        "on-primary-container": "#f4f1ff",
+                        "primary-container": "#5e5ce6",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#1a1c1f",
+                        "outline-variant": "#c7c4d7",
+                        "on-primary-fixed": "#0c006b",
+                        "on-surface-variant": "#464554",
+                        "surface-container": "#ededf2",
+                        "on-tertiary": "#ffffff",
+                        "surface-variant": "#e2e2e7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "section-margin": "48px",
+                        "card-gap": "24px",
+                        "container-padding": "32px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "button": ["Manrope"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-md": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "label-sm": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "button": ["16px", { "lineHeight": "20px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Hanken Grotesk', sans-serif; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .modal-shadow {
+            box-shadow: 0 25px 50px -12px rgba(68, 65, 204, 0.15), 0px 4px 20px rgba(94, 92, 230, 0.08);
+        }
+        .bg-page {
+            background-color: #F8F9FE;
+        }
+    </style>
+</head>
+<body class="bg-page text-on-surface h-screen overflow-hidden flex flex-col antialiased">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-40 bg-surface/80 dark:bg-inverse-surface/80 backdrop-blur-xl shadow-sm h-16">
+<div class="flex justify-between items-center h-16 px-container-padding max-w-[1440px] mx-auto">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-3xl" data-icon="lightbulb">lightbulb</span>
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">TempName Learning</span>
+</div>
+<div class="hidden md:flex gap-6 items-center">
+<a class="font-body-md text-body-md text-primary dark:text-inverse-primary font-bold border-b-2 border-primary pb-1" href="#">Courses</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">History</a>
+<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">AI Tutor</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="font-button text-button text-primary border-2 border-primary px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors hover:-translate-y-1 hover:shadow-lg duration-300">Exit Test</button>
+</div>
+</div>
+</nav>
+<!-- Background Content (Blurred) -->
+<!-- The Test Modal -->
+<main class="flex-1 mt-16 overflow-y-auto bg-page">
+<div class="max-w-4xl mx-auto py-section-margin px-container-padding">
+<div class="bg-surface-container-lowest rounded-2xl shadow-[0px_4px_20px_rgba(94,92,230,0.08)] border border-outline-variant/30 overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
+<!-- Header -->
+<div class="px-8 py-6 border-b border-outline-variant flex justify-between items-center">
+<div class="flex items-center gap-4">
+<div class="bg-primary-container text-on-primary-container p-3 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">assignment</span>
+</div>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Concept Mastery Check</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Question 2 / 5</p>
+</div>
+</div>
+<div class="flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-full shadow-sm">
+<span class="material-symbols-outlined text-[20px]">lightbulb</span>
+<span class="font-label-sm text-label-sm font-bold">Hints 3 / 3 remaining</span>
+</div>
+</div>
+<!-- Progress -->
+<div class="h-1.5 w-full bg-surface-container-highest">
+<div class="h-full bg-primary w-[40%] transition-all duration-500 ease-in-out"></div>
+</div>
+<!-- Body -->
+<div class="p-10 bg-surface-bright/30">
+<div class="flex gap-6 mb-10">
+<div class="w-12 h-12 rounded-full bg-tertiary-container flex items-center justify-center shrink-0 shadow-sm border border-tertiary-fixed">
+<span class="material-symbols-outlined text-on-tertiary-container text-[28px]">smart_toy</span>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-2xl rounded-tl-sm shadow-sm border border-outline-variant/30 relative flex-1 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
+<p class="font-body-lg text-body-lg text-on-surface text-[20px]">
+                            What is the primary goal of minimizing the cost function in linear regression?
+                        </p>
+</div>
+</div>
+<div class="space-y-4 pl-16">
+<label class="flex items-start gap-4 p-5 rounded-xl border border-outline-variant bg-surface-container-lowest hover:border-primary hover:bg-primary-fixed/10 cursor-pointer transition-all duration-200 group hover:-translate-y-1 hover:shadow-md duration-300">
+<div class="pt-1">
+<div class="w-6 h-6 rounded-full border-2 border-outline group-hover:border-primary flex items-center justify-center"></div>
+</div>
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">
+<span class="font-bold mr-2">A)</span>To increase the slope
+                        </span>
+</label>
+<label class="flex items-start gap-4 p-5 rounded-xl border-2 border-primary bg-primary-fixed/10 cursor-pointer transition-all duration-200 group relative overflow-hidden shadow-[0_0_15px_rgba(68,65,204,0.1)] hover:-translate-y-1 hover:shadow-xl duration-300">
+<div class="absolute inset-0 bg-primary/5 pointer-events-none"></div>
+<div class="pt-1 relative z-10">
+<div class="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center bg-primary">
+<div class="w-2.5 h-2.5 rounded-full bg-white"></div>
+</div>
+</div>
+<span class="font-body-md text-body-md text-primary font-bold relative z-10">
+<span class="mr-2">B)</span>To find the line of best fit
+                        </span>
+</label>
+<label class="flex items-start gap-4 p-5 rounded-xl border border-outline-variant bg-surface-container-lowest hover:border-primary hover:bg-primary-fixed/10 cursor-pointer transition-all duration-200 group hover:-translate-y-1 hover:shadow-md duration-300">
+<div class="pt-1">
+<div class="w-6 h-6 rounded-full border-2 border-outline group-hover:border-primary flex items-center justify-center"></div>
+</div>
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">
+<span class="font-bold mr-2">C)</span>To make the data points larger
+                        </span>
+</label>
+<label class="flex items-start gap-4 p-5 rounded-xl border border-outline-variant bg-surface-container-lowest hover:border-primary hover:bg-primary-fixed/10 cursor-pointer transition-all duration-200 group hover:-translate-y-1 hover:shadow-md duration-300">
+<div class="pt-1">
+<div class="w-6 h-6 rounded-full border-2 border-outline group-hover:border-primary flex items-center justify-center"></div>
+</div>
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">
+<span class="font-bold mr-2">D)</span>To ignore outliers
+                        </span>
+</label>
+</div>
+</div>
+<!-- Footer -->
+<div class="bg-surface-container-low px-8 py-6 border-t border-outline-variant flex justify-end">
+<button class="font-button text-button bg-primary text-on-primary px-10 py-4 rounded-xl shadow-sm hover:shadow-lg hover:bg-primary/90 active:scale-95 transition-all duration-150 flex items-center gap-3 hover:-translate-y-1 duration-300">
+                    Submit Answer
+                    <span class="material-symbols-outlined text-[24px]">arrow_forward</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+
+
+
+
+<script src="./api.js"></script>
+<script src="./navigation.js?v=10"></script>
+</body></html>

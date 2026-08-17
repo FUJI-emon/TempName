@@ -9,6 +9,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Load environment variables from .env file if available
 load_dotenv(BASE_DIR / '.env')
 
+# OpenRouter
+OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
+OPENROUTER_MODEL = os.getenv('OPENROUTER_MODEL', 'openrouter/free')
 # Add apps/ directory to Python sys.path for clean imports
 sys.path.insert(0, str(BASE_DIR / 'apps'))
 

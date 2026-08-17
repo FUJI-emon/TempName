@@ -23,7 +23,7 @@ from apps.ai.services.exceptions import LLMServiceError
 
 load_dotenv()
 
-RUN_INTEGRATION = bool(os.getenv("OPENROUTER_API_KEY"))
+RUN_INTEGRATION = bool(os.getenv("OPENROUTER_API_KEY")) and os.getenv("RUN_OPENROUTER_INTEGRATION") == "1"
 
 
 @unittest.skipUnless(RUN_INTEGRATION, "Không có OPENROUTER_API_KEY — skip integration test")
