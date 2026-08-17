@@ -5,7 +5,7 @@ from .interface import LLMService
 
 
 def get_llm_service() -> LLMService:
-    load_dotenv()
+    load_dotenv(override=True)
     provider = os.getenv("LLM_PROVIDER")
     if not provider:
         if os.getenv("OPENROUTER_API_KEY"):

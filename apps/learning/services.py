@@ -255,22 +255,7 @@ class LearningApplicationService:
 
         concept_model = step.concept
         material = step.material
-        goal = material.goals.first() if material else None
-
-        if not concept_model and goal:
-            concept_model = LearningConcept.objects.filter(goal=goal).first()
-
-        if not concept_model:
-            if not goal and material:
-                goal = LearningGoal.objects.create(material=material, title=material.title)
-            concept_model = LearningConcept.objects.create(
-                goal=goal,
-                external_id=f"concept_step_{step.id}",
-                title=step.title,
-                description=step.title
-            )
-            step.concept = concept_model
-            step.save()
+        goal = material.goals.first()
 
         concept_dto = ConceptDTO(
             id=concept_model.external_id or str(concept_model.id),
@@ -278,10 +263,10 @@ class LearningApplicationService:
             description=concept_model.description or "",
         )
         goal_ctx = {
-            "title": goal.title if goal else (material.title if material else "Bài học"),
-            "description": goal.description if (goal and goal.description) else "",
+            "title": goal.title if goal else material.title,
+            "description": goal.description if goal else "",
         }
-        mat_content = (material.content if material else "") or ""
+        mat_content = material.content or ""
 
         try:
             lesson = self.llm_service.generate_lesson(

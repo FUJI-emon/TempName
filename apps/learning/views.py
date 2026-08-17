@@ -263,43 +263,27 @@ def list_courses_view(request):
             concepts = list(LearningConcept.objects.filter(goal__material=mat))
             steps = list(ProgressPathStep.objects.filter(material=mat).order_by("order_index", "id"))
 
-            completed_steps_count = 0
+            progress_record = None
             if student:
-                completed_steps_count = ProgressStudentStepStatus.objects.filter(
-                    student=student,
-                    step__material=mat,
-                    status=ProgressStudentStepStatus.StepStatus.COMPLETED
-                ).count()
+                progress_record = ProgressStudentMaterialProgress.objects.filter(student=student, material=mat).first()
 
-            total_steps_count = len(steps)
-            completion_percent = round((completed_steps_count / total_steps_count) * 100) if total_steps_count > 0 else (mat.progress or 0)
-
-            if student:
-                ProgressStudentMaterialProgress.objects.update_or_create(
-                    student=student,
-                    material=mat,
-                    defaults={
-                        "completion_percent": completion_percent,
-                        "status": "completed" if (total_steps_count > 0 and completed_steps_count == total_steps_count) else "in_progress"
-                    }
-                )
+            completion_percent = int(progress_record.completion_percent) if progress_record else mat.progress
 
             # Determine course status
             status = "in_progress"
-            if total_steps_count > 0 and completed_steps_count == total_steps_count:
+            if progress_record and progress_record.status:
+                status = progress_record.status
+            elif completion_percent >= 100:
                 status = "completed"
-            elif completed_steps_count == 0 and not steps:
+            elif completion_percent == 0 and not steps:
                 status = "not_started"
 
             # Find active step to resume
             current_step = None
-            if student:
-                statuses_dict = {s.step_id: s.status for s in ProgressStudentStepStatus.objects.filter(student=student, step__material=mat)}
-                for step in steps:
-                    st_status = statuses_dict.get(step.id, "unlocked" if step.order_index == 1 else "locked")
-                    if st_status != "completed":
-                        current_step = step
-                        break
+            for step in steps:
+                if step.status != "completed":
+                    current_step = step
+                    break
             if not current_step and steps:
                 current_step = steps[0]
 
@@ -317,7 +301,6 @@ def list_courses_view(request):
                 "status": status,
                 "concepts_count": len(concepts),
                 "lessons_count": len(steps),
-                "completed_steps_count": completed_steps_count,
                 "current_step_id": current_step.id if current_step else None,
                 "current_step_title": current_step.title if current_step else None
             })
@@ -390,8 +373,6 @@ def get_material_detail_view(request, material_id):
         ]
 
         completed_steps_count = sum(1 for st in step_list if st["student_status"] == "completed")
-        total_steps_count = len(steps)
-        calculated_progress = round((completed_steps_count / total_steps_count) * 100) if total_steps_count > 0 else (material.progress or 0)
         visible_limit = ((completed_steps_count // 3) + 1) * 3
         visible_step_list = step_list[:visible_limit]
 
@@ -403,10 +384,9 @@ def get_material_detail_view(request, material_id):
             "goal_title": goal.title if goal else material.title,
             "subject": material.subject or material.title,
             "created_at": material.created_at.strftime("%Y-%m-%d %H:%M:%S") if material.created_at else "",
-            "progress": calculated_progress,
+            "progress": material.progress or 0,
             "total_concepts_count": concepts.count(),
             "completed_steps_count": completed_steps_count,
-            "total_steps_count": total_steps_count,
             "concepts": [
                 {
                     "id": c.external_id or str(c.id),
@@ -783,21 +763,11 @@ def get_step_quiz_view(request, step_id):
         checkpoint_questions.sort(key=lambda x: (x["after_card_order"] if x["after_card_order"] is not None else 999, x["id"]))
 
         student = get_current_student(request)
-        st = ProgressStudentStepStatus.objects.filter(student=student, step=step).first() if student else None
-        
-        if st and st.status:
-            student_status = st.status
-        else:
-            completed_count = ProgressStudentStepStatus.objects.filter(
-                student=student,
-                step__material=step.material,
-                status=ProgressStudentStepStatus.StepStatus.COMPLETED
-            ).count() if student else 0
-            visible_limit = ((completed_count // 3) + 1) * 3
-            if step.order_index <= visible_limit:
-                student_status = "unlocked"
-            else:
-                student_status = "locked"
+        student_status = "unlocked" if step.order_index == 1 else "locked"
+        if student:
+            st = ProgressStudentStepStatus.objects.filter(student=student, step=step).first()
+            if st:
+                student_status = st.status
 
         return JsonResponse({
             "status": "success",
@@ -990,7 +960,7 @@ def submit_question_answer_view(request, question_id=None):
                 st, _ = ProgressStudentStepStatus.objects.get_or_create(
                     student=student,
                     step=step,
-                    defaults={"status": ProgressStudentStepStatus.StepStatus.IN_PROGRESS}
+                    defaults={"status": ProgressStudentStepStatus.StepStatus.UNLOCKED}
                 )
                 st.status = ProgressStudentStepStatus.StepStatus.COMPLETED
                 st.save()
@@ -1417,21 +1387,20 @@ def login_view(request):
     """
     try:
         data = json.loads(request.body)
-        username_or_email = (data.get("username") or data.get("email") or "").strip()
+
+        username = data.get("username", "").strip()
         password = data.get("password", "")
 
-        if not username_or_email or not password:
+        if not username or not password:
             return JsonResponse(
                 {
                     "status": "error",
-                    "message": "Username/email and password are required.",
+                    "message": "Username and password are required.",
                 },
                 status=400,
             )
 
-        user = UsersUser.objects.filter(username=username_or_email).first()
-        if not user:
-            user = UsersUser.objects.filter(email=username_or_email).first()
+        user = UsersUser.objects.filter(username=username).first()
 
         if user is None or not check_password(password, user.password_hash):
             return JsonResponse(

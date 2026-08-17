@@ -48,19 +48,29 @@ from ..prompts import start_conversation as start_conversation_prompts
 
 
 class OpenRouterAdapter(LLMService):
-    BASE_URL = "https://openrouter.ai/api/v1/chat/completions"
-
-    def __init__(self, model: str = None, api_key: str = None):
-        self.model = model or os.getenv("OPENROUTER_MODEL", "anthropic/claude-3.5-sonnet")
+    def __init__(self, base_url: str = None, model: str = None, api_key: str = None):
+        raw_url = (
+            base_url
+            or os.getenv("OPENROUTER_BASE_URL")
+            or "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
+        ).rstrip("/")
+        if not raw_url.endswith("/chat/completions"):
+            raw_url = f"{raw_url}/chat/completions"
+        self.base_url = raw_url
+        self.model = model or os.getenv("OPENROUTER_MODEL", "gemini-3.5-flash-lite")
         self.api_key = api_key or os.getenv("OPENROUTER_API_KEY")
         if not self.api_key:
             raise LLMServiceError("Thiếu OPENROUTER_API_KEY trong environment")
 
+    @property
+    def BASE_URL(self):
+        return self.base_url
+
     def _call(self, system_prompt: str, user_prompt: str) -> dict:
-        """Gọi OpenRouter, ép JSON output, parse và trả dict."""
+        """Gọi OpenRouter/Gemini API, ép JSON output, parse và trả dict."""
         try:
             response = requests.post(
-                self.BASE_URL,
+                self.base_url,
                 headers={
                     "Authorization": f"Bearer {self.api_key}",
                     "Content-Type": "application/json",
