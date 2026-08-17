@@ -1,10 +1,11 @@
-<!DOCTYPE html><html lang="en" style=""><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>TempName Learning - Concept Test</title>
+<title>Lumina Learning - Final Test</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Manrope:wght@400;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Manrope:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <script id="tailwind-config">
         tailwind.config = {
@@ -81,144 +82,380 @@
                         "body-md": ["Manrope"],
                         "body-lg": ["Manrope"],
                         "label-sm": ["JetBrains Mono"]
-                    },
-                    "fontSize": {
-                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
-                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
-                        "button": ["16px", { "lineHeight": "20px", "fontWeight": "600" }],
-                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
-                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
-                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }]
                     }
                 }
             }
         }
     </script>
 <style>
-        body { font-family: 'Manrope', sans-serif; }
+        body { font-family: 'Manrope', sans-serif; background-color: #F8F9FE; color: #1a1c1f; }
         h1, h2, h3, h4, h5, h6 { font-family: 'Hanken Grotesk', sans-serif; }
         .glass-panel {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }
-        .modal-shadow {
-            box-shadow: 0 25px 50px -12px rgba(68, 65, 204, 0.15), 0px 4px 20px rgba(94, 92, 230, 0.08);
+        .soft-shadow {
+            box-shadow: 0 10px 30px -10px rgba(68, 65, 204, 0.1), 0px 4px 20px rgba(94, 92, 230, 0.08);
         }
-        .bg-page {
-            background-color: #F8F9FE;
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
     </style>
 </head>
-<body class="bg-page text-on-surface h-screen overflow-hidden flex flex-col antialiased">
-<!-- TopNavBar -->
-<nav class="fixed top-0 w-full z-40 bg-surface/80 dark:bg-inverse-surface/80 backdrop-blur-xl shadow-sm h-16">
-<div class="flex justify-between items-center h-16 px-container-padding max-w-[1440px] mx-auto">
+<body class="bg-background text-on-surface min-h-screen flex flex-col antialiased">
+<!-- Navigation Bar -->
+<nav class="fixed top-0 w-full z-40 bg-surface/90 backdrop-blur-xl border-b border-outline-variant/30 h-16 shadow-sm">
+<div class="flex justify-between items-center h-16 px-4 md:px-8 max-w-[1440px] mx-auto">
 <div class="flex items-center gap-3">
-<span class="material-symbols-outlined text-primary text-3xl" data-icon="lightbulb">lightbulb</span>
-<span class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">TempName Learning</span>
-</div>
-<div class="hidden md:flex gap-6 items-center">
-<a class="font-body-md text-body-md text-primary dark:text-inverse-primary font-bold border-b-2 border-primary pb-1" href="#">Courses</a>
-<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">History</a>
-<a class="font-body-md text-body-md text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-inverse-primary transition-colors" href="#">AI Tutor</a>
+<span class="material-symbols-outlined text-primary text-3xl">lightbulb</span>
+<span class="font-headline-md text-lg md:text-headline-md font-bold text-primary">Lumina Learning</span>
+<span class="px-2.5 py-0.5 rounded-full bg-secondary/10 text-secondary font-label-sm text-xs font-bold hidden sm:inline-block">Final Exam</span>
 </div>
 <div class="flex items-center gap-4">
-<button class="font-button text-button text-primary border-2 border-primary px-4 py-2 rounded-lg hover:bg-primary/5 transition-colors hover:-translate-y-1 hover:shadow-lg duration-300">Exit Test</button>
-</div>
-</div>
-</nav>
-<!-- Background Content (Blurred) -->
-<!-- The Test Modal -->
-<main class="flex-1 mt-16 overflow-y-auto bg-page">
-<div class="max-w-4xl mx-auto py-section-margin px-container-padding">
-<div class="bg-surface-container-lowest rounded-2xl shadow-[0px_4px_20px_rgba(94,92,230,0.08)] border border-outline-variant/30 overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-xl transition-all duration-300">
-<!-- Header -->
-<div class="px-8 py-6 border-b border-outline-variant flex justify-between items-center">
-<div class="flex items-center gap-4">
-<div class="bg-primary-container text-on-primary-container p-3 rounded-full flex items-center justify-center">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">assignment</span>
-</div>
-<div>
-<h2 class="font-headline-md text-headline-md text-on-surface">Concept Mastery Check</h2>
-<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Question 2 / 5</p>
-</div>
-</div>
-<div class="flex items-center gap-2 bg-primary text-on-primary px-4 py-2 rounded-full shadow-sm">
-<span class="material-symbols-outlined text-[20px]">lightbulb</span>
-<span class="font-label-sm text-label-sm font-bold">Hints 3 / 3 remaining</span>
-</div>
-</div>
-<!-- Progress -->
-<div class="h-1.5 w-full bg-surface-container-highest">
-<div class="h-full bg-primary w-[40%] transition-all duration-500 ease-in-out"></div>
-</div>
-<!-- Body -->
-<div class="p-10 bg-surface-bright/30">
-<div class="flex gap-6 mb-10">
-<div class="w-12 h-12 rounded-full bg-tertiary-container flex items-center justify-center shrink-0 shadow-sm border border-tertiary-fixed">
-<span class="material-symbols-outlined text-on-tertiary-container text-[28px]">smart_toy</span>
-</div>
-<div class="bg-surface-container-lowest p-6 rounded-2xl rounded-tl-sm shadow-sm border border-outline-variant/30 relative flex-1 hover:-translate-y-1 hover:shadow-md transition-all duration-300">
-<p class="font-body-lg text-body-lg text-on-surface text-[20px]">
-                            What is the primary goal of minimizing the cost function in linear regression?
-                        </p>
-</div>
-</div>
-<div class="space-y-4 pl-16">
-<label class="flex items-start gap-4 p-5 rounded-xl border border-outline-variant bg-surface-container-lowest hover:border-primary hover:bg-primary-fixed/10 cursor-pointer transition-all duration-200 group hover:-translate-y-1 hover:shadow-md duration-300">
-<div class="pt-1">
-<div class="w-6 h-6 rounded-full border-2 border-outline group-hover:border-primary flex items-center justify-center"></div>
-</div>
-<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">
-<span class="font-bold mr-2">A)</span>To increase the slope
-                        </span>
-</label>
-<label class="flex items-start gap-4 p-5 rounded-xl border-2 border-primary bg-primary-fixed/10 cursor-pointer transition-all duration-200 group relative overflow-hidden shadow-[0_0_15px_rgba(68,65,204,0.1)] hover:-translate-y-1 hover:shadow-xl duration-300">
-<div class="absolute inset-0 bg-primary/5 pointer-events-none"></div>
-<div class="pt-1 relative z-10">
-<div class="w-6 h-6 rounded-full border-2 border-primary flex items-center justify-center bg-primary">
-<div class="w-2.5 h-2.5 rounded-full bg-white"></div>
-</div>
-</div>
-<span class="font-body-md text-body-md text-primary font-bold relative z-10">
-<span class="mr-2">B)</span>To find the line of best fit
-                        </span>
-</label>
-<label class="flex items-start gap-4 p-5 rounded-xl border border-outline-variant bg-surface-container-lowest hover:border-primary hover:bg-primary-fixed/10 cursor-pointer transition-all duration-200 group hover:-translate-y-1 hover:shadow-md duration-300">
-<div class="pt-1">
-<div class="w-6 h-6 rounded-full border-2 border-outline group-hover:border-primary flex items-center justify-center"></div>
-</div>
-<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">
-<span class="font-bold mr-2">C)</span>To make the data points larger
-                        </span>
-</label>
-<label class="flex items-start gap-4 p-5 rounded-xl border border-outline-variant bg-surface-container-lowest hover:border-primary hover:bg-primary-fixed/10 cursor-pointer transition-all duration-200 group hover:-translate-y-1 hover:shadow-md duration-300">
-<div class="pt-1">
-<div class="w-6 h-6 rounded-full border-2 border-outline group-hover:border-primary flex items-center justify-center"></div>
-</div>
-<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">
-<span class="font-bold mr-2">D)</span>To ignore outliers
-                        </span>
-</label>
-</div>
-</div>
-<!-- Footer -->
-<div class="bg-surface-container-low px-8 py-6 border-t border-outline-variant flex justify-end">
-<button class="font-button text-button bg-primary text-on-primary px-10 py-4 rounded-xl shadow-sm hover:shadow-lg hover:bg-primary/90 active:scale-95 transition-all duration-150 flex items-center gap-3 hover:-translate-y-1 duration-300">
-                    Submit Answer
-                    <span class="material-symbols-outlined text-[24px]">arrow_forward</span>
+<button id="exit-test-btn" class="font-button text-xs font-semibold text-rose-600 border border-rose-200 dark:border-rose-900/50 hover:bg-rose-50 px-4 py-2 rounded-xl transition-all flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base">logout</span>
+<span>Exit Assessment</span>
 </button>
 </div>
 </div>
+</nav>
+
+<!-- Main Assessment Canvas -->
+<main class="flex-1 mt-16 flex flex-col justify-between py-6 px-4 md:px-8 max-w-4xl mx-auto w-full">
+<!-- Assessment Header & Question Status Pills -->
+<div class="flex flex-col gap-4 mb-4 w-full">
+<div class="flex items-center justify-between">
+<div>
+<h1 class="font-headline-md text-xl md:text-2xl font-bold text-on-surface" id="test-title">Final Lesson Exam</h1>
+<p class="font-label-sm text-xs text-on-surface-variant" id="question-progress-label">Question 1 of 2</p>
 </div>
+
+<div class="flex items-center gap-2">
+<button id="hint-trigger-btn" class="px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-900 border border-amber-500/30 text-xs font-bold transition-all flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base text-amber-600">lightbulb</span>
+<span id="hint-trigger-text">Get Hint (Level 1)</span>
+</button>
+</div>
+</div>
+
+<!-- Question Navigator Bar -->
+<div class="flex items-center gap-2 overflow-x-auto py-1" id="question-nav-pills">
+<!-- Dynamically populated question pills -->
+</div>
+
+<!-- Progress Bar -->
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div id="test-progress-fill" class="h-full bg-primary transition-all duration-500" style="width: 50%;"></div>
+</div>
+</div>
+
+<!-- Main Question Article -->
+<article class="bg-surface-container-lowest rounded-2xl soft-shadow border border-outline-variant/30 overflow-hidden p-6 md:p-8 flex flex-col gap-6 flex-1 animate-fade-in-up">
+<!-- Question Stem -->
+<div class="p-5 bg-surface-container-low rounded-xl border border-outline-variant/40 flex items-start gap-4">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0 shadow-sm font-bold">
+<span class="material-symbols-outlined">help</span>
+</div>
+<div class="flex-1">
+<span class="font-label-sm text-xs font-bold text-primary uppercase tracking-wider block mb-1">Assessment Item</span>
+<h2 class="font-body-lg text-base md:text-lg text-on-surface font-semibold leading-relaxed" id="question-text">
+            Loading assessment question...
+          </h2>
+</div>
+</div>
+
+<!-- Options Grid -->
+<div class="flex flex-col gap-3" id="options-container">
+<!-- Options inserted here -->
+</div>
+
+<!-- Hint Text Box -->
+<div id="hint-box" class="hidden p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-900 leading-relaxed flex flex-col gap-1"></div>
+
+<!-- Feedback & Explanation Box -->
+<div id="feedback-box" class="hidden p-4 rounded-xl text-xs md:text-sm font-medium flex flex-col gap-2"></div>
+</article>
+
+<!-- Bottom Action Bar -->
+<footer class="mt-6 flex justify-between items-center w-full pt-4 border-t border-outline-variant/30">
+<button id="prev-q-btn" class="px-5 py-2.5 font-button text-xs font-semibold text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-xl transition-all disabled:opacity-40 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-base">arrow_back</span>
+<span>Previous Question</span>
+</button>
+
+<div class="flex items-center gap-3">
+<button id="submit-q-btn" class="px-6 py-3 font-button text-xs font-bold bg-primary text-on-primary rounded-xl shadow-md hover:bg-primary/90 transition-all flex items-center gap-2">
+<span>Submit Answer</span>
+<span class="material-symbols-outlined text-base">check</span>
+</button>
+<button id="next-q-btn" class="px-6 py-3 font-button text-xs font-bold bg-secondary text-on-secondary rounded-xl shadow-md hover:opacity-90 transition-all flex items-center gap-2">
+<span>Next Question</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</button>
+</div>
+</footer>
 </main>
-
-
-
 
 <script src="./api.js"></script>
 <script src="./navigation.js?v=10"></script>
-</body></html>
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+  const urlParams = new URLSearchParams(window.location.search);
+  const stepIdFromUrl = urlParams.get("step_id");
+
+  let activeStep = null;
+  try {
+    activeStep = JSON.parse(localStorage.getItem("lumina.activeStep"));
+  } catch (e) {}
+
+  const currentStepId = stepIdFromUrl || activeStep?.id || 1;
+
+  let questions = [];
+  let currentIndex = 0;
+  let selectedOptionId = null;
+  let hintsUsed = 0;
+  let answeredMap = {}; // question_id -> { selected_option_id, is_correct, explanation }
+
+  const questionTextEl = document.getElementById("question-text");
+  const optionsContainerEl = document.getElementById("options-container");
+  const progressLabelEl = document.getElementById("question-progress-label");
+  const progressFillEl = document.getElementById("test-progress-fill");
+  const questionNavPillsEl = document.getElementById("question-nav-pills");
+  const hintTriggerBtn = document.getElementById("hint-trigger-btn");
+  const hintTriggerText = document.getElementById("hint-trigger-text");
+  const hintBox = document.getElementById("hint-box");
+  const feedbackBox = document.getElementById("feedback-box");
+  const prevQBtn = document.getElementById("prev-q-btn");
+  const nextQBtn = document.getElementById("next-q-btn");
+  const submitQBtn = document.getElementById("submit-q-btn");
+  const exitTestBtn = document.getElementById("exit-test-btn");
+
+  exitTestBtn.addEventListener("click", () => {
+    if (confirm("Are you sure you want to exit the assessment?")) {
+      window.location.href = "personalized_learning_path.html";
+    }
+  });
+
+  try {
+    const res = await window.API.learning.getStepQuiz(currentStepId);
+    if (res.status === "success") {
+      const allQs = res.questions || [];
+      const wrapup = res.final_exam || allQs.filter(q => q.question_type === "lesson_wrapup");
+      questions = wrapup.length > 0 ? wrapup : (res.checkpoints || allQs);
+
+      if (questions.length === 0) {
+        questionTextEl.textContent = "No assessment questions found for this lesson step.";
+        return;
+      }
+
+      renderCurrentQuestion();
+    }
+  } catch (err) {
+    console.error("Failed to load final test questions", err);
+    questionTextEl.textContent = "Unable to load assessment questions from server.";
+  }
+
+  function renderQuestionPills() {
+    questionNavPillsEl.innerHTML = "";
+    questions.forEach((q, idx) => {
+      const pill = document.createElement("button");
+      pill.type = "button";
+
+      const isCurrent = (idx === currentIndex);
+      const isAns = answeredMap[q.id];
+
+      let baseClasses = "px-3 py-1.5 rounded-xl font-label-sm text-xs flex items-center gap-1.5 transition-all shrink-0 cursor-pointer border ";
+
+      if (isCurrent) {
+        baseClasses += "bg-primary text-on-primary border-primary font-bold shadow-sm ring-2 ring-primary/20 scale-105";
+      } else if (isAns) {
+        baseClasses += isAns.is_correct ? "bg-emerald-500/10 text-emerald-700 border-emerald-500/30 font-semibold" : "bg-rose-500/10 text-rose-700 border-rose-500/30 font-semibold";
+      } else {
+        baseClasses += "bg-surface-container-low text-on-surface-variant/70 border-outline-variant/30 hover:bg-surface-container-high";
+      }
+
+      pill.className = baseClasses;
+      pill.innerHTML = `
+        <span class="material-symbols-outlined text-xs">${isAns ? (isAns.is_correct ? 'check_circle' : 'cancel') : 'quiz'}</span>
+        <span>Q${idx + 1}</span>
+      `;
+
+      pill.addEventListener("click", () => {
+        currentIndex = idx;
+        renderCurrentQuestion();
+      });
+
+      questionNavPillsEl.appendChild(pill);
+    });
+  }
+
+  function renderCurrentQuestion() {
+    const q = questions[currentIndex];
+    const total = questions.length;
+    selectedOptionId = null;
+    hintsUsed = 0;
+
+    progressLabelEl.textContent = `Question ${currentIndex + 1} of ${total}`;
+    progressFillEl.style.width = `${Math.round(((currentIndex + 1) / total) * 100)}%`;
+
+    renderQuestionPills();
+
+    questionTextEl.textContent = q.question_text || "Select the best option:";
+    optionsContainerEl.innerHTML = "";
+    hintBox.classList.add("hidden");
+    feedbackBox.classList.add("hidden");
+
+    const prevAns = answeredMap[q.id];
+    const prefixes = ["A", "B", "C", "D"];
+
+    (q.options || []).forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "quiz-opt-btn text-left p-4 rounded-xl border border-outline-variant/60 hover:border-primary hover:bg-primary/5 transition-all text-xs md:text-sm text-on-surface flex items-center gap-3 bg-surface-container-lowest";
+      btn.setAttribute("data-option-id", opt.id);
+
+      btn.innerHTML = `
+        <div class="opt-indicator w-6 h-6 rounded-full border border-outline flex items-center justify-center shrink-0 font-label-sm text-xs font-bold text-on-surface-variant">
+          ${prefixes[idx] || (idx + 1)}
+        </div>
+        <span class="font-body-md text-xs md:text-sm font-medium select-none flex-1">${escapeHtml(opt.option_text)}</span>
+      `;
+
+      if (prevAns && prevAns.selected_option_id === opt.id) {
+        btn.classList.add("border-primary", "bg-primary/10", "ring-2", "ring-primary/30");
+      }
+
+      btn.addEventListener("click", () => {
+        if (prevAns) return;
+        document.querySelectorAll(".quiz-opt-btn").forEach(b => {
+          b.classList.remove("border-primary", "bg-primary/10", "ring-2", "ring-primary/30");
+        });
+        btn.classList.add("border-primary", "bg-primary/10", "ring-2", "ring-primary/30");
+        selectedOptionId = opt.id;
+      });
+
+      optionsContainerEl.appendChild(btn);
+    });
+
+    if (prevAns) {
+      showFeedbackUI(prevAns.is_correct, prevAns.explanation);
+      submitQBtn.disabled = true;
+      submitQBtn.textContent = "Answered";
+    } else {
+      submitQBtn.disabled = false;
+      submitQBtn.textContent = "Submit Answer";
+    }
+
+    prevQBtn.disabled = (currentIndex === 0);
+    nextQBtn.querySelector("span").textContent = (currentIndex === total - 1) ? "Finish Test" : "Next Question";
+  }
+
+  hintTriggerBtn.addEventListener("click", async () => {
+    const q = questions[currentIndex];
+    if (!q) return;
+    hintsUsed = Math.min(hintsUsed + 1, 3);
+    hintTriggerText.textContent = `Get Hint (Level ${Math.min(hintsUsed + 1, 3)})`;
+
+    try {
+      const res = await window.API.learning.getHint(q.id, hintsUsed);
+      if (res.status === "success" && res.hint) {
+        hintBox.classList.remove("hidden");
+        hintBox.innerHTML = `<strong>💡 Level ${hintsUsed} Hint:</strong> ${escapeHtml(res.hint)}`;
+      } else {
+        hintBox.classList.remove("hidden");
+        hintBox.innerHTML = `<strong>💡 Level ${hintsUsed} Hint:</strong> Re-read the question carefully and eliminate unlikely choices.`;
+      }
+    } catch {
+      hintBox.classList.remove("hidden");
+      hintBox.innerHTML = `<strong>💡 Level ${hintsUsed} Hint:</strong> Re-read the question carefully and eliminate unlikely choices.`;
+    }
+  });
+
+  submitQBtn.addEventListener("click", async () => {
+    const q = questions[currentIndex];
+    if (!q) return;
+    if (!selectedOptionId && !answeredMap[q.id]) {
+      alert("Please select an answer option first!");
+      return;
+    }
+    if (answeredMap[q.id]) return;
+
+    submitQBtn.disabled = true;
+    submitQBtn.textContent = "Submitting...";
+
+    try {
+      const res = await window.API.learning.submitCheckpoint({
+        question_id: q.id,
+        selected_option_id: selectedOptionId,
+        hints_used: hintsUsed
+      });
+
+      answeredMap[q.id] = {
+        selected_option_id: selectedOptionId,
+        is_correct: res.is_correct,
+        explanation: res.explanation || ""
+      };
+
+      renderQuestionPills();
+      showFeedbackUI(res.is_correct, res.explanation);
+
+    } catch (err) {
+      alert(err.message || "Failed to submit answer.");
+      submitQBtn.disabled = false;
+      submitQBtn.textContent = "Submit Answer";
+    }
+  });
+
+  function showFeedbackUI(isCorrect, explanationText) {
+    feedbackBox.classList.remove("hidden", "bg-emerald-500/10", "border-emerald-500/30", "text-emerald-900", "bg-rose-500/10", "border-rose-500/30", "text-rose-900");
+    if (isCorrect) {
+      feedbackBox.classList.add("bg-emerald-500/10", "border", "border-emerald-500/30", "text-emerald-900");
+      feedbackBox.innerHTML = `
+        <div class="flex items-center gap-2 font-bold text-emerald-700">
+          <span class="material-symbols-outlined text-lg">check_circle</span>
+          <span>Correct Answer!</span>
+        </div>
+        <p class="text-xs text-emerald-800/90 leading-relaxed">${escapeHtml(explanationText || "Well done! You correctly answered this exam item.")}</p>
+      `;
+    } else {
+      feedbackBox.classList.add("bg-rose-500/10", "border", "border-rose-500/30", "text-rose-900");
+      feedbackBox.innerHTML = `
+        <div class="flex items-center gap-2 font-bold text-rose-700">
+          <span class="material-symbols-outlined text-lg">cancel</span>
+          <span>Incorrect Answer</span>
+        </div>
+        <p class="text-xs text-rose-800/90 leading-relaxed">${escapeHtml(explanationText || "Study the explanation above and review the concept.")}</p>
+      `;
+    }
+  }
+
+  prevQBtn.addEventListener("click", () => {
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderCurrentQuestion();
+    }
+  });
+
+  nextQBtn.addEventListener("click", () => {
+    if (currentIndex < questions.length - 1) {
+      currentIndex++;
+      renderCurrentQuestion();
+    } else {
+      window.location.href = "final_test_result_summary_review.html";
+    }
+  });
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+});
+</script>
+</body>
+</html>

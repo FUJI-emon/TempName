@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>Lumina Learning - Dynamic Lesson</title>
+<title>Lumina Learning - Micro Lesson</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Manrope:wght@400;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Manrope:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <script id="tailwind-config">
         tailwind.config = {
@@ -75,131 +75,81 @@
                       "card-gap": "24px"
               },
               "fontFamily": {
-                      "headline-md": [
-                              "Hanken Grotesk"
-                      ],
-                      "display-lg": [
-                              "Hanken Grotesk"
-                      ],
-                      "label-sm": [
-                              "JetBrains Mono"
-                      ],
-                      "body-md": [
-                              "Manrope"
-                      ],
-                      "button": [
-                              "Manrope"
-                      ],
-                      "headline-lg": [
-                              "Hanken Grotesk"
-                      ],
-                      "body-lg": [
-                              "Manrope"
-                      ]
-              },
-              "fontSize": {
-                      "headline-md": [
-                              "24px",
-                              {
-                                      "lineHeight": "32px",
-                                      "fontWeight": "600"
-                              }
-                      ],
-                      "display-lg": [
-                              "48px",
-                              {
-                                      "lineHeight": "56px",
-                                      "letterSpacing": "-0.02em",
-                                      "fontWeight": "700"
-                              }
-                      ],
-                      "label-sm": [
-                              "12px",
-                              {
-                                      "lineHeight": "16px",
-                                      "letterSpacing": "0.05em",
-                                      "fontWeight": "500"
-                              }
-                      ],
-                      "body-md": [
-                              "16px",
-                              {
-                                      "lineHeight": "24px",
-                                      "fontWeight": "400"
-                              }
-                      ],
-                      "button": [
-                              "16px",
-                              {
-                                      "lineHeight": "20px",
-                                      "fontWeight": "600"
-                              }
-                      ],
-                      "headline-lg": [
-                              "32px",
-                              {
-                                      "lineHeight": "40px",
-                                      "fontWeight": "600"
-                              }
-                      ],
-                      "body-lg": [
-                              "18px",
-                              {
-                                      "lineHeight": "28px",
-                                      "fontWeight": "400"
-                              }
-                      ]
+                      "headline-md": ["Hanken Grotesk"],
+                      "display-lg": ["Hanken Grotesk"],
+                      "label-sm": ["JetBrains Mono"],
+                      "body-md": ["Manrope"],
+                      "button": ["Manrope"],
+                      "headline-lg": ["Hanken Grotesk"],
+                      "body-lg": ["Manrope"]
               }
             }
           }
         }
     </script>
 <style>
-        body { background-color: theme('colors.background'); color: theme('colors.on-surface'); }
+        body { background-color: #f9f9fe; color: #1a1c1f; font-family: 'Manrope', sans-serif; }
         .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(226, 226, 231, 0.6);
         }
         .soft-shadow {
-            box-shadow: 0px 4px 20px rgba(94, 92, 230, 0.08);
+            box-shadow: 0px 4px 24px rgba(68, 65, 204, 0.08);
         }
         .progress-gradient {
-            background: linear-gradient(90deg, theme('colors.primary'), theme('colors.secondary'));
+            background: linear-gradient(90deg, #4441cc, #9026c3);
         }
         .bg-blur-overlay {
             backdrop-filter: blur(8px);
             background-color: rgba(249, 249, 254, 0.6);
         }
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(10px) scale(0.95); }
+            from { opacity: 0; transform: translateY(12px) scale(0.98); }
             to { opacity: 1; transform: translateY(0) scale(1); }
         }
         .animate-fade-in-up {
-            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .flip-card {
+            perspective: 1000px;
+        }
+        .flip-card-inner {
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        .flip-card-front, .flip-card-back {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .flip-card-back {
+            transform: rotateY(180deg);
         }
     </style>
 </head>
-<body class="min-h-screen relative overflow-hidden font-body-md text-body-md flex antialiased">
+<body class="min-h-screen relative overflow-x-hidden font-body-md text-body-md flex antialiased">
 <!-- Side Navigation -->
-<nav class="w-64 flex flex-col justify-between h-screen bg-surface-container-lowest border-r border-outline-variant/30 py-6 px-4 relative z-30 shrink-0 soft-shadow">
+<nav class="w-64 flex flex-col justify-between h-screen bg-surface-container-lowest border-r border-outline-variant/30 py-6 px-4 fixed top-0 left-0 z-30 shrink-0 soft-shadow">
 <div class="flex flex-col gap-8">
 <div class="px-4 font-headline-md text-headline-md font-bold text-primary flex items-center gap-2">
 <span class="material-symbols-outlined text-primary text-3xl" data-icon="lightbulb">lightbulb</span>
             Lumina
         </div>
 <div class="flex flex-col gap-2">
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="student_dashboard_overview.html">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-0.5 hover:shadow-sm duration-300" href="student_dashboard_overview.html">
 <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span> Dashboard
             </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="course_history_my_learning_journeys_1.html">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary font-button text-button hover:-translate-y-0.5 hover:shadow-sm duration-300" href="course_history_my_learning_journeys_1.html">
 <span class="material-symbols-outlined" data-icon="school">school</span> My Courses
             </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="new_course_ai_topic_discussion.html">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-0.5 hover:shadow-sm duration-300" href="new_course_ai_topic_discussion.html">
 <span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span> AI Tutor
             </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="settings_user_account_preferences.html">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-0.5 hover:shadow-sm duration-300" href="settings_user_account_preferences.html">
 <span class="material-symbols-outlined" data-icon="settings">settings</span> Settings
             </a>
 </div>
@@ -212,70 +162,96 @@
 </div>
 </div>
 </nav>
-<!-- Background Layer -->
-<div class="absolute inset-0 z-0 opacity-40 pointer-events-none select-none flex flex-col p-container-padding gap-section-margin pl-[calc(16rem+32px)]">
-<header class="flex justify-between items-center h-16 w-full max-w-[1440px] mx-auto">
-<div class="font-headline-md text-headline-md font-bold text-primary">Lumina Learning</div>
-</header>
-<div class="flex max-w-[1440px] mx-auto w-full gap-gutter">
-<div class="w-[280px] hidden lg:flex flex-col gap-2 p-6 bg-surface-container-lowest rounded-xl soft-shadow">
-<div class="h-10 bg-surface-variant rounded"></div>
-<div class="h-10 bg-surface-variant rounded"></div>
-<div class="h-10 bg-surface-variant rounded"></div>
-</div>
-<div class="flex-1 flex flex-col gap-card-gap">
-<div class="h-32 bg-surface-container-lowest rounded-xl soft-shadow w-full"></div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-card-gap">
-<div class="h-64 bg-surface-container-lowest rounded-xl soft-shadow"></div>
-<div class="h-64 bg-surface-container-lowest rounded-xl soft-shadow"></div>
-</div>
-</div>
-</div>
-</div>
-<div class="absolute inset-0 z-10 bg-blur-overlay ml-64"></div>
-<!-- Main Active Canvas (Z-20) -->
-<main class="relative z-20 flex-1 flex flex-col items-center justify-center p-4 md:p-container-padding min-h-screen">
-<div class="w-full max-w-2xl relative my-auto">
-<!-- Overall Progress Indicator (Above Card) -->
-<div class="flex items-center justify-between mb-4 px-2">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider" id="module-header-title">Module: Interactive Lesson</span>
-<span class="font-label-sm text-label-sm text-primary font-bold" id="step-progress-percent">In Progress</span>
+
+<!-- Main Canvas Container -->
+<main class="flex-1 ml-64 min-h-screen flex flex-col justify-between p-4 md:p-8 relative z-20">
+<!-- Top Controls Bar -->
+<div class="w-full max-w-4xl mx-auto flex items-center justify-between gap-4 mb-4">
+<div class="flex items-center gap-3">
+<button id="back-to-path-btn" class="flex items-center gap-1.5 px-3 py-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-xl transition-all font-button text-xs font-semibold">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+<span>Back to Path</span>
+</button>
+<div class="h-4 w-px bg-outline-variant/40"></div>
+<span class="font-label-sm text-xs text-on-surface-variant truncate max-w-xs md:max-w-md" id="module-header-title">Module: AI Micro Learning</span>
 </div>
 
-<!-- The Learning Card Article -->
-<article class="bg-surface-container-lowest rounded-xl soft-shadow overflow-hidden flex flex-col relative transition-all duration-300 border border-outline-variant/30">
+<div class="flex items-center gap-3">
+<!-- Stopwatch 1: Total Lesson Elapsed Timer -->
+<div class="flex items-center gap-1.5 bg-primary/10 border border-primary/30 px-3 py-1.5 rounded-full shadow-sm text-xs font-mono font-bold text-primary" title="Tổng thời gian học bài này">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span id="total-lesson-timer">00:00</span>
+</div>
+
+<!-- Stopwatch 2: Current Card Timer -->
+<div class="flex items-center gap-1.5 bg-secondary/10 border border-secondary/30 px-3 py-1.5 rounded-full shadow-sm text-xs font-mono font-bold text-secondary" title="Thời gian trên thẻ hiện tại">
+<span class="material-symbols-outlined text-sm">timer</span>
+<span id="current-card-timer">00:00</span>
+</div>
+
+<div class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant/30 px-3 py-1.5 rounded-full shadow-sm">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-sm text-xs text-primary font-bold" id="step-progress-percent">0%</span>
+</div>
+<button id="close-lesson-btn" class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-rose-500/10 text-on-surface-variant hover:text-rose-600 transition-colors" title="Close Lesson">
+<span class="material-symbols-outlined text-lg">close</span>
+</button>
+</div>
+</div>
+
+<!-- Main Learning Card Area -->
+<div class="w-full max-w-4xl mx-auto my-auto">
+<!-- Sequence Navigation Pills (Current / Completed / Remaining) -->
+<div class="flex items-center justify-between gap-2 mb-3 px-1 overflow-x-auto py-1 select-none" id="sequence-pills-container">
+<!-- Dynamically populated pills -->
+</div>
+
+<!-- Main Article Card -->
+<article class="bg-surface-container-lowest rounded-2xl soft-shadow overflow-hidden flex flex-col relative transition-all duration-300 border border-outline-variant/30 min-h-[480px]">
 <!-- Linear Progress Bar -->
 <div class="h-1.5 w-full bg-surface-variant relative">
-<div id="lesson-progress-fill" class="absolute top-0 left-0 h-full progress-gradient rounded-r-full transition-all duration-300" style="width: 0%;"></div>
+<div id="lesson-progress-fill" class="absolute top-0 left-0 h-full progress-gradient rounded-r-full transition-all duration-500" style="width: 0%;"></div>
 </div>
 
-<div class="p-6 md:p-8 flex flex-col gap-6">
-<!-- Card Header -->
+<!-- Card Body Content -->
+<div class="p-6 md:p-8 flex flex-col gap-6 flex-1 justify-between" id="main-card-content">
+<!-- Header -->
 <header>
-<h2 class="font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wide mb-1" id="lesson-card-index">Lesson Concept</h2>
-<h1 class="font-headline-lg text-2xl md:text-headline-lg text-on-surface font-bold" id="lesson-card-title">Loading Lesson...</h1>
+<div class="flex items-center justify-between gap-2 mb-2">
+<span class="font-label-sm text-xs text-secondary font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-secondary/10" id="lesson-card-index">Lesson Card</span>
+<span class="font-label-sm text-xs text-on-surface-variant" id="lesson-card-type-tag">Concept</span>
+</div>
+<h1 class="font-headline-lg text-2xl md:text-headline-lg text-on-surface font-bold leading-tight" id="lesson-card-title"></h1>
 </header>
 
-<!-- Card Body (Renders Cards or Inline Checkpoint/Exam Question) -->
-<div class="flex flex-col gap-4 text-on-surface-variant" id="lesson-card-body">
-<p class="font-body-md text-body-md">
-                            Loading AI Lesson content from backend...
-                        </p>
+<!-- Content Block -->
+<div class="flex flex-col gap-5 text-on-surface-variant flex-1" id="lesson-card-body">
+</div>
 </div>
 </div>
 
-<!-- Card Footer (Navigation) -->
-<footer class="p-6 border-t border-surface-variant flex justify-between items-center bg-surface-bright">
-<button id="prev-card-btn" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-surface-container-low rounded-lg transition-colors font-button text-button disabled:opacity-40 disabled:cursor-not-allowed">
-<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
-                        Previous
-                    </button>
-<button id="next-card-btn" class="flex items-center gap-2 px-6 py-2 bg-primary text-on-primary rounded-lg shadow-sm hover:shadow-md transition-shadow font-button text-button hover:-translate-y-0.5 duration-300">
-                        <span>Next</span>
-                        <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+<!-- Card Footer Navigation -->
+<footer class="p-4 md:p-6 border-t border-surface-variant/60 flex justify-between items-center bg-surface-bright/70 rounded-b-2xl">
+<button id="prev-card-btn" class="flex items-center gap-2 px-4 py-2.5 text-on-surface-variant hover:text-primary hover:bg-surface-container-low rounded-xl transition-all font-button text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed">
+<span class="material-symbols-outlined text-base">arrow_back</span>
+<span>Previous</span>
+</button>
+
+<div class="flex items-center gap-2" id="card-nav-center-actions">
+<!-- Optional inline actions -->
+</div>
+
+<button id="next-card-btn" class="flex items-center gap-2 px-6 py-2.5 bg-primary text-on-primary rounded-xl shadow-md hover:bg-primary/90 hover:shadow-lg transition-all font-button text-xs font-bold hover:-translate-y-0.5 duration-300">
+<span>Next</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
 </button>
 </footer>
 </article>
+</div>
+
+<!-- Footer branding -->
+<div class="w-full max-w-4xl mx-auto text-center py-2 text-xs text-on-surface-variant/60 font-label-sm">
+      Lumina Learning Adaptive Engine • Step Quiz &amp; Verification Sequence
 </div>
 </main>
 
@@ -287,10 +263,14 @@ document.addEventListener("DOMContentLoaded", async function () {
   const stepProgressPercent = document.getElementById("step-progress-percent");
   const lessonCardTitle = document.getElementById("lesson-card-title");
   const lessonCardIndex = document.getElementById("lesson-card-index");
+  const lessonCardTypeTag = document.getElementById("lesson-card-type-tag");
   const lessonCardBody = document.getElementById("lesson-card-body");
   const progressFill = document.getElementById("lesson-progress-fill");
   const prevCardBtn = document.getElementById("prev-card-btn");
   const nextCardBtn = document.getElementById("next-card-btn");
+  const sequencePillsContainer = document.getElementById("sequence-pills-container");
+  const backToPathBtn = document.getElementById("back-to-path-btn");
+  const closeLessonBtn = document.getElementById("close-lesson-btn");
 
   const urlParams = new URLSearchParams(window.location.search);
   const stepIdFromUrl = urlParams.get("step_id");
@@ -302,7 +282,15 @@ document.addEventListener("DOMContentLoaded", async function () {
     material = window.API?.storage?.getMaterial();
   } catch (e) {}
 
-  const currentStepId = stepIdFromUrl || activeStep?.id || 1;
+  let currentStepId = parseInt(stepIdFromUrl, 10);
+  if (isNaN(currentStepId)) {
+    if (activeStep && activeStep.id && !isNaN(parseInt(activeStep.id, 10))) {
+      currentStepId = parseInt(activeStep.id, 10);
+    } else {
+      currentStepId = 64;
+    }
+  }
+
   let currentQuestion = null;
   let selectedOptionId = null;
   let hintsUsed = 0;
@@ -312,16 +300,40 @@ document.addEventListener("DOMContentLoaded", async function () {
   let currentIndex = 0;
   let stepData = null;
 
+  // 📊 Quiz Answers & Review Mode State Variables
+  let userAnswersMap = {}; // { [question_id]: { selectedOptionId, isCorrect, explanation } }
+  let isReviewMode = false;
+
+  // ⏱️ Stopwatches / Timers State Variables (declared before any function call)
+  let totalSeconds = 0;
+  let cardSeconds = 0;
+  let totalTimerInterval = null;
+  let cardTimerInterval = null;
+
   if (material && material.title) {
     moduleHeaderTitle.textContent = `Module: ${material.title}`;
   } else {
     moduleHeaderTitle.textContent = `Module: AI Learning Journey`;
   }
 
-  // Fetch Step Quiz, Cards, and Questions from Backend
+  backToPathBtn.addEventListener("click", () => {
+    window.location.href = "personalized_learning_path.html";
+  });
+
+  closeLessonBtn.addEventListener("click", () => {
+    closeLessonSafely();
+  });
+
+  function closeLessonSafely() {
+    if (confirm("Do you want to exit the current lesson and return to the Learning Path?")) {
+      window.location.href = "personalized_learning_path.html";
+    }
+  }
+
+  // Fetch Step Quiz data from backend API
   try {
     const res = await window.API.learning.getStepQuiz(currentStepId);
-    if (res.status === "success") {
+    if (res && res.status === "success") {
       stepData = res;
 
       if (res.step_title) {
@@ -337,30 +349,62 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (sequenceItems.length > 0) {
         renderCurrentItem();
       }
+    } else {
+      throw new Error(res?.message || "Invalid step quiz payload response");
     }
   } catch (err) {
-    console.error("Failed to load step quiz/lesson", err);
-    lessonCardTitle.textContent = "Lỗi tải bài học";
-    lessonCardBody.innerHTML = `<p class="text-rose-500 text-sm font-bold">Không thể kết nối với backend server. Vui lòng thử lại sau.</p>`;
+    console.error("Failed to load step quiz/lesson, attempting fallback load...", err);
+    try {
+      const fallbackRes = await window.API.learning.getStepQuiz(64);
+      if (fallbackRes && fallbackRes.status === "success") {
+        stepData = fallbackRes;
+        if (fallbackRes.step_title) {
+          document.title = `Lumina - ${fallbackRes.step_title}`;
+        }
+        buildSequenceItems(fallbackRes);
+        if (sequenceItems.length > 0) {
+          renderCurrentItem();
+          return;
+        }
+      }
+    } catch (fbErr) {
+      console.error("Fallback step load also failed:", fbErr);
+    }
+
+    lessonCardTitle.textContent = "Error Loading Lesson";
+    lessonCardBody.innerHTML = `
+      <div class="p-6 bg-rose-500/10 border border-rose-500/30 rounded-2xl text-center flex flex-col items-center gap-3">
+        <span class="material-symbols-outlined text-rose-600 text-4xl">error</span>
+        <p class="text-sm font-bold text-rose-700">Unable to fetch lesson data from server.</p>
+        <p class="text-xs text-on-surface-variant mb-2">Please make sure the backend Django server is running and try again.</p>
+        <a href="personalized_learning_path.html" class="px-5 py-2.5 bg-primary text-on-primary font-bold text-xs rounded-xl shadow-sm hover:bg-primary/90 transition-all inline-flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">refresh</span>
+          <span>Return to Learning Path</span>
+        </a>
+      </div>
+    `;
   }
 
   function renderLockedLessonState(res) {
     stepProgressPercent.textContent = "Locked";
-    stepProgressPercent.className = "font-label-sm text-label-sm text-rose-500 font-bold flex items-center gap-1";
-    stepProgressPercent.innerHTML = `<span class="material-symbols-outlined text-sm">lock</span><span>Bị khóa</span>`;
+    stepProgressPercent.className = "font-label-sm text-xs text-rose-500 font-bold flex items-center gap-1";
+    stepProgressPercent.innerHTML = `<span class="material-symbols-outlined text-xs">lock</span><span>Locked</span>`;
     
-    lessonCardIndex.textContent = "BÀI HỌC CHƯA MỞ KHÓA";
-    lessonCardTitle.textContent = res.step_title || "Bài học bị khóa";
+    lessonCardIndex.textContent = "STEP LOCKED";
+    lessonCardTypeTag.textContent = "Prerequisite Required";
+    lessonCardTitle.textContent = res.step_title || "Step is Locked";
     lessonCardBody.innerHTML = `
-      <div class="p-6 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-center flex flex-col items-center gap-3 animate-fade-in-up">
-        <span class="material-symbols-outlined text-amber-600 text-5xl">lock</span>
-        <h3 class="font-bold text-on-surface text-base">Bạn cần hoàn thành các bài học trước để mở khóa!</h3>
+      <div class="p-8 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-center flex flex-col items-center gap-4 animate-fade-in-up my-auto">
+        <div class="w-16 h-16 rounded-full bg-amber-500/20 text-amber-600 flex items-center justify-center text-3xl">
+          <span class="material-symbols-outlined" style="font-size: 36px;">lock</span>
+        </div>
+        <h3 class="font-bold text-on-surface text-lg">Complete Prerequisite Steps First</h3>
         <p class="text-xs text-on-surface-variant leading-relaxed max-w-md">
-          Hãy quay lại Lộ trình học tập cá nhân hóa để tiếp tục theo thứ tự các bước học.
+          This step is currently locked. Complete the preceding steps in your Personalized Learning Path to unlock this lesson.
         </p>
         <a href="personalized_learning_path.html" class="mt-2 px-6 py-3 bg-primary text-on-primary font-bold text-xs rounded-xl shadow-md hover:bg-primary/90 transition-all inline-flex items-center gap-2">
           <span class="material-symbols-outlined text-sm">arrow_back</span>
-          <span>Quay lại Lộ trình học tập</span>
+          <span>Return to Learning Path</span>
         </a>
       </div>
     `;
@@ -400,30 +444,34 @@ document.addEventListener("DOMContentLoaded", async function () {
             placedCheckpointIds.add(q.id);
             sequenceItems.push({
               type: "checkpoint",
-              question: q
+              question: q,
+              afterCardOrder: cardOrder
             });
           }
         });
       });
     }
 
-    // Append any unplaced checkpoint questions (if after_card_order > total_cards)
+    // Append unplaced checkpoint questions
     checkpointQs.forEach(q => {
       if (!placedCheckpointIds.has(q.id)) {
         placedCheckpointIds.add(q.id);
         sequenceItems.push({
           type: "checkpoint",
-          question: q
+          question: q,
+          afterCardOrder: q.after_card_order || cards.length
         });
       }
     });
 
-    // Append Final Exam / Wrap-up questions (after_card_order = null) at the end of the lesson
+    // Append Final Exam / Wrap-up questions (after_card_order = null)
     if (wrapupQs.length > 0) {
-      wrapupQs.forEach(q => {
+      wrapupQs.forEach((q, idx) => {
         sequenceItems.push({
           type: "final_test",
-          question: q
+          question: q,
+          testIndex: idx + 1,
+          totalTests: wrapupQs.length
         });
       });
     }
@@ -433,269 +481,625 @@ document.addEventListener("DOMContentLoaded", async function () {
       sequenceItems.push({
         type: "card",
         data: {
-          heading: res.step_title || "Tổng quan bài học",
-          body: (res.lesson && res.lesson.explanation) ? res.lesson.explanation : "Bài học đang được biên soạn nội dung."
+          heading: res.step_title || "Lesson Overview",
+          body: (res.lesson && res.lesson.explanation) ? res.lesson.explanation : "Lesson content is currently being prepared."
         },
         cardIndex: 1,
         totalCards: 1
       });
     }
+  }  function renderSequencePills() {
+    if (!sequencePillsContainer) return;
+    sequencePillsContainer.innerHTML = "";
+
+    sequenceItems.forEach((item, idx) => {
+      const pill = document.createElement("div");
+      
+      let label = "";
+      let icon = "";
+      let isCurrent = (idx === currentIndex);
+      let isCompleted = (idx < currentIndex);
+
+      if (item.type === "card") {
+        label = `Card ${item.cardIndex}`;
+        icon = "article";
+      } else if (item.type === "checkpoint") {
+        label = `Checkpoint`;
+        icon = "bolt";
+      } else if (item.type === "final_test") {
+        label = `Exam ${item.testIndex || ""}`;
+        icon = "assignment";
+      }
+
+      let baseClasses = "px-3 py-1.5 rounded-xl font-label-sm text-xs flex items-center gap-1.5 shrink-0 cursor-pointer select-none border transition-all hover:opacity-100 ";
+
+      if (isCurrent) {
+        baseClasses += "bg-primary text-on-primary border-primary font-bold shadow-sm ring-2 ring-primary/20 scale-105";
+      } else if (isCompleted) {
+        baseClasses += "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 font-semibold";
+        icon = "check_circle";
+      } else {
+        baseClasses += "bg-surface-container-low text-on-surface-variant/70 border-outline-variant/30 opacity-60";
+      }
+
+      pill.className = baseClasses;
+      pill.innerHTML = `<span class="material-symbols-outlined text-sm">${icon}</span><span>${label}</span>`;
+      pill.addEventListener("click", () => {
+        currentIndex = idx;
+        renderCurrentItem();
+      });
+      sequencePillsContainer.appendChild(pill);
+    });
+  }
+
+  // ⏱️ Stopwatches / Timers Logic
+
+  function initTimers() {
+    if (totalTimerInterval) clearInterval(totalTimerInterval);
+    totalSeconds = 0;
+    totalTimerInterval = setInterval(() => {
+      totalSeconds++;
+      const m = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+      const s = String(totalSeconds % 60).padStart(2, '0');
+      const el = document.getElementById("total-lesson-timer");
+      if (el) el.textContent = `${m}:${s}`;
+    }, 1000);
+
+    resetCardTimer();
+  }
+
+  function resetCardTimer() {
+    if (cardTimerInterval) clearInterval(cardTimerInterval);
+    cardSeconds = 0;
+    const el = document.getElementById("current-card-timer");
+    if (el) el.textContent = "00:00";
+
+    cardTimerInterval = setInterval(() => {
+      cardSeconds++;
+      const m = String(Math.floor(cardSeconds / 60)).padStart(2, '0');
+      const s = String(cardSeconds % 60).padStart(2, '0');
+      if (el) el.textContent = `${m}:${s}`;
+    }, 1000);
+  }
+
+  function stopTimers() {
+    if (totalTimerInterval) clearInterval(totalTimerInterval);
+    if (cardTimerInterval) clearInterval(cardTimerInterval);
+  }
+
+  function setNextBtnText(txt) {
+    if (!nextCardBtn) return;
+    const sp = nextCardBtn.querySelector("span");
+    if (sp) sp.textContent = txt;
+    else nextCardBtn.textContent = txt;
   }
 
   function renderCurrentItem() {
+    if (!sequenceItems || sequenceItems.length === 0) return;
     const item = sequenceItems[currentIndex];
+    if (!item) return;
     const total = sequenceItems.length;
     const progressPct = Math.round(((currentIndex + 1) / total) * 100);
+    
     if (progressFill) progressFill.style.width = `${progressPct}%`;
-    stepProgressPercent.textContent = `${progressPct}%`;
+    if (stepProgressPercent) stepProgressPercent.textContent = `${progressPct}%`;
 
-    prevCardBtn.disabled = (currentIndex === 0);
+    renderSequencePills();
+
+    // Enable previous card button to allow reviewing previous cards
+    if (prevCardBtn) {
+      prevCardBtn.disabled = (currentIndex === 0);
+      prevCardBtn.title = "Quay lại thẻ trước";
+    }
+
+    // Reset card timer for current card & init total timer on start
+    if (totalSeconds === 0 && !totalTimerInterval) {
+      initTimers();
+    } else {
+      resetCardTimer();
+    }
 
     if (item.type === "card") {
-      lessonCardIndex.textContent = `Lesson Card ${item.cardIndex} of ${item.totalCards}`;
-      lessonCardTitle.textContent = item.data.heading || stepData?.step_title || "Lesson Concept";
-
-      lessonCardBody.innerHTML = "";
-      const bodyP = document.createElement("p");
-      bodyP.className = "font-body-md text-body-md text-on-surface-variant leading-relaxed whitespace-pre-line";
-      bodyP.textContent = item.data.body || "";
-      lessonCardBody.appendChild(bodyP);
-
-      if (item.cardIndex === 1 && stepData?.lesson?.example) {
-        const codeBox = document.createElement("div");
-        codeBox.className = "bg-primary/5 p-4 rounded-xl border border-primary/20 text-xs font-mono text-on-surface my-2 space-y-1";
-        codeBox.innerHTML = `<span class="text-primary font-bold block mb-1">💡 Ví dụ thực tế:</span> ${escapeHtml(stepData.lesson.example)}`;
-        lessonCardBody.appendChild(codeBox);
-      }
-
-      nextCardBtn.querySelector("span").textContent = (currentIndex === total - 1) ? "Hoàn thành bài học" : "Tiếp theo";
-      nextCardBtn.onclick = () => {
-        if (currentIndex < sequenceItems.length - 1) {
-          currentIndex++;
-          renderCurrentItem();
-        } else {
-          showTargetAchievedModal();
-        }
-      };
-
-    } else if (item.type === "checkpoint" || item.type === "final_test") {
-      currentQuestion = item.question;
-      selectedOptionId = null;
-      hintsUsed = 0;
-      isAnswered = false;
-
-      const isFinal = (item.type === "final_test");
-      const titleText = isFinal ? "Bài kiểm tra tổng kết (Final Exam)" : "Câu hỏi Checkpoint";
-      
-      const quizQuestionsCount = sequenceItems.filter(i => i.type === item.type).length;
-      const quizCurrentIndex = sequenceItems.slice(0, currentIndex + 1).filter(i => i.type === item.type).length;
-
-      lessonCardIndex.textContent = `${titleText} (${quizCurrentIndex}/${quizQuestionsCount})`;
-      lessonCardTitle.textContent = stepData?.step_title || "Kiểm tra kiến thức";
-
-      renderInlineQuizUI(item, isFinal ? "Final Exam" : "Checkpoint");
-
-      const submitText = isFinal ? "Nộp bài Final Exam" : "Nộp bài Checkpoint";
-      nextCardBtn.querySelector("span").textContent = submitText;
-      
-      nextCardBtn.onclick = () => {
-        const quizSubmitBtn = document.getElementById("quiz-submit-btn");
-        if (!selectedOptionId && !isAnswered) {
-          alert("Vui lòng chọn 1 đáp án và bấm Nộp bài trước khi tiếp tục!");
-          return;
-        }
-        if (isAnswered && currentIndex < sequenceItems.length - 1) {
-          currentIndex++;
-          renderCurrentItem();
-        } else if (isAnswered && currentIndex === sequenceItems.length - 1) {
-          showTargetAchievedModal();
-        } else if (!isAnswered && quizSubmitBtn) {
-          quizSubmitBtn.click();
-        }
-      };
+      renderLessonCardView(item, total);
+    } else if (item.type === "checkpoint") {
+      renderCheckpointView(item, total);
+    } else if (item.type === "final_test") {
+      renderFinalTestView(item, total);
     }
   }
 
-  function renderInlineQuizUI(item, labelTag) {
-    const q = item.question;
-    const isFinal = (item.type === "final_test");
+  function renderLessonCardView(item, total) {
+    if (lessonCardIndex) lessonCardIndex.textContent = `LESSON CARD ${item.cardIndex} OF ${item.totalCards}`;
+    if (lessonCardTypeTag) lessonCardTypeTag.textContent = "Micro Concept";
+    if (lessonCardTitle) lessonCardTitle.textContent = item.data.heading || stepData?.step_title || "Lesson Concept";
+
+    if (!lessonCardBody) return;
+    lessonCardBody.innerHTML = "";
+    
+    // Main Body Paragraph
+    const bodyContainer = document.createElement("div");
+    bodyContainer.className = "space-y-4 animate-fade-in-up";
+    
+    const bodyP = document.createElement("p");
+    bodyP.className = "font-body-md text-sm md:text-base text-on-surface-variant leading-relaxed whitespace-pre-line";
+    bodyP.textContent = item.data.body || "";
+    bodyContainer.appendChild(bodyP);
+
+    // Practical Example callout box if available
+    if (stepData?.lesson?.example && item.cardIndex === 1) {
+      const exampleBox = document.createElement("div");
+      exampleBox.className = "bg-primary/5 p-4 rounded-xl border border-primary/20 flex flex-col gap-1.5 my-2";
+      exampleBox.innerHTML = `
+        <div class="flex items-center gap-1.5 font-bold text-xs text-primary uppercase tracking-wider">
+          <span class="material-symbols-outlined text-sm">lightbulb</span>
+          <span>Practical Example:</span>
+        </div>
+        <div class="font-mono text-xs text-on-surface leading-relaxed whitespace-pre-line bg-surface-container-lowest/80 p-3 rounded-lg border border-outline-variant/30">
+          ${escapeHtml(stepData.lesson.example)}
+        </div>
+      `;
+      bodyContainer.appendChild(exampleBox);
+    }
+
+    // Key Points pill list if available
+    if (stepData?.lesson?.key_points && stepData.lesson.key_points.length > 0 && item.cardIndex === 2) {
+      const keyPointsBox = document.createElement("div");
+      keyPointsBox.className = "bg-secondary/5 p-4 rounded-xl border border-secondary/20 flex flex-col gap-2 my-2";
+      
+      const pointsListHtml = stepData.lesson.key_points.map(pt => `
+        <li class="flex items-start gap-2 text-xs text-on-surface">
+          <span class="material-symbols-outlined text-secondary text-sm shrink-0 mt-0.5">check_circle</span>
+          <span>${escapeHtml(pt)}</span>
+        </li>
+      `).join("");
+
+      keyPointsBox.innerHTML = `
+        <div class="flex items-center gap-1.5 font-bold text-xs text-secondary uppercase tracking-wider">
+          <span class="material-symbols-outlined text-sm">stars</span>
+          <span>Key Points to Remember:</span>
+        </div>
+        <ul class="space-y-1.5 mt-1">${pointsListHtml}</ul>
+      `;
+      bodyContainer.appendChild(keyPointsBox);
+    }
+
+    // Flashcards for active recall if available
+    if (stepData?.lesson?.flashcards && stepData.lesson.flashcards.length > 0 && item.cardIndex === item.totalCards) {
+      const flashcardsContainer = document.createElement("div");
+      flashcardsContainer.className = "flex flex-col gap-3 my-2 pt-2 border-t border-outline-variant/30";
+      
+      const fcHeader = document.createElement("div");
+      fcHeader.className = "flex items-center justify-between";
+      fcHeader.innerHTML = `
+        <span class="font-label-sm text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">style</span>
+          <span>Flashcard Review (Click to flip)</span>
+        </span>
+        <span class="text-xs text-on-surface-variant">Active Recall</span>
+      `;
+      flashcardsContainer.appendChild(fcHeader);
+
+      const fcGrid = document.createElement("div");
+      fcGrid.className = "grid grid-cols-1 sm:grid-cols-2 gap-3";
+
+      stepData.lesson.flashcards.forEach((fc, idx) => {
+        const fcCard = document.createElement("div");
+        fcCard.className = "flip-card h-28 cursor-pointer select-none rounded-xl";
+        fcCard.innerHTML = `
+          <div class="flip-card-inner relative w-full h-full rounded-xl shadow-sm transition-all duration-500">
+            <div class="flip-card-front absolute inset-0 bg-surface-container-low border border-primary/20 rounded-xl p-3 flex flex-col justify-between">
+              <span class="font-label-sm text-[10px] text-primary uppercase font-bold">Front #${idx+1}</span>
+              <p class="text-xs font-semibold text-on-surface text-center my-auto">${escapeHtml(fc.front)}</p>
+              <span class="text-[10px] text-on-surface-variant/70 text-right">Click to flip 🔄</span>
+            </div>
+            <div class="flip-card-back absolute inset-0 bg-primary/10 border border-primary/40 rounded-xl p-3 flex flex-col justify-between">
+              <span class="font-label-sm text-[10px] text-secondary uppercase font-bold">Back</span>
+              <p class="text-xs font-semibold text-primary text-center my-auto">${escapeHtml(fc.back)}</p>
+              <span class="text-[10px] text-secondary/70 text-right">Flipped ↩️</span>
+            </div>
+          </div>
+        `;
+        fcCard.addEventListener("click", () => fcCard.classList.toggle("flipped"));
+        fcGrid.appendChild(fcCard);
+      });
+
+      flashcardsContainer.appendChild(fcGrid);
+      bodyContainer.appendChild(flashcardsContainer);
+    }
+
+    lessonCardBody.appendChild(bodyContainer);
+
+    setNextBtnText((currentIndex === total - 1) ? "Finish Lesson" : "Next Card");
+    if (nextCardBtn) {
+      nextCardBtn.disabled = false;
+      nextCardBtn.title = "";
+    }
+    nextCardBtn.onclick = () => {
+      if (currentIndex < sequenceItems.length - 1) {
+        currentIndex++;
+        renderCurrentItem();
+      } else {
+        showCompletionSummary();
+      }
+    };
+  }
+
+  function renderCheckpointView(item, total) {
+    currentQuestion = item.question;
+    selectedOptionId = null;
+    hintsUsed = 0;
+    
+    const savedAns = userAnswersMap[currentQuestion.id];
+    isAnswered = (savedAns || isReviewMode) ? true : false;
+
+    const checkpointCount = sequenceItems.filter(i => i.type === "checkpoint").length;
+    const checkpointIndex = sequenceItems.slice(0, currentIndex + 1).filter(i => i.type === "checkpoint").length;
+
+    lessonCardIndex.textContent = `CHECKPOINT ${checkpointIndex} OF ${checkpointCount}`;
+    lessonCardTypeTag.textContent = `After Card ${item.afterCardOrder || 1}`;
+    lessonCardTitle.textContent = "Interactive Checkpoint Question";
 
     lessonCardBody.innerHTML = `
       <div class="flex flex-col gap-5 animate-fade-in-up">
-        <div class="p-4 ${isFinal ? 'bg-secondary/10 border-secondary/30' : 'bg-primary/5 border-primary/20'} rounded-xl border flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full ${isFinal ? 'bg-secondary text-on-secondary' : 'bg-primary-container text-on-primary-container'} flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined">${isFinal ? 'assignment' : 'quiz'}</span>
+        <div class="p-4 bg-primary/5 border border-primary/20 rounded-xl flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-xl">bolt</span>
           </div>
           <div>
-            <h3 class="font-button text-sm text-on-surface font-bold">${escapeHtml(labelTag)}</h3>
-            <p class="text-xs text-on-surface-variant">Lumina AI Knowledge Evaluation</p>
+            <h3 class="font-button text-sm text-on-surface font-bold">Knowledge Checkpoint</h3>
+            <p class="text-xs text-on-surface-variant">Check your understanding of the concepts covered so far before continuing.</p>
           </div>
         </div>
 
-        <div class="p-4 bg-surface-container-low rounded-xl border border-surface-variant/50">
-          <p class="font-body-md text-sm text-on-surface font-medium" id="quiz-question-text">${escapeHtml(q.question_text || "Chọn đáp án đúng nhất:")}</p>
+        <div class="p-5 bg-surface-container-low rounded-xl border border-outline-variant/40">
+          <p class="font-body-lg text-sm md:text-base text-on-surface font-semibold leading-snug" id="quiz-question-text">
+            ${escapeHtml(currentQuestion.question_text || "Select the best answer:")}
+          </p>
         </div>
 
         <div class="flex flex-col gap-2.5" id="quiz-options-container"></div>
-
-        <div id="hint-text-box" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200"></div>
-        <div id="quiz-feedback-box" class="hidden p-4 rounded-xl text-sm font-medium flex flex-col gap-2"></div>
+        <div id="hint-text-box" class="hidden p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-900 dark:text-amber-200 flex flex-col gap-1"></div>
+        <div id="quiz-feedback-box" class="hidden p-4 rounded-xl text-xs md:text-sm font-medium flex flex-col gap-2"></div>
 
         <div class="flex justify-between items-center pt-2 border-t border-surface-variant/50">
-          <button id="hint-btn" type="button" class="font-label-sm text-xs text-secondary hover:underline flex items-center gap-1">
+          <button id="hint-btn" type="button" class="px-3 py-2 rounded-xl text-xs font-bold text-secondary bg-secondary/10 hover:bg-secondary/20 transition-all flex items-center gap-1.5">
             <span class="material-symbols-outlined text-sm">lightbulb</span>
-            <span id="hint-btn-text">Gợi ý (Cấp 1)</span>
+            <span id="hint-btn-text">Get Hint (Level 1)</span>
           </button>
-          <button id="quiz-submit-btn" type="button" class="px-5 py-2.5 bg-primary text-on-primary font-button text-xs rounded-lg shadow-sm hover:bg-primary/90 transition-all font-bold">
-            Nộp đáp án
+          <button id="quiz-submit-btn" type="button" class="px-6 py-2.5 bg-primary text-on-primary font-button text-xs rounded-xl shadow-md hover:bg-primary/90 transition-all font-bold">
+            Submit Answer
           </button>
         </div>
-        <button id="next-action-btn" type="button" class="hidden w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-button text-xs rounded-lg shadow-sm transition-all flex items-center justify-center gap-1">
-          <span>Tiếp tục học bài tiếp theo</span>
-          <span class="material-symbols-outlined text-sm">arrow_forward</span>
-        </button>
       </div>
     `;
 
+    renderOptionsUI(currentQuestion);
+    setupQuizHandlers(item, false);
+
+    setNextBtnText((savedAns || isReviewMode) ? "Next Question" : "Submit Answer");
+    if (nextCardBtn) {
+      nextCardBtn.disabled = (!savedAns && !isReviewMode && !selectedOptionId);
+      nextCardBtn.title = (!savedAns && !isReviewMode && !selectedOptionId) ? "Vui lòng chọn 1 đáp án A, B hoặc C để tiếp tục" : "";
+    }
+
+    nextCardBtn.onclick = () => {
+      const quizSubmitBtn = document.getElementById("quiz-submit-btn");
+      if (!selectedOptionId && !isAnswered && !savedAns && !isReviewMode) {
+        alert("Vui lòng chọn 1 đáp án (A, B hoặc C) trước khi chuyển sang câu tiếp theo!");
+        return;
+      }
+      if (isAnswered && currentIndex < sequenceItems.length - 1) {
+        currentIndex++;
+        renderCurrentItem();
+      } else if (isAnswered && currentIndex === sequenceItems.length - 1) {
+        showCompletionSummary();
+      } else if (!isAnswered && quizSubmitBtn) {
+        quizSubmitBtn.click();
+      }
+    };
+  }
+
+  function renderFinalTestView(item, total) {
+    currentQuestion = item.question;
+    selectedOptionId = null;
+    hintsUsed = 0;
+
+    const savedAns = userAnswersMap[currentQuestion.id];
+    isAnswered = (savedAns || isReviewMode) ? true : false;
+
+    lessonCardIndex.textContent = `FINAL EXAM Q${item.testIndex} OF ${item.totalTests}`;
+    lessonCardTypeTag.textContent = "Assessment";
+    lessonCardTitle.textContent = "Final Lesson Exam Question";
+
+    lessonCardBody.innerHTML = `
+      <div class="flex flex-col gap-5 animate-fade-in-up">
+        <div class="p-4 bg-secondary/10 border border-secondary/30 rounded-xl flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-xl">assignment</span>
+            </div>
+            <div>
+              <h3 class="font-button text-sm text-on-surface font-bold">Final Exam Assessment</h3>
+              <p class="text-xs text-on-surface-variant">Formal evaluation covering all concepts in this lesson.</p>
+            </div>
+          </div>
+          <span class="px-3 py-1 bg-secondary/20 text-secondary font-label-sm text-xs font-bold rounded-full">Exam Mode</span>
+        </div>
+
+        <div class="p-5 bg-surface-container-low rounded-xl border border-outline-variant/40">
+          <p class="font-body-lg text-sm md:text-base text-on-surface font-semibold leading-snug">
+            ${escapeHtml(currentQuestion.question_text || "Select the best answer:")}
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2.5" id="quiz-options-container"></div>
+        <div id="hint-text-box" class="hidden p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-900 flex flex-col gap-1"></div>
+        <div id="quiz-feedback-box" class="hidden p-4 rounded-xl text-xs md:text-sm font-medium flex flex-col gap-2"></div>
+
+        <div class="flex justify-between items-center pt-2 border-t border-surface-variant/50">
+          <button id="hint-btn" type="button" class="px-3 py-2 rounded-xl text-xs font-bold text-secondary bg-secondary/10 hover:bg-secondary/20 transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">lightbulb</span>
+            <span id="hint-btn-text">Get Hint (Level 1)</span>
+          </button>
+          <button id="quiz-submit-btn" type="button" class="px-6 py-2.5 bg-secondary text-on-secondary font-button text-xs rounded-xl shadow-md hover:opacity-90 transition-all font-bold">
+            Submit Final Answer
+          </button>
+        </div>
+      </div>
+    `;
+
+    renderOptionsUI(currentQuestion);
+    setupQuizHandlers(item, true);
+
+    setNextBtnText((savedAns || isReviewMode) ? "Next Question" : "Submit Final Answer");
+    if (nextCardBtn) {
+      nextCardBtn.disabled = (!savedAns && !isReviewMode && !selectedOptionId);
+      nextCardBtn.title = (!savedAns && !isReviewMode && !selectedOptionId) ? "Vui lòng chọn 1 đáp án A, B hoặc C để tiếp tục" : "";
+    }
+
+    nextCardBtn.onclick = () => {
+      const quizSubmitBtn = document.getElementById("quiz-submit-btn");
+      if (!selectedOptionId && !isAnswered && !savedAns && !isReviewMode) {
+        alert("Vui lòng chọn 1 đáp án (A, B hoặc C) trước khi chuyển sang câu tiếp theo!");
+        return;
+      }
+      if (isAnswered && currentIndex < sequenceItems.length - 1) {
+        currentIndex++;
+        renderCurrentItem();
+      } else if (isAnswered && currentIndex === sequenceItems.length - 1) {
+        showCompletionSummary();
+      } else if (!isAnswered && quizSubmitBtn) {
+        quizSubmitBtn.click();
+      }
+    };
+  }
+
+  function renderOptionsUI(question) {
     const optionsContainer = document.getElementById("quiz-options-container");
+    if (!optionsContainer) return;
+
+    if (!question.options || question.options.length === 0) {
+      optionsContainer.innerHTML = `<div class="p-4 text-xs text-on-surface-variant text-center">No options available for this question.</div>`;
+      return;
+    }
+
+    const prefixes = ["A", "B", "C", "D"];
+    const savedAns = userAnswersMap[question.id];
+
+    question.options.forEach((opt, idx) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      let btnClasses = "quiz-option-btn text-left p-4 rounded-xl border border-outline-variant/60 hover:border-primary hover:bg-primary/5 transition-all text-xs md:text-sm text-on-surface flex items-center gap-3 bg-surface-container-lowest";
+      btn.setAttribute("data-option-id", opt.id);
+
+      let isCorrectOpt = opt.is_correct;
+      let isUserChosen = savedAns && String(savedAns.selectedOptionId) === String(opt.id);
+
+      if (savedAns || isReviewMode) {
+        if (isCorrectOpt) {
+          btnClasses = "quiz-option-btn text-left p-4 rounded-xl border-2 border-emerald-500 bg-emerald-500/10 font-bold text-xs md:text-sm text-emerald-900 flex items-center gap-3 shadow-sm";
+        } else if (isUserChosen && !isCorrectOpt) {
+          btnClasses = "quiz-option-btn text-left p-4 rounded-xl border-2 border-rose-500 bg-rose-500/10 font-bold text-xs md:text-sm text-rose-900 flex items-center gap-3 shadow-sm";
+        }
+      }
+
+      let indicatorHtml = `
+        <div class="opt-indicator w-6 h-6 rounded-full border border-outline flex items-center justify-center shrink-0 font-label-sm text-xs font-bold text-on-surface-variant">
+          ${prefixes[idx] || (idx + 1)}
+        </div>
+      `;
+
+      if ((savedAns || isReviewMode) && isCorrectOpt) {
+        indicatorHtml = `
+          <div class="opt-indicator w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 font-label-sm text-xs font-bold shadow-sm">
+            ✓
+          </div>
+        `;
+      } else if ((savedAns || isReviewMode) && isUserChosen && !isCorrectOpt) {
+        indicatorHtml = `
+          <div class="opt-indicator w-6 h-6 rounded-full bg-rose-500 text-white flex items-center justify-center shrink-0 font-label-sm text-xs font-bold shadow-sm">
+            ✗
+          </div>
+        `;
+      }
+
+      btn.className = btnClasses;
+      btn.innerHTML = `
+        ${indicatorHtml}
+        <span class="font-body-md text-xs md:text-sm font-medium select-none flex-1">${escapeHtml(opt.option_text)}</span>
+      `;
+
+      if (!savedAns && !isReviewMode) {
+        btn.addEventListener("click", () => {
+          if (isAnswered) return;
+          document.querySelectorAll(".quiz-option-btn").forEach(b => {
+            b.classList.remove("border-primary", "bg-primary/10", "ring-2", "ring-primary/30");
+            const ind = b.querySelector(".opt-indicator");
+            if (ind) {
+              ind.classList.remove("bg-primary", "text-white", "border-primary");
+              ind.classList.add("border-outline", "text-on-surface-variant");
+            }
+          });
+          btn.classList.add("border-primary", "bg-primary/10", "ring-2", "ring-primary/30");
+          const indicator = btn.querySelector(".opt-indicator");
+          if (indicator) {
+            indicator.classList.remove("border-outline", "text-on-surface-variant");
+            indicator.classList.add("bg-primary", "text-white", "border-primary");
+          }
+          selectedOptionId = opt.id;
+          if (nextCardBtn) {
+            nextCardBtn.disabled = false;
+            nextCardBtn.title = "";
+          }
+        });
+      }
+
+      optionsContainer.appendChild(btn);
+    });
+
+    if (savedAns || isReviewMode) {
+      const feedbackBox = document.getElementById("quiz-feedback-box");
+      if (feedbackBox) {
+        feedbackBox.classList.remove("hidden", "bg-emerald-500/10", "border-emerald-500/30", "text-emerald-900", "bg-rose-500/10", "border-rose-500/30", "text-rose-900");
+        const isCorr = savedAns ? savedAns.isCorrect : true;
+        const explText = savedAns ? savedAns.explanation : (question.explanation || "Đáp án chính xác theo Database.");
+        if (isCorr) {
+          feedbackBox.classList.add("bg-emerald-500/10", "border", "border-emerald-500/30", "text-emerald-900");
+          feedbackBox.innerHTML = `
+            <div class="flex items-center gap-2 font-bold text-emerald-700">
+              <span class="material-symbols-outlined text-lg">check_circle</span>
+              <span>Trả lời Đúng!</span>
+            </div>
+            <p class="text-xs text-emerald-800/90 leading-relaxed">${escapeHtml(explText)}</p>
+          `;
+        } else {
+          feedbackBox.classList.add("bg-rose-500/10", "border", "border-rose-500/30", "text-rose-900");
+          feedbackBox.innerHTML = `
+            <div class="flex items-center gap-2 font-bold text-rose-700">
+              <span class="material-symbols-outlined text-lg">cancel</span>
+              <span>Lựa chọn Chưa Đúng</span>
+            </div>
+            <p class="text-xs text-rose-800/90 leading-relaxed">${escapeHtml(explText)}</p>
+          `;
+        }
+      }
+      const quizSubmitBtn = document.getElementById("quiz-submit-btn");
+      if (quizSubmitBtn) {
+        quizSubmitBtn.disabled = true;
+        quizSubmitBtn.textContent = "Đã hoàn thành câu hỏi";
+        quizSubmitBtn.className = "px-6 py-2.5 bg-surface-variant text-on-surface-variant font-button text-xs rounded-xl opacity-70 cursor-not-allowed font-bold";
+      }
+    }
+  }
+
+  function setupQuizHandlers(item, isFinal) {
     const hintBtn = document.getElementById("hint-btn");
     const hintBtnText = document.getElementById("hint-btn-text");
     const hintTextBox = document.getElementById("hint-text-box");
     const quizSubmitBtn = document.getElementById("quiz-submit-btn");
     const quizFeedbackBox = document.getElementById("quiz-feedback-box");
-    const nextActionBtn = document.getElementById("next-action-btn");
 
-    if (!q.options || q.options.length === 0) {
-      optionsContainer.innerHTML = `<div class="p-3 text-xs text-on-surface-variant text-center">Chưa có lựa chọn cho câu hỏi này.</div>`;
-      return;
+    if (hintBtn) {
+      hintBtn.addEventListener("click", async () => {
+        hintsUsed++;
+        const currentLevel = Math.min(hintsUsed, 3);
+        try {
+          const res = await window.API.learning.getHint(currentQuestion.id, currentLevel);
+          if (res && res.status === "success" && res.hint) {
+            hintTextBox.classList.remove("hidden");
+            hintTextBox.innerHTML = `
+              <div class="flex items-center gap-1.5 font-bold">
+                <span class="material-symbols-outlined text-sm">lightbulb</span>
+                <span>Hint Level ${res.level}</span>
+              </div>
+              <p class="leading-relaxed">${escapeHtml(res.hint)}</p>
+            `;
+          }
+        } catch (e) {
+          hintTextBox.classList.remove("hidden");
+          hintTextBox.innerHTML = `<p class="leading-relaxed font-semibold text-rose-700">Gợi ý Mức ${currentLevel}: Hãy xem lại lý thuyết trong các thẻ bài học trước đó.</p>`;
+        }
+
+        if (currentLevel < 3) {
+          hintBtnText.textContent = `Get Hint (Level ${currentLevel + 1})`;
+        } else {
+          hintBtn.disabled = true;
+          hintBtnText.textContent = `Max Hint Level (3/3)`;
+        }
+      });
     }
 
-    q.options.forEach((opt) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "quiz-option-btn text-left p-3.5 rounded-xl border border-outline-variant hover:border-primary hover:bg-primary/5 transition-all text-xs text-on-surface flex items-center gap-3";
-      btn.setAttribute("data-option-id", opt.id);
-
-      btn.innerHTML = `
-        <div class="opt-indicator w-4 h-4 rounded-full border border-outline flex items-center justify-center shrink-0"></div>
-        <span class="font-body-md text-xs select-none">${escapeHtml(opt.option_text)}</span>
-      `;
-
-      btn.addEventListener("click", () => {
-        if (isAnswered) return;
-        document.querySelectorAll(".quiz-option-btn").forEach(b => {
-          b.classList.remove("border-primary", "bg-primary/10", "ring-2", "ring-primary/30");
-          const ind = b.querySelector(".opt-indicator");
-          if (ind) ind.classList.remove("bg-primary", "border-primary");
-        });
-        btn.classList.add("border-primary", "bg-primary/10", "ring-2", "ring-primary/30");
-        const indicator = btn.querySelector(".opt-indicator");
-        if (indicator) indicator.classList.add("bg-primary", "border-primary");
-        selectedOptionId = opt.id;
-      });
-
-      optionsContainer.appendChild(btn);
-    });
-
-    hintBtn.addEventListener("click", async () => {
-      if (!currentQuestion) return;
-      hintsUsed = Math.min(hintsUsed + 1, 3);
-      hintBtnText.textContent = `Gợi ý (Cấp ${Math.min(hintsUsed + 1, 3)})`;
-
-      try {
-        const res = await window.API.learning.getHint(currentQuestion.id, hintsUsed);
-        if (res.status === "success" && res.hint) {
-          hintTextBox.classList.remove("hidden");
-          hintTextBox.innerHTML = `<strong>💡 Gợi ý ${hintsUsed}:</strong> ${escapeHtml(res.hint)}`;
-        } else {
-          hintTextBox.classList.remove("hidden");
-          hintTextBox.innerHTML = `<strong>💡 Gợi ý ${hintsUsed}:</strong> Hãy chú ý lại các khái niệm trọng tâm trong thẻ bài học.`;
-        }
-      } catch {
-        hintTextBox.classList.remove("hidden");
-        hintTextBox.innerHTML = `<strong>💡 Gợi ý ${hintsUsed}:</strong> Hãy chú ý lại các khái niệm trọng tâm trong thẻ bài học.`;
-      }
-    });
-
-    quizSubmitBtn.addEventListener("click", async () => {
-      if (!selectedOptionId) {
-        alert("Vui lòng chọn 1 đáp án trước khi nộp bài!");
-        return;
-      }
-
-      quizSubmitBtn.disabled = true;
-      quizSubmitBtn.textContent = "Đang kiểm tra...";
-
-      try {
-        const payload = {
-          question_id: currentQuestion.id,
-          selected_option_id: selectedOptionId,
-          hints_used: hintsUsed
-        };
-
-        const res = await window.API.learning.submitCheckpoint(payload);
-        isAnswered = true;
-
-        quizFeedbackBox.classList.remove("hidden", "bg-emerald-500/10", "border-emerald-500/30", "text-emerald-900", "bg-rose-500/10", "border-rose-500/30", "text-rose-900");
-
-        if (res.is_correct) {
-          quizFeedbackBox.classList.add("bg-emerald-500/10", "border", "border-emerald-500/30", "text-emerald-900");
-          quizFeedbackBox.innerHTML = `
-            <div class="flex items-center gap-2 font-bold text-emerald-700">
-              <span class="material-symbols-outlined text-lg">check_circle</span>
-              <span>Chính xác! Đã trả lời đúng.</span>
-            </div>
-            <p class="text-xs text-emerald-800/90">${escapeHtml(res.explanation || "Tuyệt vời, bạn đã nắm vững kiến thức này!")}</p>
-          `;
-        } else {
-          quizFeedbackBox.classList.add("bg-rose-500/10", "border", "border-rose-500/30", "text-rose-900");
-          quizFeedbackBox.innerHTML = `
-            <div class="flex items-center gap-2 font-bold text-rose-700">
-              <span class="material-symbols-outlined text-lg">cancel</span>
-              <span>Chưa chính xác.</span>
-            </div>
-            <p class="text-xs text-rose-800/90">${escapeHtml(res.explanation || "Hãy xem lại lý thuyết và thử lại nhé!")}</p>
-          `;
+    if (quizSubmitBtn) {
+      quizSubmitBtn.addEventListener("click", async () => {
+        if (!selectedOptionId && !isAnswered) {
+          alert("Vui lòng chọn 1 đáp án trước khi bấm Submit!");
+          return;
         }
 
-        nextActionBtn.classList.remove("hidden");
-
-        if (res.next_action === "complete" || res.is_final_batch) {
-          nextActionBtn.querySelector("span").textContent = "Hoàn tất lộ trình học";
-          nextActionBtn.onclick = () => showTargetAchievedModal();
-        } else if (res.needs_next_batch) {
-          nextActionBtn.querySelector("span").textContent = "Đang tạo đợt bài học tiếp theo...";
-          const mat = window.API?.storage?.getMaterial();
-          const selectedConcepts = window.API?.storage?.getSelectedConcepts();
-          if (mat && selectedConcepts) {
-            await window.API.learning.generatePath({
-              material_id: mat.id || mat.material_id,
-              concepts: selectedConcepts
-            }).catch(() => {});
+        if (isAnswered) {
+          if (currentIndex < sequenceItems.length - 1) {
+            currentIndex++;
+            renderCurrentItem();
+          } else {
+            showCompletionSummary();
           }
-          nextActionBtn.querySelector("span").textContent = "Tiếp tục đợt tiếp theo";
-          nextActionBtn.onclick = () => {
-            window.location.href = "personalized_learning_path.html";
-          };
-        } else {
-          nextActionBtn.querySelector("span").textContent = "Tiếp tục bài học";
-          nextActionBtn.onclick = () => {
-            if (currentIndex < sequenceItems.length - 1) {
-              currentIndex++;
-              renderCurrentItem();
-            } else {
-              showTargetAchievedModal();
-            }
-          };
+          return;
         }
 
-      } catch (err) {
-        alert(err.message || "Không thể nộp bài. Vui lòng thử lại.");
-      } finally {
-        quizSubmitBtn.disabled = false;
-        quizSubmitBtn.textContent = "Đã nộp bài";
-      }
-    });
+        quizSubmitBtn.disabled = true;
+        quizSubmitBtn.textContent = "Đang đối chiếu Database...";
+
+        try {
+          const payload = {
+            question_id: currentQuestion.id,
+            selected_option_id: selectedOptionId,
+            hints_used: hintsUsed
+          };
+
+          const res = await window.API.learning.submitCheckpoint(payload);
+          isAnswered = true;
+
+          userAnswersMap[currentQuestion.id] = {
+            selectedOptionId: selectedOptionId,
+            isCorrect: res.is_correct,
+            explanation: res.explanation
+          };
+
+          quizFeedbackBox.classList.remove("hidden", "bg-emerald-500/10", "border-emerald-500/30", "text-emerald-900", "bg-rose-500/10", "border-rose-500/30", "text-rose-900");
+
+          if (res.is_correct) {
+            quizFeedbackBox.classList.add("bg-emerald-500/10", "border", "border-emerald-500/30", "text-emerald-900");
+            quizFeedbackBox.innerHTML = `
+              <div class="flex items-center gap-2 font-bold text-emerald-700">
+                <span class="material-symbols-outlined text-lg">check_circle</span>
+                <span>Correct Answer!</span>
+              </div>
+              <p class="text-xs text-emerald-800/90 leading-relaxed">${escapeHtml(res.explanation || "Great job! You have mastered this concept.")}</p>
+            `;
+          } else {
+            quizFeedbackBox.classList.add("bg-rose-500/10", "border", "border-rose-500/30", "text-rose-900");
+            quizFeedbackBox.innerHTML = `
+              <div class="flex items-center gap-2 font-bold text-rose-700">
+                <span class="material-symbols-outlined text-lg">cancel</span>
+                <span>Incorrect Choice</span>
+              </div>
+              <p class="text-xs text-rose-800/90 leading-relaxed">${escapeHtml(res.explanation || "Review the explanation above and continue learning.")}</p>
+            `;
+          }
+
+          if (nextCardBtn) {
+            nextCardBtn.disabled = false;
+            nextCardBtn.title = "";
+          }
+          setNextBtnText((currentIndex === sequenceItems.length - 1) ? "Finish Lesson" : "Continue Lesson");
+
+        } catch (err) {
+          alert(err.message || "Failed to submit answer. Please try again.");
+          quizSubmitBtn.disabled = false;
+          quizSubmitBtn.textContent = isFinal ? "Submit Final Answer" : "Submit Answer";
+        }
+      });
+    }
   }
 
   prevCardBtn.addEventListener("click", () => {
@@ -705,47 +1109,100 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
   });
 
-  function showTargetAchievedModal() {
-    const modalHtml = `
-      <div id="target-achieved-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-surface-container-lowest p-6 rounded-2xl max-w-md w-full shadow-2xl border border-primary/20 space-y-4 text-center animate-fade-in-up">
-          <div class="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center mx-auto text-3xl">
-            <span class="material-symbols-outlined" style="font-size: 36px;">workspace_premium</span>
-          </div>
-          <h2 class="font-headline-md text-xl font-bold text-on-surface">Mục tiêu học tập đã hoàn thành!</h2>
-          <p class="text-xs text-on-surface-variant leading-relaxed">
-            Chúc mừng bạn đã chinh phục toàn bộ các khái niệm trong mục tiêu này. Bạn có muốn kết thúc lộ trình hay tiếp tục học bài tập bổ sung?
+  function showCompletionSummary() {
+    stopTimers();
+    const stepNum = stepData?.order_index || 1;
+    const stepTitle = stepData?.step_title || "Bài học";
+
+    const totalQuestions = sequenceItems.filter(i => i.type === 'checkpoint' || i.type === 'final_test').length;
+    const attemptedQuestions = Object.keys(userAnswersMap).length;
+    const correctCount = Object.values(userAnswersMap).filter(a => a.isCorrect).length;
+    const incorrectCount = Math.max(0, attemptedQuestions - correctCount);
+    const accuracyPct = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 100;
+
+    const totalTimeEl = document.getElementById("total-lesson-timer");
+    const formattedTime = totalTimeEl ? totalTimeEl.textContent : "00:00";
+
+    lessonCardIndex.textContent = "BÀI HỌC HOÀN THÀNH";
+    lessonCardTypeTag.textContent = "Báo cáo Kết quả Học tập";
+    lessonCardTitle.textContent = `Kết quả Bài ${stepNum}: ${escapeHtml(stepTitle)}`;
+
+    lessonCardBody.innerHTML = `
+      <div class="flex flex-col items-center justify-center p-4 text-center gap-4 animate-fade-in-up my-auto">
+        <div class="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center shadow-lg border border-emerald-500/30">
+          <span class="material-symbols-outlined" style="font-size: 40px;">emoji_events</span>
+        </div>
+
+        <div class="space-y-1">
+          <h2 class="font-headline-lg text-xl font-bold text-on-surface">🎉 Chúc mừng! Bạn đã hoàn thành Bài ${stepNum}!</h2>
+          <p class="font-body-md text-xs text-on-surface-variant max-w-md leading-relaxed">
+            Dưới đây là chi tiết kết quả câu hỏi và tổng thời gian học tập cho bài <strong>${escapeHtml(stepTitle)}</strong>.
           </p>
-          <div class="flex flex-col gap-2 pt-2">
-            <button id="modal-finish-btn" class="w-full py-3 bg-primary text-on-primary rounded-xl font-button font-bold text-xs shadow-md hover:bg-primary/90 transition-all flex items-center justify-center gap-1">
-              <span>Hoàn thành lộ trình học</span>
-              <span class="material-symbols-outlined text-base">emoji_events</span>
-            </button>
-            <button id="modal-bonus-btn" class="w-full py-3 bg-surface-container-high text-primary rounded-xl font-button font-bold text-xs hover:bg-surface-variant transition-all border border-primary/20 flex items-center justify-center gap-1">
-              <span>Tiếp tục học bổ sung (Bonus Practice)</span>
-              <span class="material-symbols-outlined text-base">add_circle</span>
-            </button>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-xl py-2">
+          <div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/40 flex flex-col items-center justify-center shadow-sm">
+            <span class="material-symbols-outlined text-primary text-xl mb-1">timer</span>
+            <span class="font-display-lg text-base font-bold text-on-surface">${formattedTime}</span>
+            <span class="text-[10px] text-on-surface-variant font-medium">Tổng thời gian học</span>
           </div>
+
+          <div class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/30 flex flex-col items-center justify-center shadow-sm">
+            <span class="material-symbols-outlined text-emerald-600 text-xl mb-1">check_circle</span>
+            <span class="font-display-lg text-base font-bold text-emerald-700">${correctCount} / ${totalQuestions}</span>
+            <span class="text-[10px] text-emerald-800 font-medium">Số câu đúng</span>
+          </div>
+
+          <div class="p-3 bg-rose-500/10 rounded-xl border border-rose-500/30 flex flex-col items-center justify-center shadow-sm">
+            <span class="material-symbols-outlined text-rose-600 text-xl mb-1">cancel</span>
+            <span class="font-display-lg text-base font-bold text-rose-700">${incorrectCount} / ${totalQuestions}</span>
+            <span class="text-[10px] text-rose-800 font-medium">Số câu sai</span>
+          </div>
+
+          <div class="p-3 bg-secondary/10 rounded-xl border border-secondary/30 flex flex-col items-center justify-center shadow-sm">
+            <span class="material-symbols-outlined text-secondary text-xl mb-1">query_stats</span>
+            <span class="font-display-lg text-base font-bold text-secondary">${accuracyPct}%</span>
+            <span class="text-[10px] text-secondary font-medium">Độ chính xác</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center gap-2.5 w-full max-w-lg pt-1">
+          <button id="review-lesson-btn" type="button" class="w-full py-3 bg-secondary text-on-secondary rounded-xl font-button font-bold text-xs shadow-md hover:opacity-90 transition-all flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-base">visibility</span>
+            <span>Xem lại bài học & đáp án</span>
+          </button>
+          <button id="continue-next-lesson-btn" type="button" class="w-full py-3 bg-primary text-on-primary rounded-xl font-button font-bold text-xs shadow-md hover:bg-primary/90 transition-all flex items-center justify-center gap-2">
+            <span>Tiếp tục học bài mới</span>
+            <span class="material-symbols-outlined text-base">arrow_forward</span>
+          </button>
+          <button id="close-lesson-modal-btn" type="button" class="w-full py-3 bg-surface-container-high text-on-surface rounded-xl font-button font-bold text-xs hover:bg-surface-variant transition-all border border-outline-variant/40 flex items-center justify-center gap-2">
+            <span>Về Lộ trình</span>
+          </button>
         </div>
       </div>
     `;
-    document.body.insertAdjacentHTML("beforeend", modalHtml);
 
-    document.getElementById("modal-finish-btn").addEventListener("click", () => {
-      window.location.href = "final_test_result_summary_review.html";
+    document.getElementById("review-lesson-btn")?.addEventListener("click", () => {
+      isReviewMode = true;
+      currentIndex = 0;
+      renderCurrentItem();
     });
 
-    document.getElementById("modal-bonus-btn").addEventListener("click", async () => {
-      const mat = window.API?.storage?.getMaterial();
-      const selectedConcepts = window.API?.storage?.getSelectedConcepts();
-      if (mat && selectedConcepts) {
-        await window.API.learning.generatePath({
-          material_id: mat.id || mat.material_id,
-          concepts: selectedConcepts
-        }).catch(() => {});
-      }
+    document.getElementById("continue-next-lesson-btn")?.addEventListener("click", () => {
       window.location.href = "personalized_learning_path.html";
     });
+
+    document.getElementById("close-lesson-modal-btn")?.addEventListener("click", () => {
+      window.location.href = "personalized_learning_path.html";
+    });
+
+    if (prevCardBtn) prevCardBtn.disabled = false;
+    setNextBtnText("Xem lại bài học");
+    nextCardBtn.onclick = () => {
+      isReviewMode = true;
+      currentIndex = 0;
+      renderCurrentItem();
+    };
   }
 
   function escapeHtml(str) {

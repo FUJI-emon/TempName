@@ -639,7 +639,7 @@
     }
 
     if (element.tagName === "BUTTON") {
-      if (element.dataset.themeOption || element.dataset.noNav === "true" || element.closest("#edit-profile-modal") || element.id === "edit-profile-btn" || element.id === "close-modal-btn") {
+      if (element.dataset.themeOption || element.dataset.noNav === "true" || element.closest("#edit-profile-modal") || element.id === "edit-profile-btn" || element.id === "close-modal-btn" || element.id === "toggle-mode-btn" || element.id === "toggle-password" || element.id === "submit-btn" || element.type === "submit") {
         return;
       }
       element.type = "button";
@@ -727,8 +727,6 @@
       { match: /start learning free/i, target: ROUTES.login }
     ],
     [ROUTES.login]: [
-      { match: /forgot password/i, target: ROUTES.landing },
-      { match: /sign up/i, target: ROUTES.landing },
       { match: /google/i, target: ROUTES.dashboard },
       { match: /apple/i, target: ROUTES.dashboard }
     ],
