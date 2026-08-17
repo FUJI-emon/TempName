@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 app_name = "learning"
+app_name = 'learning'
 
 urlpatterns = [
     # 🏠 ログイン前トップページ
@@ -40,4 +41,5 @@ urlpatterns = [
     path("checkpoint/submit/", views.submit_checkpoint_view, name="submit_checkpoint"),
     path("hint/<int:question_id>/<int:level>/", views.get_hint_view, name="get_hint"),
     path("chat/", views.chat_view, name="chat"),
+        path('ft_result/', views.result, name='ft_result'),
 ]

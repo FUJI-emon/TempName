@@ -693,3 +693,7 @@ def chat_view(request):
         return JsonResponse({"status": "error", "message": f"Guardrail blocked chat: {exc}"}, status=422)
     except LLMServiceError as exc:
         return JsonResponse({"status": "error", "message": f"LLM Error: {exc}"}, status=500)
+# apps/learning/views.py の一番下に追加します
+
+def result(request):
+    return render(request, 'learning/ft_result.html')

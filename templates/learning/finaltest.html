@@ -252,6 +252,26 @@ document.addEventListener("DOMContentLoaded", () => {
     const currentTimerEl = document.getElementById("currentTimer");
     const totalTimerEl = document.getElementById("totalTimer");
 
+    function updateProgressBar() {
+        // 回答済みの数をカウント（バーの長さに使用）
+        const answeredCount = questions.filter(q => q.userAnswer !== null).length;
+        const total = questions.length;
+        
+        // ▼ ここを変更：上の文字は「今開いている問題番号」を表示する
+        const questionNumber = currentIndex + 1;
+        progressLabelEl.textContent = ` (${questionNumber}/${total}問目)`;
+        
+        // バーの長さは「回答済みの数」で計算する
+        const percentage = Math.max((answeredCount / total) * 100, 15);
+        progressFillEl.style.width = `${percentage}%`;
+        
+        if (answeredCount === total) {
+            progressFillEl.textContent = "全問回答完了!!";
+        } else {
+            progressFillEl.textContent = `あと ${total - answeredCount} 問!!`;
+        }
+    }
+
     function render() {
         const currentQ = questions[currentIndex];
         
@@ -272,15 +292,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 const allBtns = optionsContainerEl.querySelectorAll(".option-btn");
                 allBtns.forEach(b => b.classList.remove("selected"));
                 btn.classList.add("selected");
+                
+                // ▼ 選択肢をクリックした瞬間にバーを更新させる
+                updateProgressBar();
             });
             
             optionsContainerEl.appendChild(btn);
         });
         
-        const questionNumber = currentIndex + 1;
-        progressLabelEl.textContent = `進捗度 (${questionNumber}/10問目)`;
-        progressFillEl.style.width = `${(questionNumber / 10) * 100}%`;
-        progressFillEl.textContent = `あと ${10 - questionNumber} 問!!`;
+        // ▼ 画面の描画時（前へ・次へを押した時など）にもバーの表示を最新状態にする
+        updateProgressBar();
 
         btnPrev.style.visibility = currentIndex === 0 ? "hidden" : "visible";
         btnNext.textContent = currentIndex === 9 ? "テスト終了" : "次の問題 →";
@@ -305,7 +326,14 @@ document.addEventListener("DOMContentLoaded", () => {
             currentIndex++;
             render();
         } else {
-            alert("テスト終了！お疲れ様でした。");
+            // テスト終了時：ブラウザのメモリに点数と時間をセーブする
+            // ※今はまだ「どの選択肢が正解か」のデータを作っていないため、仮で「8点」として保存します
+            localStorage.setItem('test_score', 8); 
+            localStorage.setItem('test_total', questions.length);
+            localStorage.setItem('test_time', totalTimerEl.textContent);
+            
+            // urls.py に登録した ft_result のURLへジャンプする
+            window.location.href = "/ft_result/";
         }
     });
 
