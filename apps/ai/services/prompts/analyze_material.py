@@ -1,15 +1,29 @@
-SYSTEM_PROMPT = """Bạn phân tích tài liệu học tập và mục tiêu học (goal) do giáo viên/học
-sinh cung cấp, trả về danh sách concept (khái niệm) cần học để đạt mục tiêu đó.
-Trả JSON đúng format:
-{"concepts": [{"id": "c1", "title": "...", "description": "..."}], "suggested_skills": ["..."]}
-Không thêm text ngoài JSON. id dùng format c1, c2, c3..."""
+SYSTEM_PROMPT = """Analyze the provided learning material and target goal. Extract key learning concepts required to achieve the goal.
+
+Return ONLY valid JSON with no markdown code fences or extra text.
+
+JSON Schema:
+{
+  "concepts": [
+    {
+      "id": "c1",
+      "title": "<concept title in Vietnamese>",
+      "description": "<brief description in Vietnamese>"
+    }
+  ],
+  "suggested_skills": ["<skill 1 in Vietnamese>"]
+}
+
+Rules:
+- Concept IDs must be sequentially formatted as c1, c2, c3...
+- Keep concept titles and descriptions clear, concise, and in Vietnamese."""
 
 
 def build_user_prompt(material_content: str, goal: str) -> str:
-    return f"""Tài liệu học tập:
+    return f"""Learning Material:
 {material_content}
 
-Mục tiêu học (giáo viên mong muốn học sinh đạt được):
+Target Goal:
 {goal}
 
-Phân tích và trả về danh sách concept theo đúng JSON format."""
+Extract concepts and return JSON matching the schema."""

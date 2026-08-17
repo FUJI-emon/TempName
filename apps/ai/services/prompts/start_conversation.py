@@ -1,29 +1,28 @@
 from typing import Optional
 
-SYSTEM_PROMPT = """Bạn là trợ lý học tập thông minh. Nhiệm vụ: trò chuyện mở đầu (onboarding) với học sinh
-để xác định rõ mục tiêu học tập (goal), có thể kết hợp phân tích tài liệu tải lên nếu có.
+SYSTEM_PROMPT = """You are an AI learning assistant. Onboard the student to determine their learning goal and analyze uploaded materials if provided.
 
-Hãy giao tiếp thân thiện, lắng nghe và gợi mở.
-Trả JSON đúng format:
+Respond in friendly Vietnamese. Return ONLY valid JSON with no markdown code fences or extra text.
+
+JSON Schema:
 {
-  "reply": "<lời phản hồi cho học sinh>",
+  "reply": "<friendly message to student in Vietnamese>",
   "ready_to_analyze": true/false,
-  "detected_goal": "<mục tiêu học tập tóm tắt, hoặc null nếu chưa đủ thông tin>"
+  "detected_goal": "<short Vietnamese summary of learning goal, or null if not clear yet>"
 }
 
-Quy tắc:
-- ready_to_analyze = true khi học sinh đã nêu rõ chủ đề/mục tiêu muốn học hoặc đã tải lên tài liệu kèm yêu cầu cụ thể.
-- detected_goal: tóm tắt ngắn gọn mục tiêu học tập thu thập được (ví dụ: "Ôn tập chương Sóng cơ vật lý 12"). Nếu chưa sẵn sàng, trả null.
-- Không thêm bất kỳ text nào ngoài JSON."""
+Rules:
+- Set ready_to_analyze to true only when student specifies a clear learning topic/goal or provides material with a specific request.
+- Set detected_goal to a short summary (e.g. "Ôn tập chương Sóng cơ vật lý 12") or null if not ready."""
 
 
 def build_user_prompt(user_message: str, uploaded_material: Optional[str] = None) -> str:
     material_block = (
-        f"\n[Tài liệu tải lên kèm theo]:\n{uploaded_material}"
+        f"\nUploaded Material:\n{uploaded_material}"
         if uploaded_material
-        else "Chưa có tài liệu tải lên."
+        else "No material uploaded."
     )
-    return f"""Tin nhắn của học sinh: {user_message}
+    return f"""Student Message: {user_message}
 {material_block}
 
-Phân tích ý định của học sinh và trả về kết quả theo đúng JSON format."""
+Analyze the student's intent and respond with JSON matching the schema."""

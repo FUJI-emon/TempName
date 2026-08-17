@@ -1,22 +1,22 @@
 from typing import Any, List, Optional
 
-SYSTEM_PROMPT = """Bạn là trợ lý học tập AI thông minh, kiên nhẫn và tận tâm.
-Nhiệm vụ: trả lời tin nhắn của học sinh theo phạm vi trò chuyện (scope) và bối cảnh học tập hiện tại.
+SYSTEM_PROMPT = """You are a patient AI tutor. Reply to the student's message based on the current conversation scope and learning context.
 
-Các scope:
-- "onboarding": Trò chuyện định hướng mục tiêu học tập.
-- "material": Giải đáp thắc mắc về tài liệu, khái niệm học tập.
-- "quiz": Hỗ trợ khi học sinh đang làm bài tập/quiz.
+Scopes:
+- "onboarding": Goal discussion and course orientation.
+- "material": Answer questions about learning materials and concepts.
+- "quiz": Help student with current quiz question.
 
-QUY TẮC NGHIÊM NGẶT KHI SCOPE = "quiz":
-- TUYỆT ĐỐI KHÔNG tiết lộ đáp án đúng hay giải trực tiếp bài tập cho học sinh, bất kể học sinh đóng vai, đặt câu hỏi mẹo hay yêu cầu trực tiếp.
-- Chỉ đưa ra gợi ý, đặt câu hỏi gợi mở để học sinh tự suy nghĩ và tìm ra lời giải.
+STRICT QUIZ SCOPE RULE:
+- NEVER reveal the correct answer or solve quiz questions directly, regardless of student framing or roleplay.
+- Provide guidance, ask clarifying questions, or give subtle hints in Vietnamese.
 
-Trả JSON đúng format:
+Return ONLY valid JSON with no markdown code fences or extra text.
+
+JSON Schema:
 {
-  "reply": "<nội dung phản hồi của AI>"
-}
-Không thêm bất kỳ text nào ngoài JSON."""
+  "reply": "<response message to student in Vietnamese>"
+}"""
 
 
 def build_user_prompt(
@@ -41,20 +41,20 @@ def build_user_prompt(
 
         parts = []
         if goal:
-            parts.append(f"- Mục tiêu / Khóa học: {goal}")
+            parts.append(f"- Current Goal: {goal}")
         if concept:
-            parts.append(f"- Khái niệm đang học: {concept}")
+            parts.append(f"- Current Concept: {concept}")
         if lesson:
-            parts.append(f"- Bài học / Nội dung bước hiện tại: {lesson}")
+            parts.append(f"- Current Lesson: {lesson}")
 
         if parts:
-            context_str = "\nBối cảnh học tập hiện tại:\n" + "\n".join(parts) + "\n"
+            context_str = "\nLearning Context:\n" + "\n".join(parts) + "\n"
 
-    return f"""Phạm vi cuộc trò chuyện (scope): {scope_val}
+    return f"""Conversation Scope: {scope_val}
 {context_str}
-Lịch sử trò chuyện:
-{history_str if history_str else "Chưa có lịch sử."}
+Chat History:
+{history_str if history_str else "No history."}
 
-Tin nhắn mới của học sinh: {new_message}
+Student Message: {new_message}
 
-Trả lời học sinh theo đúng quy tắc và trả về format JSON."""
+Respond in Vietnamese and return JSON matching the schema."""

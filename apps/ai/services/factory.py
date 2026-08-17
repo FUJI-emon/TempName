@@ -17,6 +17,9 @@ def get_llm_service() -> LLMService:
     if provider == "openrouter":
         from .adapters.openrouter import OpenRouterAdapter
         return OpenRouterAdapter()
+    elif provider == "ollama":
+        from .adapters.ollama import OllamaAdapter
+        return OllamaAdapter()
     elif provider == "fake":
         return FakeLLMService()
     raise ValueError(f"Unknown LLM_PROVIDER: {provider}")

@@ -1,26 +1,22 @@
 from typing import Any, List
 
-SYSTEM_PROMPT = """Bạn là hệ thống học tập thích ứng (Adaptive Learning System). Nhiệm vụ: dựa vào lịch sử
-đánh giá câu trả lời của học sinh đối với concept hiện tại để quyết định bước đi tiếp theo (next action).
+SYSTEM_PROMPT = """You are an adaptive learning decision engine. Based on student answer evaluation history for the current concept, decide the next pedagogical action.
 
-Các hành động khả thi (action):
-- "explain_again": Giảng lại khái niệm theo cách tiếp cận mới (khi học sinh làm sai nhiều hoặc hiểu sai căn bản).
-- "show_example": Đưa thêm ví dụ trực quan minh họa (khi học sinh chưa nắm chắc cách áp dụng).
-- "practice_more": Cho làm thêm bài tập cùng cấp độ (khi học sinh làm đúng một phần nhưng cần củng cố).
-- "move_next": Chuyển sang concept tiếp theo (khi học sinh đã đạt mức độ thành thạo/mastery).
+Return ONLY valid JSON with no markdown code fences or extra text.
 
-Trả JSON đúng format:
+JSON Schema:
 {
   "action": "explain_again | show_example | practice_more | move_next",
-  "concept_id": "<id>",
-  "reasoning": "<lý do đưa ra quyết định>",
+  "concept_id": "<concept_id>",
+  "reasoning": "<short rationale in English or Vietnamese>",
   "needs_next_batch": true/false
 }
 
-Quy tắc:
-- reasoning: Giải thích logic đằng sau quyết định (dành cho log hệ thống).
-- needs_next_batch: set true nếu action="move_next" và cần tải đợt concept tiếp theo.
-- Không thêm bất kỳ text nào ngoài JSON."""
+Action Criteria:
+- "explain_again": Student repeated errors or fundamentally misunderstood concept.
+- "show_example": Student struggled with applying formula/concept.
+- "practice_more": Student partially correct but needs reinforcement.
+- "move_next": Student demonstrated mastery. Set needs_next_batch to true if next concept batch is needed."""
 
 
 def build_user_prompt(concept: Any, evaluation_history: List[Any]) -> str:
@@ -31,14 +27,14 @@ def build_user_prompt(concept: Any, evaluation_history: List[Any]) -> str:
     for idx, eval_item in enumerate(evaluation_history):
         is_corr = eval_item.get("is_correct") if isinstance(eval_item, dict) else eval_item.is_correct
         misc = eval_item.get("misconception") if isinstance(eval_item, dict) else getattr(eval_item, "misconception", None)
-        history_str += f"- Lần {idx+1}: Correct={is_corr}, Misconception={misc}\n"
+        history_str += f"- Attempt {idx+1}: Correct={is_corr}, Misconception={misc}\n"
 
     if not evaluation_history:
-        history_str = "Chưa có lịch sử làm bài cho concept này."
+        history_str = "No evaluation history."
 
-    return f"""Concept hiện tại: {concept_title} (ID: {concept_id})
+    return f"""Current Concept: {concept_title} (ID: {concept_id})
 
-Lịch sử trả lời của học sinh:
+Evaluation History:
 {history_str}
 
-Quyết định bước tiếp theo và trả về đúng format JSON."""
+Decide the next action and return JSON matching the schema."""

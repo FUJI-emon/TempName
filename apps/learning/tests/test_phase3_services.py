@@ -1,5 +1,5 @@
 from decimal import Decimal
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from django.test import TestCase, Client
 from django.urls import reverse
@@ -327,7 +327,8 @@ class Phase3ViewsTestCase(TestCase):
         session["user_id"] = self.student.id
         session.save()
 
-    def test_onboarding_view(self):
+    @patch("apps.learning.services.get_llm_service", return_value=FakeLLMService())
+    def test_onboarding_view(self, mock_get_llm):
         response = self.client.post(
             reverse("learning:onboarding"),
             data={"user_message": "I want to study math"},
@@ -336,7 +337,8 @@ class Phase3ViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["status"], "success")
 
-    def test_create_material_view(self):
+    @patch("apps.learning.services.get_llm_service", return_value=FakeLLMService())
+    def test_create_material_view(self, mock_get_llm):
         response = self.client.post(
             reverse("learning:create_material"),
             data={
@@ -351,7 +353,8 @@ class Phase3ViewsTestCase(TestCase):
         self.assertEqual(data["status"], "success")
         self.assertIn("material_id", data)
 
-    def test_get_hint_view(self):
+    @patch("apps.learning.services.get_llm_service", return_value=FakeLLMService())
+    def test_get_hint_view(self, mock_get_llm):
         material = LearningMaterial.objects.create(title="M", content="C", subject="S")
         goal = LearningGoal.objects.create(material=material, title="M")
         concept = LearningConcept.objects.create(goal=goal, external_id="c1", title="S", order_index=1)

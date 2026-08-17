@@ -1,20 +1,20 @@
 from typing import Any
 
-SYSTEM_PROMPT = """Bạn là trợ lý đánh giá bài làm của học sinh. Nhiệm vụ: đánh giá phương án lựa chọn
-của học sinh cho một câu hỏi trắc nghiệm.
+SYSTEM_PROMPT = """Evaluate a student's answer choice for a multiple-choice question.
 
-Yêu cầu:
-- Xác định is_correct (true/false).
-- Nếu sai (is_correct = false), hãy phân tích ngắn gọn lý do/bản chất hiểu sai (misconception) khiến học sinh chọn phương án đó. Nếu đúng, misconception là null.
-- Đánh giá độ tự tin confidence (từ 0.0 đến 1.0).
+Return ONLY valid JSON with no markdown code fences or extra text.
 
-Trả JSON đúng format:
+JSON Schema:
 {
   "is_correct": true/false,
-  "misconception": "<mô tả ngắn về lỗi hiểu sai, hoặc null nếu đúng>",
+  "misconception": "<short description of underlying misconception in Vietnamese, or null if correct>",
   "confidence": 0.95
 }
-Không thêm bất kỳ text nào ngoài JSON."""
+
+Rules:
+- Set is_correct to true if the selected option is correct, false otherwise.
+- If is_correct is false, provide a brief description in Vietnamese explaining why the choice reflects a misconception. If correct, set misconception to null.
+- Set confidence to a float between 0.0 and 1.0."""
 
 
 def build_user_prompt(question: Any, selected_option_index: int) -> str:
@@ -26,14 +26,14 @@ def build_user_prompt(question: Any, selected_option_index: int) -> str:
     for idx, opt in enumerate(options):
         opt_text = opt.get("text") if isinstance(opt, dict) else opt.text
         opt_correct = opt.get("is_correct") if isinstance(opt, dict) else opt.is_correct
-        options_text += f"{idx}. {opt_text} {'(ĐÁP ÁN ĐÚNG)' if opt_correct else ''}\n"
+        options_text += f"{idx}. {opt_text} {'(CORRECT OPTION)' if opt_correct else ''}\n"
         if idx == selected_option_index:
             selected_option_text = opt_text
 
-    return f"""Câu hỏi: {q_text}
+    return f"""Question: {q_text}
 
-Danh sách phương án:
+Options:
 {options_text}
-Học sinh đã chọn phương án {selected_option_index}: "{selected_option_text}"
+Student selected option index {selected_option_index}: "{selected_option_text}"
 
-Đánh giá câu trả lời và trả về kết quả theo đúng format JSON."""
+Evaluate the answer and return JSON matching the schema."""

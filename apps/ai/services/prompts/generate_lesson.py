@@ -1,33 +1,35 @@
 from typing import Any, Optional
 
-SYSTEM_PROMPT = """Bạn là giáo viên giảng dạy vi học (micro-learning) xuất sắc. Nhiệm vụ: tạo nội dung bài học cho 1 khái niệm (concept) cụ thể.
+SYSTEM_PROMPT = """You are an expert micro-learning teacher. Generate lesson content for a specific concept.
 
-Bài học bao gồm:
-- explanation: Giải thích tổng quan ngắn gọn, súc tích, dễ hiểu.
-- example: Ví dụ thực tế minh họa trực quan.
-- key_points: Các điểm cốt lõi cần nhớ (dạng danh sách).
-- flashcards: Thẻ ghi nhớ câu hỏi/trả lời để học nhanh (front/back).
-- cards: Chuỗi các thẻ bài học (LessonCard) giảng dạy tương tác từng bước cho học sinh (order_index từ 1, heading, body).
+Return ONLY valid JSON with no markdown code fences or extra text.
 
-LƯU Ý QUAN TRỌNG VỀ SỐ LƯỢNG THẺ (CARDS):
-- TỰ QUYẾT ĐỊNH SỐ LƯỢNG CARD phù hợp với độ phức tạp của khái niệm (ví dụ: concept đơn giản 3 cards, concept phức tạp 4-6 cards). KHÔNG hardcode số lượng cố định.
-- Mỗi card phải có order_index bắt đầu từ 1 (1, 2, 3, 4...).
-- Mỗi card chứa nội dung học thực sự: heading (tiêu đề thẻ) và body (nội dung kiến thức giảng dạy chi tiết).
-- Bài học KHÔNG ĐƯỢC chứa câu hỏi kiểm tra hay quiz hay checkpoint.
-
-Trả JSON đúng format:
+JSON Schema:
 {
-  "concept_id": "<id>",
-  "explanation": "<nội dung giải thích tổng quan>",
-  "example": "<ví dụ minh họa>",
-  "key_points": ["<điểm 1>", "<điểm 2>"],
-  "flashcards": [{"front": "<mặt trước>", "back": "<mặt sau>"}],
+  "concept_id": "<concept_id>",
+  "explanation": "<concise summary explanation in Vietnamese>",
+  "example": "<practical illustrative example in Vietnamese>",
+  "key_points": ["<key takeaway 1>", "<key takeaway 2>"],
+  "flashcards": [
+    {
+      "front": "<question/term in Vietnamese>",
+      "back": "<answer/definition in Vietnamese>"
+    }
+  ],
   "cards": [
-    {"order_index": 1, "heading": "<tiêu đề thẻ 1>", "body": "<nội dung bài học thẻ 1>"},
-    {"order_index": 2, "heading": "<tiêu đề thẻ 2>", "body": "<nội dung bài học thẻ 2>"}
+    {
+      "order_index": 1,
+      "heading": "<card title in Vietnamese>",
+      "body": "<card lesson content in Vietnamese>"
+    }
   ]
 }
-Không thêm bất kỳ text nào ngoài JSON."""
+
+Rules:
+- Generate 2 to 4 interactive cards depending on concept complexity.
+- Card order_index must start at 1 (1, 2, 3...).
+- All card bodies must contain actual teaching content in Vietnamese.
+- Do NOT include questions, quizzes, or checkpoints inside cards or lesson content."""
 
 
 def build_user_prompt(
@@ -43,19 +45,19 @@ def build_user_prompt(
     goal_title = goal_context.get("title", "") if goal_context else ""
     goal_desc = goal_context.get("description", "") if goal_context else ""
 
-    mat_text = f"\nBối cảnh tài liệu trích xuất:\n{material_context[:1000]}" if material_context else ""
+    mat_text = f"\nExtracted Material Context:\n{material_context[:1000]}" if material_context else ""
 
-    return f"""Mục tiêu học tập lớn (LearningGoal):
-- Tiêu đề mục tiêu: {goal_title}
-- Mô tả mục tiêu: {goal_desc}
+    return f"""Target Learning Goal:
+- Title: {goal_title}
+- Description: {goal_desc}
 
-Khái niệm cần tạo bài học (Concept):
+Concept to teach:
 - ID: {concept_id}
-- Tiêu đề khái niệm: {concept_title}
-- Mô tả / Yêu cầu đạt được: {concept_desc}
+- Title: {concept_title}
+- Description: {concept_desc}
 {mat_text}
 
-Lịch sử/Bối cảnh học tập của học sinh:
+Student Mastery Context:
 {mastery_context}
 
-Tạo bài học chi tiết với số lượng thẻ (cards) phù hợp độ phức tạp theo đúng format JSON."""
+Generate the micro-learning lesson and return JSON matching the schema."""
