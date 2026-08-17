@@ -1,7 +1,7 @@
+from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import User
 
 
 # 🟢 Topic モデル
@@ -17,10 +17,10 @@ class Topic(models.Model):
     def __str__(self):
         return self.title
 
-# =====================================================================
-# 1. USERS
-# =====================================================================
 
+# =====================================================================
+# USERS & MATERIALS
+# =====================================================================
 
 class UsersUser(models.Model):
     username = models.CharField(max_length=150, unique=True, null=False)
@@ -39,6 +39,9 @@ class LearningMaterial(models.Model):
         ('english', 'English'),
     ]
 
+    user = models.ForeignKey(
+        UsersUser, on_delete=models.CASCADE, related_name="materials", null=True, blank=True
+    )
     subject = models.CharField(max_length=20, choices=SUBJECT_CHOICES, default='math', verbose_name="教科")
     title = models.CharField(max_length=200, verbose_name="タイトル")
     content = models.TextField(verbose_name="学習教材本文 / 課題内容")
@@ -48,6 +51,7 @@ class LearningMaterial(models.Model):
     last_used_at = models.DateTimeField(default=timezone.now, verbose_name="最終利用日時")
 
     class Meta:
+        db_table = "learning_material"
         verbose_name = "学習教材"
         verbose_name_plural = "学習教材一覧"
         ordering = ['-last_used_at']
@@ -58,22 +62,9 @@ class LearningMaterial(models.Model):
             return 0
         delta = timezone.now() - self.last_used_at
         return max(0, delta.days)
-    user = models.ForeignKey(
-        UsersUser, on_delete=models.CASCADE, related_name="materials", null=True, blank=True
-    )
-    title = models.CharField(max_length=200, null=False)
-    content = models.TextField(null=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    last_used_at = models.DateTimeField(default=timezone.now)
-    progress = models.IntegerField(default=0)
-    subject = models.CharField(max_length=20, default="")
 
     def __str__(self):
         return self.title
-
-    class Meta:
-        db_table = "learning_material"
 
 
 class LearningGoal(models.Model):
@@ -85,6 +76,7 @@ class LearningGoal(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="作成日時")
 
     class Meta:
+        db_table = "learning_goal"
         verbose_name = "学習目標"
         verbose_name_plural = "学習目標一覧"
         ordering = ['-created_at']
@@ -116,50 +108,6 @@ class UploadedDocument(models.Model):
         return self.name
 
 
-class ChatThread(models.Model):
-    """チャットスレッド（対話の単位）"""
-    learning_material = models.ForeignKey(
-        'LearningMaterial', 
-        on_delete=models.CASCADE, 
-        related_name='chat_threads',
-        null=True, 
-        blank=True
-    )
-    title = models.CharField("スレッドタイトル", max_length=255, default="新しいチャット")
-    created_at = models.DateTimeField("作成日時", default=timezone.now)
-    updated_at = models.DateTimeField("更新日時", auto_now=True)
-
-    class Meta:
-        ordering = ['-updated_at']
-
-    def __str__(self):
-        return self.title
-
-
-class ChatMessage(models.Model):
-    """スレッド内の各メッセージ"""
-    SENDER_CHOICES = (
-        ('user', 'ユーザー'),
-        ('ai', 'AIアシスタント'),
-    )
-
-    thread = models.ForeignKey(
-        ChatThread, 
-        on_delete=models.CASCADE, 
-        related_name='messages'
-    )
-    sender = models.CharField("送信者", max_length=10, choices=SENDER_CHOICES)
-    content = models.TextField("メッセージ内容")
-    created_at = models.DateTimeField("送信日時", default=timezone.now)
-
-    class Meta:
-        ordering = ['created_at']
-
-    def __str__(self):
-        return f"[{self.sender}] {self.content[:20]}"
-
-
-# 🌟 ChatMessage から独立した正しく配置されたクラス
 class UserStepProgress(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     topic_id = models.IntegerField()
@@ -175,16 +123,14 @@ class UserStepProgress(models.Model):
 
     class Meta:
         unique_together = ('user', 'topic_id', 'step_num')
-    title = models.CharField(max_length=200, null=False)
-    description = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.title} ({self.material.title})"
+        return f"Topic {self.topic_id} - Step {self.step_num}"
 
-    class Meta:
-        db_table = "learning_goal"
 
+# =====================================================================
+# LEARNING PATH & LESSONS
+# =====================================================================
 
 class LearningConcept(models.Model):
     goal = models.ForeignKey(
@@ -348,6 +294,10 @@ class ProgressStudentMaterialProgress(models.Model):
         ]
 
 
+# =====================================================================
+# QUIZ
+# =====================================================================
+
 class QuizQuestion(models.Model):
     lesson = models.ForeignKey(
         ProgressLesson, on_delete=models.CASCADE, related_name="questions", null=False
@@ -414,6 +364,10 @@ class QuizAttempt(models.Model):
         db_table = "quiz_attempt"
 
 
+# =====================================================================
+# CHAT
+# =====================================================================
+
 class ChatThread(models.Model):
     class ScopeType(models.TextChoices):
         MATERIAL = "material", "Material"
@@ -449,6 +403,7 @@ class ChatMessage(models.Model):
         db_table = "chat_message"
 
 
+# 別名エイリアス定義
 QuizCheckpointQuestion = QuizQuestion
 QuizCheckpointOption = QuizOption
 QuizCheckpointAttempt = QuizAttempt
