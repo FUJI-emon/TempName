@@ -824,13 +824,14 @@ def get_hint_view(request, question_id, level):
 def submit_checkpoint_view(request):
     """
     Endpoint nộp đáp án câu hỏi Checkpoint hoặc Final Test đối chiếu 100% từ Database.
-    Input (JSON): {"question_id": 1, "selected_option_id": 2, "hints_used": 0}
+    Input (JSON): {"question_id": 1, "selected_option_id": 2, "hints_used": 0, "score_percent": 80}
     """
     try:
         data = json.loads(request.body)
         question_id = data.get("question_id")
         selected_option_id = data.get("selected_option_id")
         hints_used = data.get("hints_used", 0)
+        score_percent = data.get("score_percent")
 
         student = None
         student_id = data.get("student_id")
@@ -864,41 +865,69 @@ def submit_checkpoint_view(request):
                 hints_used=hints_used
             )
 
+        passed_threshold = False
         step_completed = False
         next_step_unlocked = False
+        completion_percent = 0
+
         if q_model and q_model.lesson and q_model.lesson.step:
             step = q_model.lesson.step
-            if q_model.question_type == "lesson_wrapup" and is_correct:
-                st, _ = ProgressStudentStepStatus.objects.get_or_create(
-                    student=student,
-                    step=step,
-                    defaults={"status": ProgressStudentStepStatus.StepStatus.UNLOCKED}
-                )
-                st.status = ProgressStudentStepStatus.StepStatus.COMPLETED
-                st.save()
-                step_completed = True
+            if q_model.question_type == "lesson_wrapup":
+                if score_percent is not None:
+                    passed_threshold = bool(score_percent >= 80)
+                else:
+                    passed_threshold = is_correct
 
-                next_step = ProgressPathStep.objects.filter(
-                    material=step.material,
-                    order_index=step.order_index + 1
-                ).first()
-                if next_step:
-                    next_st, _ = ProgressStudentStepStatus.objects.get_or_create(
+                if passed_threshold:
+                    st, _ = ProgressStudentStepStatus.objects.get_or_create(
                         student=student,
-                        step=next_step,
+                        step=step,
                         defaults={"status": ProgressStudentStepStatus.StepStatus.UNLOCKED}
                     )
-                    next_st.status = ProgressStudentStepStatus.StepStatus.UNLOCKED
-                    next_st.save()
-                    next_step_unlocked = True
+                    st.status = ProgressStudentStepStatus.StepStatus.COMPLETED
+                    st.save()
+                    step_completed = True
+
+                    next_step = ProgressPathStep.objects.filter(
+                        material=step.material,
+                        order_index=step.order_index + 1
+                    ).first()
+                    if next_step:
+                        next_st, _ = ProgressStudentStepStatus.objects.get_or_create(
+                            student=student,
+                            step=next_step,
+                            defaults={"status": ProgressStudentStepStatus.StepStatus.UNLOCKED}
+                        )
+                        next_st.status = ProgressStudentStepStatus.StepStatus.UNLOCKED
+                        next_st.save()
+                        next_step_unlocked = True
+
+                total_steps = ProgressPathStep.objects.filter(material=step.material).count()
+                completed_steps = ProgressStudentStepStatus.objects.filter(
+                    student=student,
+                    step__material=step.material,
+                    status=ProgressStudentStepStatus.StepStatus.COMPLETED
+                ).count()
+                completion_percent = round((completed_steps / total_steps) * 100) if total_steps > 0 else 100
+
+                ProgressStudentMaterialProgress.objects.update_or_create(
+                    student=student,
+                    material=step.material,
+                    defaults={
+                        "completion_percent": completion_percent,
+                        "status": "completed" if (total_steps > 0 and completed_steps == total_steps) else "in_progress"
+                    }
+                )
 
         return JsonResponse({
             "status": "success",
             "is_correct": is_correct,
             "explanation": explanation,
             "question_type": q_model.question_type if q_model else "checkpoint",
+            "passed_threshold": passed_threshold,
             "step_completed": step_completed,
             "next_step_unlocked": next_step_unlocked,
+            "completion_percent": completion_percent,
         })
     except Exception as exc:
         return JsonResponse({"status": "error", "message": f"Lỗi chấm điểm: {exc}"}, status=500)
@@ -919,6 +948,7 @@ def submit_question_answer_view(request, question_id=None):
         q_id = question_id or data.get("question_id")
         selected_opt = data.get("option_id") or data.get("selected_option_id")
         hints = data.get("hints_used", 0)
+        score_percent = data.get("score_percent")
 
         student = None
         student_id = data.get("student_id")
@@ -952,41 +982,69 @@ def submit_question_answer_view(request, question_id=None):
                 hints_used=hints
             )
 
+        passed_threshold = False
         step_completed = False
         next_step_unlocked = False
+        completion_percent = 0
+
         if q_model and q_model.lesson and q_model.lesson.step:
             step = q_model.lesson.step
-            if q_model.question_type == "lesson_wrapup" and is_correct:
-                st, _ = ProgressStudentStepStatus.objects.get_or_create(
-                    student=student,
-                    step=step,
-                    defaults={"status": ProgressStudentStepStatus.StepStatus.UNLOCKED}
-                )
-                st.status = ProgressStudentStepStatus.StepStatus.COMPLETED
-                st.save()
-                step_completed = True
+            if q_model.question_type == "lesson_wrapup":
+                if score_percent is not None:
+                    passed_threshold = bool(score_percent >= 80)
+                else:
+                    passed_threshold = is_correct
 
-                next_step = ProgressPathStep.objects.filter(
-                    material=step.material,
-                    order_index=step.order_index + 1
-                ).first()
-                if next_step:
-                    next_st, _ = ProgressStudentStepStatus.objects.get_or_create(
+                if passed_threshold:
+                    st, _ = ProgressStudentStepStatus.objects.get_or_create(
                         student=student,
-                        step=next_step,
+                        step=step,
                         defaults={"status": ProgressStudentStepStatus.StepStatus.UNLOCKED}
                     )
-                    next_st.status = ProgressStudentStepStatus.StepStatus.UNLOCKED
-                    next_st.save()
-                    next_step_unlocked = True
+                    st.status = ProgressStudentStepStatus.StepStatus.COMPLETED
+                    st.save()
+                    step_completed = True
+
+                    next_step = ProgressPathStep.objects.filter(
+                        material=step.material,
+                        order_index=step.order_index + 1
+                    ).first()
+                    if next_step:
+                        next_st, _ = ProgressStudentStepStatus.objects.get_or_create(
+                            student=student,
+                            step=next_step,
+                            defaults={"status": ProgressStudentStepStatus.StepStatus.UNLOCKED}
+                        )
+                        next_st.status = ProgressStudentStepStatus.StepStatus.UNLOCKED
+                        next_st.save()
+                        next_step_unlocked = True
+
+                total_steps = ProgressPathStep.objects.filter(material=step.material).count()
+                completed_steps = ProgressStudentStepStatus.objects.filter(
+                    student=student,
+                    step__material=step.material,
+                    status=ProgressStudentStepStatus.StepStatus.COMPLETED
+                ).count()
+                completion_percent = round((completed_steps / total_steps) * 100) if total_steps > 0 else 100
+
+                ProgressStudentMaterialProgress.objects.update_or_create(
+                    student=student,
+                    material=step.material,
+                    defaults={
+                        "completion_percent": completion_percent,
+                        "status": "completed" if (total_steps > 0 and completed_steps == total_steps) else "in_progress"
+                    }
+                )
 
         return JsonResponse({
             "status": "success",
             "is_correct": is_correct,
             "explanation": explanation,
             "question_type": q_model.question_type if q_model else "checkpoint",
+            "passed_threshold": passed_threshold,
             "step_completed": step_completed,
             "next_step_unlocked": next_step_unlocked,
+            "completion_percent": completion_percent,
         })
     except Exception as exc:
         return JsonResponse({"status": "error", "message": str(exc), "exc_type": type(exc).__name__}, status=500)
