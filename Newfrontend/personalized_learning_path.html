@@ -237,7 +237,6 @@
 <!-- Learning Path (Left 2/3) -->
 <div class="lg:col-span-2">
 <div class="relative pl-4 py-8" id="path-tree-container">
-  <div class="p-8 text-center text-on-surface-variant">Loading your personalized learning steps...</div>
 </div>
 </div>
 <!-- Sidebar Progress (Right 1/3) -->
@@ -288,16 +287,28 @@
 <script src="./navigation.js?v=10"></script>
 <script>
 document.addEventListener("DOMContentLoaded", async function () {
+  const urlParams = new URLSearchParams(window.location.search);
+  const materialIdFromUrl = urlParams.get("material_id");
+
   const pathTitle = document.getElementById("path-title");
   const pathSubtitle = document.getElementById("path-subtitle");
   const pathTreeContainer = document.getElementById("path-tree-container");
   const progressPercent = document.getElementById("progress-percent");
   const progressRing = document.getElementById("progress-ring");
+  const remainingStepsCount = document.getElementById("remaining-steps-count");
+  const continueBtn = document.getElementById("continue-learning-btn");
   const deleteHeaderBtn = document.getElementById("delete-course-header-btn");
+
+  let material = window.API?.storage?.getMaterial();
+  let pathData = window.API?.storage?.getLearningPath();
+  let selectedConcepts = window.API?.storage?.getSelectedConcepts();
+
+  const matId = materialIdFromUrl || material?.id || material?.material_id || window.API?.storage?.getLastMaterialId() || "latest";
+
   if (deleteHeaderBtn) {
     deleteHeaderBtn.addEventListener("click", () => {
       const title = pathTitle ? pathTitle.textContent : "Khóa học này";
-      const targetMaterialId = materialIdFromUrl || material?.id || material?.material_id || window.API?.storage?.getLastMaterialId();
+      const targetMaterialId = matId !== "latest" ? matId : (material?.id || material?.material_id || window.API?.storage?.getLastMaterialId());
 
       if (window.API?.showDeleteConfirmModal) {
         window.API.showDeleteConfirmModal(title, async () => {
@@ -323,14 +334,6 @@ document.addEventListener("DOMContentLoaded", async function () {
     });
   }
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const materialIdFromUrl = urlParams.get("material_id");
-  let material = window.API?.storage?.getMaterial();
-  let pathData = window.API?.storage?.getLearningPath();
-  let selectedConcepts = window.API?.storage?.getSelectedConcepts();
-
-  const matId = materialIdFromUrl || material?.id || material?.material_id || window.API?.storage?.getLastMaterialId();
-
   if (matId) {
     try {
       const detailRes = await window.API.learning.getMaterialDetail(matId);
@@ -348,34 +351,39 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   if (material && (material.title || material.goal_title)) {
-    pathTitle.textContent = material.title || material.goal_title;
-    pathSubtitle.textContent = `Master the key concepts in ${material.title || material.goal_title}.`;
+    if (pathTitle) pathTitle.textContent = material.title || material.goal_title;
+    if (pathSubtitle) pathSubtitle.textContent = `Master the key concepts in ${material.title || material.goal_title}.`;
   }
 
   // Derive steps to render directly from Backend Source of Truth
   let steps = [];
-  if (pathData && pathData.steps && pathData.steps.length > 0) {
-    steps = pathData.steps;
-  } else if (material && material.steps && material.steps.length > 0) {
+  if (material && material.steps && material.steps.length > 0) {
     steps = material.steps;
+  } else if (pathData && pathData.steps && pathData.steps.length > 0) {
+    steps = pathData.steps;
   }
 
   if (steps.length === 0 && matId) {
-    pathTreeContainer.innerHTML = `
-      <div class="p-8 text-center bg-surface-container-lowest rounded-xl shadow-sm space-y-4">
-        <span class="material-symbols-outlined text-4xl text-primary animate-spin">progress_activity</span>
-        <h3 class="font-headline-md text-on-surface font-bold">Đang tạo lộ trình học tập cá nhân hóa...</h3>
-        <p class="font-body-md text-on-surface-variant">Hệ thống AI đang tổng hợp bài giảng và sắp xếp các bước học phù hợp.</p>
-      </div>
-    `;
+    if (pathTreeContainer) {
+      pathTreeContainer.innerHTML = `
+        <div class="p-8 text-center bg-surface-container-lowest rounded-xl shadow-sm space-y-4">
+          <span class="material-symbols-outlined text-4xl text-primary animate-spin">progress_activity</span>
+          <h3 class="font-headline-md text-on-surface font-bold">Đang tạo lộ trình học tập cá nhân hóa...</h3>
+          <p class="font-body-md text-on-surface-variant">Hệ thống AI đang tổng hợp bài giảng và sắp xếp các bước học phù hợp.</p>
+        </div>
+      `;
+    }
     try {
-      const genRes = await window.API.learning.generatePath({ material_id: parseInt(matId) });
-      if (genRes && genRes.status === "success" && genRes.steps && genRes.steps.length > 0) {
-        steps = genRes.steps;
-        const detailRes = await window.API.learning.getMaterialDetail(matId);
-        if (detailRes && detailRes.status === "success") {
-          material = detailRes;
-          window.API.storage.setMaterial(detailRes);
+      const targetId = parseInt(matId);
+      if (!isNaN(targetId)) {
+        const genRes = await window.API.learning.generatePath({ material_id: targetId });
+        if (genRes && genRes.status === "success" && genRes.steps && genRes.steps.length > 0) {
+          steps = genRes.steps;
+          const detailRes = await window.API.learning.getMaterialDetail(matId);
+          if (detailRes && detailRes.status === "success") {
+            material = detailRes;
+            window.API.storage.setMaterial(detailRes);
+          }
         }
       }
     } catch (e) {
@@ -384,14 +392,16 @@ document.addEventListener("DOMContentLoaded", async function () {
   }
 
   if (steps.length === 0) {
-    pathTreeContainer.innerHTML = `
-      <div class="p-8 text-center bg-surface-container-lowest rounded-xl shadow-sm space-y-4">
-        <span class="material-symbols-outlined text-4xl text-outline">route</span>
-        <h3 class="font-headline-md text-on-surface font-bold">Chưa tìm thấy các bước học tập</h3>
-        <p class="font-body-md text-on-surface-variant">Vui lòng tải lên tài liệu để hệ thống tạo lộ trình bài học cá nhân hóa.</p>
-        <a href="lumina_learning_upload_document_desktop.html" class="inline-block px-6 py-3 bg-primary text-on-primary rounded-xl font-button shadow-sm hover:bg-primary/90 transition-all">Upload Document</a>
-      </div>
-    `;
+    if (pathTreeContainer) {
+      pathTreeContainer.innerHTML = `
+        <div class="p-8 text-center bg-surface-container-lowest rounded-xl shadow-sm space-y-4">
+          <span class="material-symbols-outlined text-4xl text-outline">route</span>
+          <h3 class="font-headline-md text-on-surface font-bold">Chưa tìm thấy các bước học tập</h3>
+          <p class="font-body-md text-on-surface-variant">Vui lòng tải lên tài liệu để hệ thống tạo lộ trình bài học cá nhân hóa.</p>
+          <a href="lumina_learning_upload_document_desktop.html" class="inline-block px-6 py-3 bg-primary text-on-primary rounded-xl font-button shadow-sm hover:bg-primary/90 transition-all">Upload Document</a>
+        </div>
+      `;
+    }
     return;
   }
 
@@ -403,22 +413,29 @@ document.addEventListener("DOMContentLoaded", async function () {
   if (progressPercent) progressPercent.innerHTML = `${pct}<span class="text-headline-md">%</span>`;
   if (progressRing) progressRing.setAttribute("stroke-dasharray", `${pct}, 100`);
 
-  renderPathSteps(steps);
+  const visibleLimit = (Math.floor(completedSteps / 3) + 1) * 3;
+  const activeBatchSteps = steps.slice(0, visibleLimit);
+  renderPathSteps(activeBatchSteps);
 
   function renderPathSteps(stepsList) {
+    if (!pathTreeContainer) return;
     pathTreeContainer.innerHTML = `
-      <div class="mb-6 flex items-center justify-between bg-primary-fixed/40 px-4 py-2.5 rounded-xl border border-primary-fixed">
+      <div class="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between bg-primary-fixed/40 px-4 py-3 rounded-xl border border-primary-fixed gap-2">
         <div class="flex items-center gap-2">
           <span class="material-symbols-outlined text-primary text-xl">auto_awesome</span>
-          <span class="font-button text-sm text-primary font-bold">Personalized Concept Path (${stepsList.length} Lessons)</span>
+          <div>
+            <div class="font-button text-sm text-primary font-bold">Adaptive AI Path (3 Lessons/Phase)</div>
+            <div class="text-xs text-on-surface-variant">Complete these 3 lessons for AI to adapt the next phase to your mastery level.</div>
+          </div>
         </div>
-        <span class="font-label-sm text-xs bg-primary text-on-primary px-2 py-0.5 rounded-full font-bold">${completedSteps}/${stepsList.length} Completed</span>
+        <span class="font-label-sm text-xs bg-primary text-on-primary px-3 py-1 rounded-full font-bold shrink-0">${completedSteps}/${stepsList.length} Completed</span>
       </div>
     `;
 
     const totalSteps = stepsList.length;
-    const activeUnlockedStep = stepsList.find(s => s.student_status === "unlocked" || s.student_status === "in_progress") || stepsList[0];
-    remainingStepsCount.textContent = `${totalSteps - completedSteps} remaining step(s)`;
+    if (remainingStepsCount) {
+      remainingStepsCount.textContent = `${totalSteps - completedSteps} remaining step(s)`;
+    }
 
     stepsList.forEach((step, idx) => {
       const isLast = idx === totalSteps - 1;
@@ -470,7 +487,6 @@ document.addEventListener("DOMContentLoaded", async function () {
           </div>
         `;
       } else {
-        // Locked step
         wrapper.innerHTML = `
           ${!isLast ? '<div class="path-line bg-surface-variant"></div>' : ''}
           <div class="path-node flex-shrink-0 w-12 h-12 rounded-full bg-surface-variant text-outline flex items-center justify-center shadow-sm relative z-10 opacity-70">
@@ -486,7 +502,6 @@ document.addEventListener("DOMContentLoaded", async function () {
         `;
       }
 
-      // Attach click handlers only for unlocked or completed steps
       if (st === "unlocked" || st === "in_progress" || st === "completed") {
         const goToLesson = (e) => {
           e.stopPropagation();
@@ -519,7 +534,6 @@ document.addEventListener("DOMContentLoaded", async function () {
           localStorage.setItem("lumina.activeStep", JSON.stringify(activeUnlockedStep));
         } catch (err) {}
         window.location.href = `interactive_lesson_linear_regression_with_sidebar.html?step_id=${activeUnlockedStep.id}&step_title=${encodeURIComponent(activeUnlockedStep.title)}`;
-      }
       }
     });
   }

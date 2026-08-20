@@ -1,18 +1,7 @@
-"""
-OpenRouterAdapter — implement LLMService bằng cách gọi OpenRouter API.
-Pattern chung cho mọi method:
-  1. Validate input (nếu cần) -> raise LLMEmptyInputError
-  2. Build prompt từ apps/ai/services/prompts/<method>.py
-  3. self._call(system_prompt, user_prompt) -> dict (đã parse JSON)
-  4. Map dict -> đúng DTO, bọc try/except -> raise LLMInvalidResponseError nếu sai format
-  5. Riêng generate_hint và chat_reply(scope=QUIZ): LUÔN chạy assert_no_leak trước khi return
-     (guardrail chặn ngay tại nguồn, không chờ orchestrator phát hiện).
-"""
 import json
 import os
-import re
-
 import requests
+from typing import Any, List, Optional
 
 from ..dto import (
     AnalyzeMaterialResult,
@@ -33,71 +22,62 @@ from ..dto import (
     QuestionOptionDTO,
     QuestionPurpose,
 )
-from ..exceptions import LLMEmptyInputError, LLMInvalidResponseError, LLMRateLimitError, LLMServiceError
+from ..exceptions import LLMEmptyInputError, LLMInvalidResponseError, LLMServiceError
 from ..guardrail import assert_no_leak, assert_no_leak_chat
 from ..interface import LLMService
-from ..prompts import analyze_material as analyze_prompts
-from ..prompts import chat_reply as chat_reply_prompts
-from ..prompts import decide_next_action as decide_next_action_prompts
-from ..prompts import evaluate_answer as evaluate_answer_prompts
-from ..prompts import generate_check_question as generate_check_question_prompts
-from ..prompts import generate_learning_path as generate_learning_path_prompts
-from ..prompts import generate_lesson as generate_lesson_prompts
-from ..prompts import hint as hint_prompts
-from ..prompts import start_conversation as start_conversation_prompts
+from ..prompts import (
+    analyze_material as analyze_material_prompts,
+    chat_reply as chat_reply_prompts,
+    decide_next_action as decide_next_action_prompts,
+    evaluate_answer as evaluate_answer_prompts,
+    generate_check_question as generate_check_question_prompts,
+    generate_learning_path as generate_learning_path_prompts,
+    generate_lesson as generate_lesson_prompts,
+    hint as hint_prompts,
+    start_conversation as start_conversation_prompts,
+)
 
 
-class OpenRouterAdapter(LLMService):
-    def __init__(self, base_url: str = None, model: str = None, api_key: str = None):
-        raw_url = (
-            base_url
-            or os.getenv("OPENROUTER_BASE_URL")
-            or "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions"
-        ).rstrip("/")
-        if not raw_url.endswith("/chat/completions"):
-            raw_url = f"{raw_url}/chat/completions"
-        self.base_url = raw_url
-        self.model = model or os.getenv("OPENROUTER_MODEL", "gemini-3.5-flash-lite")
-        self.api_key = api_key or os.getenv("OPENROUTER_API_KEY")
-        if not self.api_key:
-            raise LLMServiceError("Thiếu OPENROUTER_API_KEY trong environment")
+class OllamaAdapter(LLMService):
+    """Adapter tích hợp Local LLM qua Ollama (/api/generate)."""
 
-    @property
-    def BASE_URL(self):
-        return self.base_url
+    def __init__(self, base_url: str = None, model: str = None):
+        self.base_url = (base_url or os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")).rstrip("/")
+        self.model = model or os.getenv("OLLAMA_MODEL", "qwen3:8b")
+        self.timeout = int(os.getenv("OLLAMA_TIMEOUT", "180"))
 
     def _call(self, system_prompt: str, user_prompt: str) -> dict:
-        """Gọi OpenRouter/Gemini API, ép JSON output, parse và trả dict."""
+        """Gọi Ollama /api/generate, ép JSON output, parse và trả dict."""
+        url = f"{self.base_url}/api/generate"
+        payload = {
+            "model": self.model,
+            "prompt": user_prompt,
+            "system": system_prompt,
+            "stream": False,
+            "format": "json",
+            "think": False,
+            "options": {
+                "temperature": 0,
+                "num_predict": 1500,
+            },
+        }
         try:
             response = requests.post(
-                self.base_url,
-                headers={
-                    "Authorization": f"Bearer {self.api_key}",
-                    "Content-Type": "application/json",
-                },
-                json={
-                    "model": self.model,
-                    "messages": [
-                        {"role": "system", "content": system_prompt},
-                        {"role": "user", "content": user_prompt},
-                    ],
-                    "response_format": {"type": "json_object"},
-                    "temperature": 0.4,
-                },
-                timeout=30,
+                url,
+                headers={"Content-Type": "application/json"},
+                json=payload,
+                timeout=self.timeout,
             )
-            if response.status_code in (429, 402):
-                raise LLMRateLimitError(f"Hệ thống AI đã đạt giới hạn gọi API (Rate Limit Exceeded / hết Quota token - Mã lỗi {response.status_code}). Vui lòng thử lại sau.")
-            elif response.status_code in (401, 403):
-                raise LLMRateLimitError(f"API Key AI không hợp lệ hoặc đã hết lượt truy cập (Mã lỗi {response.status_code}).")
             response.raise_for_status()
         except requests.RequestException as exc:
-            if exc.response is not None and exc.response.status_code in (429, 402, 401, 403):
-                raise LLMRateLimitError(f"AI API đã đạt giới hạn/Quota (Mã lỗi {exc.response.status_code}). Vui lòng thử lại sau.") from exc
-            raise LLMServiceError(f"Gọi OpenRouter thất bại: {exc}") from exc
+            raise LLMServiceError(f"Gọi Ollama thất bại: {exc}") from exc
 
         try:
-            content = response.json()["choices"][0]["message"]["content"].strip()
+            resp_json = response.json()
+            if "response" not in resp_json:
+                raise LLMInvalidResponseError("Ollama response thiếu field 'response'")
+            content = str(resp_json["response"]).strip()
+
             if content.startswith("```json"):
                 content = content[7:]
             elif content.startswith("```"):
@@ -106,19 +86,11 @@ class OpenRouterAdapter(LLMService):
                 content = content[:-3]
             content = content.strip()
 
-            start_idx = content.find("{")
-            end_idx = content.rfind("}")
-            if start_idx != -1 and end_idx != -1 and end_idx >= start_idx:
-                content = content[start_idx : end_idx + 1]
-
-            # Clean trailing commas inside JSON objects/arrays
-            content = re.sub(r',\s*([\}\]])', r'\1', content)
-
             return json.loads(content)
-        except (KeyError, IndexError, json.JSONDecodeError) as exc:
-            raise LLMInvalidResponseError(f"OpenRouter trả response không hợp lệ: {exc}") from exc
+        except (KeyError, json.JSONDecodeError, TypeError) as exc:
+            raise LLMInvalidResponseError(f"Không thể parse JSON từ Ollama response: {exc}") from exc
 
-    def start_conversation(self, user_message, uploaded_material=None):
+    def start_conversation(self, user_message: str, uploaded_material: Optional[str] = None) -> ConversationResult:
         if not user_message or not user_message.strip():
             raise LLMEmptyInputError("user_message không được để trống")
 
@@ -135,31 +107,31 @@ class OpenRouterAdapter(LLMService):
         except (KeyError, TypeError) as exc:
             raise LLMInvalidResponseError(f"Response thiếu/lỗi field trong start_conversation: {exc}") from exc
 
-    def analyze_material(self, material_content, goal):
+    def analyze_material(self, material_content: str, goal: str) -> AnalyzeMaterialResult:
         if not material_content or not material_content.strip():
             raise LLMEmptyInputError("material_content không được để trống")
 
-        system_prompt = analyze_prompts.SYSTEM_PROMPT
-        user_prompt = analyze_prompts.build_user_prompt(material_content, goal)
+        system_prompt = analyze_material_prompts.SYSTEM_PROMPT
+        user_prompt = analyze_material_prompts.build_user_prompt(material_content, goal)
         data = self._call(system_prompt, user_prompt)
 
         try:
             concepts = [
-                ConceptDTO(id=c["id"], title=c["title"], description=c.get("description", ""))
-                for c in data["concepts"]
+                ConceptDTO(
+                    id=c["id"],
+                    title=c["title"],
+                    description=c.get("description", ""),
+                )
+                for c in data.get("concepts", [])
             ]
+            return AnalyzeMaterialResult(
+                concepts=concepts,
+                suggested_skills=data.get("suggested_skills", []),
+            )
         except (KeyError, TypeError) as exc:
-            raise LLMInvalidResponseError(f"Response thiếu/lỗi field concepts: {exc}") from exc
+            raise LLMInvalidResponseError(f"Response thiếu/lỗi field trong analyze_material: {exc}") from exc
 
-        return AnalyzeMaterialResult(
-            concepts=concepts,
-            suggested_skills=data.get("suggested_skills", []),
-        )
-
-    def generate_learning_path(self, concepts, mastery_context, batch_size=3):
-        if not concepts:
-            return LearningPathBatchResult(ordered_concept_ids=[], is_final_batch=True)
-
+    def generate_learning_path(self, concepts: List[Any], mastery_context: dict, batch_size: int = 3) -> LearningPathBatchResult:
         system_prompt = generate_learning_path_prompts.SYSTEM_PROMPT
         user_prompt = generate_learning_path_prompts.build_user_prompt(concepts, mastery_context, batch_size)
         data = self._call(system_prompt, user_prompt)
@@ -170,14 +142,13 @@ class OpenRouterAdapter(LLMService):
                 ordered_ids = [c.id if hasattr(c, "id") else c["id"] for c in concepts[:batch_size]]
 
             return LearningPathBatchResult(
-                ordered_concept_ids=ordered_ids,
+                ordered_concept_ids=[str(cid) for cid in ordered_ids],
                 is_final_batch=bool(data.get("is_final_batch", len(concepts) <= batch_size)),
             )
         except (KeyError, TypeError) as exc:
             raise LLMInvalidResponseError(f"Response thiếu/lỗi field trong generate_learning_path: {exc}") from exc
 
-
-    def generate_lesson(self, concept, mastery_context, goal_context=None, material_context=None):
+    def generate_lesson(self, concept, mastery_context, goal_context=None, material_context=None) -> LessonDTO:
         system_prompt = generate_lesson_prompts.SYSTEM_PROMPT
         user_prompt = generate_lesson_prompts.build_user_prompt(
             concept, mastery_context, goal_context, material_context
@@ -199,7 +170,7 @@ class OpenRouterAdapter(LLMService):
             ]
             concept_id = concept.id if hasattr(concept, "id") else concept.get("id", data.get("concept_id", ""))
             return LessonDTO(
-                concept_id=concept_id,
+                concept_id=str(concept_id),
                 explanation=data["explanation"],
                 example=data.get("example", ""),
                 key_points=data.get("key_points", []),
@@ -209,7 +180,7 @@ class OpenRouterAdapter(LLMService):
         except (KeyError, TypeError) as exc:
             raise LLMInvalidResponseError(f"Response thiếu/lỗi field trong generate_lesson: {exc}") from exc
 
-    def generate_check_question(self, concept, lesson, purpose, previous_misconceptions=None):
+    def generate_check_question(self, concept, lesson, purpose, previous_misconceptions=None) -> CheckQuestionResult:
         system_prompt = generate_check_question_prompts.SYSTEM_PROMPT
         user_prompt = generate_check_question_prompts.build_user_prompt(
             concept, lesson, purpose, previous_misconceptions
@@ -257,7 +228,7 @@ class OpenRouterAdapter(LLMService):
         except (KeyError, TypeError) as exc:
             raise LLMInvalidResponseError(f"Response thiếu/lỗi field trong generate_check_question: {exc}") from exc
 
-    def evaluate_answer(self, question, selected_option_index):
+    def evaluate_answer(self, question, selected_option_index) -> AnswerEvaluationResult:
         if selected_option_index < 0 or selected_option_index >= len(question.options):
             raise IndexError("selected_option_index ngoài phạm vi danh sách phương án")
 
@@ -274,10 +245,10 @@ class OpenRouterAdapter(LLMService):
         except (KeyError, TypeError, ValueError) as exc:
             raise LLMInvalidResponseError(f"Response thiếu/lỗi field trong evaluate_answer: {exc}") from exc
 
-    def decide_next_action(self, concept, evaluation_history):
+    def decide_next_action(self, concept, evaluation_history) -> NextActionResult:
         concept_id = concept.id if hasattr(concept, "id") else concept.get("id", "")
         if not evaluation_history:
-            return NextActionResult(action=NextAction.MOVE_NEXT, concept_id=concept_id)
+            return NextActionResult(action=NextAction.MOVE_NEXT, concept_id=str(concept_id))
 
         system_prompt = decide_next_action_prompts.SYSTEM_PROMPT
         user_prompt = decide_next_action_prompts.build_user_prompt(concept, evaluation_history)
@@ -287,14 +258,14 @@ class OpenRouterAdapter(LLMService):
             action_enum = NextAction(data["action"])
             return NextActionResult(
                 action=action_enum,
-                concept_id=data.get("concept_id", concept_id),
+                concept_id=str(data.get("concept_id", concept_id)),
                 reasoning=data.get("reasoning", ""),
                 needs_next_batch=bool(data.get("needs_next_batch", False)),
             )
         except (KeyError, TypeError, ValueError) as exc:
             raise LLMInvalidResponseError(f"Response thiếu/lỗi field trong decide_next_action: {exc}") from exc
 
-    def generate_hint(self, question, level, previous_hints):
+    def generate_hint(self, question, level, previous_hints) -> HintResult:
         system_prompt = hint_prompts.SYSTEM_PROMPT
         user_prompt = hint_prompts.build_user_prompt(question, level, previous_hints)
         data = self._call(system_prompt, user_prompt)
@@ -305,10 +276,10 @@ class OpenRouterAdapter(LLMService):
             raise LLMInvalidResponseError("Response thiếu field 'hint'") from exc
 
         result = HintResult(level=level, text=hint_text)
-        assert_no_leak(result.text, question)  # chặn ngay tại nguồn
+        assert_no_leak(result.text, question)
         return result
 
-    def chat_reply(self, history, new_message, scope, learning_context=None):
+    def chat_reply(self, history, new_message, scope, learning_context=None) -> ChatReplyResult:
         if not new_message or not new_message.strip():
             raise LLMEmptyInputError("new_message không được để trống")
 

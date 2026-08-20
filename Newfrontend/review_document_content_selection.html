@@ -374,13 +374,14 @@ document.addEventListener("DOMContentLoaded", async function () {
   async function generatePath(conceptsToUse) {
     hideStatus();
     submitBtn.disabled = true;
-    submitBtnText.textContent = "AI is generating your learning path...";
+    submitBtnText.textContent = "AI đang phân tích & sinh bài học...";
     submitSpinner.classList.remove("hidden");
-    showStatus("Calling AI Engine to design custom learning path steps...", "loading");
+    showStatus("🤖 AI đang phân tích khái niệm & tạo dữ liệu bài học vào Database...", "loading");
 
     try {
+      const matId = material?.id || material?.material_id || window.API?.storage?.getLastMaterialId();
       const payload = {
-        material_id: material.material_id,
+        material_id: matId ? parseInt(matId) : null,
         concepts: conceptsToUse.map(c => ({
           id: c.id || String(c.title),
           title: c.title,
@@ -394,8 +395,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         showStatus("Learning path generated successfully!", "success");
         window.API.storage.setLearningPath(res);
         window.API.storage.setSelectedConcepts(conceptsToUse);
+        const targetMatId = res.material_id || material?.id || material?.material_id;
+        if (targetMatId) {
+          localStorage.setItem("lumina.lastMaterialId", targetMatId);
+        }
         setTimeout(() => {
-          window.location.href = "personalized_learning_path.html";
+          window.location.href = targetMatId ? `personalized_learning_path.html?material_id=${targetMatId}` : "personalized_learning_path.html";
         }, 400);
       } else {
         showStatus(res.message || "Failed to generate learning path.", "error");

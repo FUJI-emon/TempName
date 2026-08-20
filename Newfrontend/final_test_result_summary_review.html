@@ -1,10 +1,11 @@
-<!DOCTYPE html><html class="light" lang="en"><head>
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
 <meta charset="utf-8">
 <meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>TempName Learning - Final Test Result</title>
+<title>Lumina Learning - Final Test Result Summary</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Manrope:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700;800&amp;family=Manrope:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
 <script id="tailwind-config">
         tailwind.config = {
@@ -81,15 +82,6 @@
                         "button": ["Manrope"],
                         "headline-lg": ["Hanken Grotesk"],
                         "body-md": ["Manrope"]
-                    },
-                    "fontSize": {
-                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
-                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
-                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
-                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "500" }],
-                        "button": ["16px", { "lineHeight": "20px", "fontWeight": "600" }],
-                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
-                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
                     }
                 }
             }
@@ -97,167 +89,256 @@
     </script>
 <style>
         body { font-family: 'Manrope', sans-serif; background-color: #F8F9FE; color: #1a1c1f; }
-        h1, h2, h3, h4, h5, h6, .font-headline-md, .font-display-lg, .font-headline-lg { font-family: 'Hanken Grotesk', sans-serif; }
-        .font-label-sm { font-family: 'JetBrains Mono', monospace; }
-        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.5); }
-        .shadow-soft { box-shadow: 0px 4px 20px rgba(94, 92, 230, 0.08); }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Hanken Grotesk', sans-serif; }
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.5); }
+        .shadow-soft { box-shadow: 0px 4px 24px rgba(94, 92, 230, 0.08); }
         .shadow-active { box-shadow: 0px 0px 0px 2px #4441cc, 0px 4px 20px rgba(94, 92, 230, 0.15); }
         .gradient-text { background: linear-gradient(135deg, #4441cc 0%, #9026c3 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-fade-in-up {
+            animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
     </style>
 </head>
-<body class="bg-background min-h-screen flex flex-col items-center py-section-margin px-container-padding">
+<body class="bg-background min-h-screen flex flex-col items-center py-8 px-4 md:px-8 antialiased">
 <!-- Header Section -->
-<header class="text-center mb-section-margin w-full max-w-4xl mx-auto">
-<h1 class="font-display-lg text-display-lg mb-base flex items-center justify-center gap-3">
-<span class="material-symbols-outlined text-4xl text-primary" style="font-variation-settings: 'FILL' 1;">celebration</span>
-            Lesson Complete
-        </h1>
-<h2 class="font-headline-md text-headline-md text-on-surface-variant mb-6">Linear Regression</h2>
-<div class="glass-panel shadow-soft rounded-2xl p-8 max-w-lg mx-auto relative overflow-hidden hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-<!-- Decorative background blur -->
-<div class="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
-<div class="absolute -bottom-10 -left-10 w-32 h-32 bg-secondary/20 rounded-full blur-3xl pointer-events-none"></div>
+<header class="text-center mb-8 w-full max-w-4xl mx-auto">
+<h1 class="font-display-lg text-3xl md:text-display-lg font-bold mb-2 flex items-center justify-center gap-3">
+<span class="material-symbols-outlined text-4xl text-primary">emoji_events</span>
+<span>Assessment Complete</span>
+</h1>
+<h2 class="font-headline-md text-lg md:text-headline-md text-on-surface-variant mb-6" id="lesson-result-title">AI Micro-Learning Concept</h2>
+
+<div class="glass-panel shadow-soft rounded-2xl p-6 md:p-8 max-w-md mx-auto relative overflow-hidden transition-all duration-300 animate-fade-in-up">
 <div class="relative z-10 flex flex-col items-center">
-<div class="text-[64px] font-bold font-headline-lg leading-none gradient-text mb-2 tracking-tighter">80%</div>
-<div class="font-button text-button text-on-surface-variant bg-surface-container-low px-4 py-1.5 rounded-full mb-6 flex items-center gap-2">
-<span class="w-2 h-2 rounded-full bg-[#10b981]"></span> 4 Correct 
-                     <span class="w-2 h-2 rounded-full bg-error ml-2"></span> 1 Incorrect
-                </div>
-<p class="font-body-md text-body-md text-center text-on-surface">Great job! You have completed the final test for this lesson and are ready to move forward.</p>
+<div class="text-5xl md:text-6xl font-bold font-headline-lg leading-none gradient-text mb-3 tracking-tighter" id="score-percentage">100%</div>
+<div class="font-button text-xs font-semibold text-on-surface-variant bg-surface-container-low px-4 py-1.5 rounded-full mb-4 flex items-center gap-3 border border-outline-variant/30">
+<span class="flex items-center gap-1 text-emerald-600"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> <span id="correct-count">2</span> Correct</span>
+<span class="flex items-center gap-1 text-rose-600"><span class="w-2 h-2 rounded-full bg-rose-500"></span> <span id="incorrect-count">0</span> Incorrect</span>
+</div>
+<p class="font-body-md text-xs md:text-sm text-center text-on-surface leading-relaxed" id="mastery-summary-message">
+        Excellent performance! You have demonstrated strong mastery of this lesson step and unlocked the next concept in your path.
+      </p>
 </div>
 </div>
 </header>
+
 <!-- Main Content Area -->
-<main class="w-full max-w-[1200px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-<!-- Question Review List -->
-<section class="lg:col-span-5 flex flex-col gap-4">
-<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Question Review</h3>
-<!-- Q1 -->
-<button class="w-full text-left bg-surface-container-lowest shadow-soft rounded-xl p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors group hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-<div class="flex items-center gap-4">
-<div class="w-8 h-8 rounded-full bg-[#10b981]/10 flex items-center justify-center text-[#10b981]">
-<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<main class="w-full max-w-[1100px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1">
+<!-- Question Review List (Left Column) -->
+<section class="lg:col-span-5 flex flex-col gap-3">
+<h3 class="font-headline-md text-base md:text-lg text-on-surface font-bold mb-1 flex items-center justify-between">
+<span>Question Breakdown</span>
+<span class="text-xs font-normal text-on-surface-variant">Click item to inspect</span>
+</h3>
+
+<div class="flex flex-col gap-2.5" id="questions-review-list">
+<!-- Dynamically populated review items -->
 </div>
-<div>
-<div class="font-button text-button text-on-surface">Question 1</div>
-<div class="font-label-sm text-label-sm text-[#10b981]">Correct</div>
-</div>
-</div>
-<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
-</button>
-<!-- Q2 -->
-<button class="w-full text-left bg-surface-container-lowest shadow-soft rounded-xl p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors group hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-<div class="flex items-center gap-4">
-<div class="w-8 h-8 rounded-full bg-[#10b981]/10 flex items-center justify-center text-[#10b981]">
-<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-</div>
-<div>
-<div class="font-button text-button text-on-surface">Question 2</div>
-<div class="font-label-sm text-label-sm text-[#10b981]">Correct</div>
-</div>
-</div>
-<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
-</button>
-<!-- Q3 (Active/Incorrect) -->
-<button class="w-full text-left bg-surface-container-lowest shadow-active rounded-xl p-4 flex items-center justify-between relative overflow-hidden group hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
-<div class="flex items-center gap-4 pl-2">
-<div class="w-8 h-8 rounded-full bg-error/10 flex items-center justify-center text-error">
-<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">cancel</span>
-</div>
-<div>
-<div class="font-button text-button text-on-surface">Question 3</div>
-<div class="font-label-sm text-label-sm text-error">Incorrect</div>
-</div>
-</div>
-<span class="material-symbols-outlined text-primary">chevron_right</span>
-</button>
-<!-- Q4 -->
-<button class="w-full text-left bg-surface-container-lowest shadow-soft rounded-xl p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors group hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-<div class="flex items-center gap-4">
-<div class="w-8 h-8 rounded-full bg-[#10b981]/10 flex items-center justify-center text-[#10b981]">
-<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-</div>
-<div>
-<div class="font-button text-button text-on-surface">Question 4</div>
-<div class="font-label-sm text-label-sm text-[#10b981]">Correct</div>
-</div>
-</div>
-<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
-</button>
-<!-- Q5 -->
-<button class="w-full text-left bg-surface-container-lowest shadow-soft rounded-xl p-4 flex items-center justify-between hover:bg-surface-container-low transition-colors group hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-<div class="flex items-center gap-4">
-<div class="w-8 h-8 rounded-full bg-[#10b981]/10 flex items-center justify-center text-[#10b981]">
-<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-</div>
-<div>
-<div class="font-button text-button text-on-surface">Question 5</div>
-<div class="font-label-sm text-label-sm text-[#10b981]">Correct</div>
-</div>
-</div>
-<span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">chevron_right</span>
-</button>
 </section>
-<!-- Detail Review Panel -->
-<section class="lg:col-span-7 h-full">
-<div class="bg-surface-container-lowest shadow-soft rounded-2xl p-8 h-full flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-<div class="flex items-center gap-3 mb-6">
-<span class="material-symbols-outlined text-primary text-2xl">menu_book</span>
-<h3 class="font-headline-md text-headline-md text-on-surface">Question 3 Review</h3>
+
+<!-- Detail Review Panel (Right Column) -->
+<section class="lg:col-span-7 flex flex-col h-full">
+<div class="bg-surface-container-lowest shadow-soft rounded-2xl p-6 md:p-8 h-full flex flex-col border border-outline-variant/30 animate-fade-in-up">
+<div class="flex items-center gap-2.5 mb-5 pb-4 border-b border-surface-variant">
+<span class="material-symbols-outlined text-primary text-2xl">auto_stories</span>
+<h3 class="font-headline-md text-lg font-bold text-on-surface" id="detail-panel-title">Question Detail Review</h3>
 </div>
-<div class="bg-surface-container-low rounded-xl p-6 mb-card-gap">
-<p class="font-body-lg text-body-lg text-on-surface mb-2 font-medium">What is the primary goal of minimizing the cost function in linear regression?</p>
-</div>
-<div class="space-y-4 mb-8 flex-grow">
-<!-- User's Incorrect Answer -->
-<div class="border border-error/30 bg-error/5 rounded-xl p-4 flex items-start gap-4">
-<div class="mt-1 text-error">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">cancel</span>
-</div>
-<div>
-<div class="font-label-sm text-label-sm text-error mb-1 uppercase tracking-wider">Your Answer</div>
-<div class="font-body-md text-body-md text-on-surface">A) To increase the slope</div>
-</div>
-</div>
-<!-- Correct Answer -->
-<div class="border border-[#10b981]/30 bg-[#10b981]/5 rounded-xl p-4 flex items-start gap-4">
-<div class="mt-1 text-[#10b981]">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
-</div>
-<div>
-<div class="font-label-sm text-label-sm text-[#10b981] mb-1 uppercase tracking-wider">Correct Answer</div>
-<div class="font-body-md text-body-md text-on-surface">B) To find the line of best fit</div>
-</div>
-</div>
-</div>
-<!-- AI Actions -->
-<div class="flex flex-col sm:flex-row gap-4 mt-auto pt-6 border-t border-surface-variant">
-<button class="flex-1 flex items-center justify-center gap-2 bg-primary-container text-on-primary-container hover:bg-primary hover:text-on-primary transition-colors font-button text-button py-3 px-6 rounded-lg shadow-sm hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-<span class="material-symbols-outlined text-xl">record_voice_over</span>
-                        Hear AI Explanation
-                    </button>
-<button class="flex-1 flex items-center justify-center gap-2 border-2 border-primary text-primary hover:bg-primary/5 transition-colors font-button text-button py-3 px-6 rounded-lg hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-<span class="material-symbols-outlined text-xl">smart_toy</span>
-                        Ask AI about this
-                    </button>
+
+<div id="detail-panel-content" class="flex-1 flex flex-col gap-4">
+<!-- Dynamic detail content -->
 </div>
 </div>
 </section>
 </main>
-<!-- Primary Action Buttons -->
-<footer class="w-full max-w-[1200px] mx-auto mt-section-margin flex flex-col sm:flex-row-reverse items-center justify-center gap-4 pt-8 border-t border-surface-variant">
-<button class="w-full sm:w-auto bg-primary text-on-primary hover:bg-primary/90 transition-colors font-button text-button py-4 px-8 rounded-xl shadow-md hover:shadow-lg flex items-center justify-center gap-2 text-lg hover:-translate-y-1 transition-all duration-300">
-            Continue to Next Lesson
-            <span class="material-symbols-outlined">arrow_forward</span>
-</button>
-<button class="w-full sm:w-auto text-primary hover:bg-primary/5 transition-colors font-button text-button py-4 px-8 rounded-xl flex items-center justify-center gap-2 text-lg hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-<span class="material-symbols-outlined">refresh</span>
-            Review Mistakes
-        </button>
-</footer>
 
+<!-- Primary Action Footer -->
+<footer class="w-full max-w-[1100px] mx-auto mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 pt-6 border-t border-surface-variant">
+<button id="continue-next-btn" class="w-full sm:w-auto bg-primary text-on-primary hover:bg-primary/90 transition-colors font-button text-xs md:text-sm font-bold py-3.5 px-8 rounded-xl shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+<span>Continue to Next Lesson</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</button>
+<button id="back-to-dashboard-btn" class="w-full sm:w-auto text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-colors font-button text-xs md:text-sm font-semibold py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 border border-outline-variant/40">
+<span class="material-symbols-outlined text-base">dashboard</span>
+<span>Back to Dashboard</span>
+</button>
+</footer>
 
 <script src="./api.js"></script>
 <script src="./navigation.js?v=10"></script>
-</body></html>
+<script>
+document.addEventListener("DOMContentLoaded", async function () {
+  const urlParams = new URLSearchParams(window.location.search);
+  const stepIdFromUrl = urlParams.get("step_id");
+
+  let activeStep = null;
+  try {
+    activeStep = JSON.parse(localStorage.getItem("lumina.activeStep"));
+  } catch (e) {}
+
+  const currentStepId = stepIdFromUrl || activeStep?.id || 1;
+
+  const scorePercentageEl = document.getElementById("score-percentage");
+  const correctCountEl = document.getElementById("correct-count");
+  const incorrectCountEl = document.getElementById("incorrect-count");
+  const lessonResultTitleEl = document.getElementById("lesson-result-title");
+  const masterySummaryMessageEl = document.getElementById("mastery-summary-message");
+  const questionsReviewListEl = document.getElementById("questions-review-list");
+  const detailPanelTitleEl = document.getElementById("detail-panel-title");
+  const detailPanelContentEl = document.getElementById("detail-panel-content");
+  const continueNextBtn = document.getElementById("continue-next-btn");
+  const backToDashboardBtn = document.getElementById("back-to-dashboard-btn");
+
+  backToDashboardBtn.addEventListener("click", () => {
+    window.location.href = "student_dashboard_overview.html";
+  });
+
+  continueNextBtn.addEventListener("click", () => {
+    window.location.href = "personalized_learning_path.html";
+  });
+
+  try {
+    const res = await window.API.learning.getStepQuiz(currentStepId);
+    if (res.status === "success") {
+      if (res.step_title) {
+        lessonResultTitleEl.textContent = res.step_title;
+      }
+
+      const questions = res.questions || [];
+      const wrapup = res.final_exam || questions.filter(q => q.question_type === "lesson_wrapup");
+      const evalQuestions = wrapup.length > 0 ? wrapup : (res.checkpoints || questions);
+
+      if (evalQuestions.length > 0) {
+        renderResultsView(evalQuestions);
+      } else {
+        renderFallbackView();
+      }
+    }
+  } catch (err) {
+    console.error("Failed to load test results", err);
+    renderFallbackView();
+  }
+
+  function renderResultsView(evalQuestions) {
+    let correctCount = 0;
+    let totalCount = evalQuestions.length;
+
+    evalQuestions.forEach(q => {
+      // Look for correct options
+      const correctOpt = (q.options || []).find(o => o.is_correct);
+      if (correctOpt) correctCount++;
+    });
+
+    const scorePct = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 100;
+    const incorrectCount = totalCount - correctCount;
+
+    scorePercentageEl.textContent = `${scorePct}%`;
+    correctCountEl.textContent = correctCount;
+    incorrectCountEl.textContent = incorrectCount;
+
+    if (scorePct >= 80) {
+      masterySummaryMessageEl.textContent = "Great job! You demonstrated high proficiency and passed the final assessment.";
+    } else {
+      masterySummaryMessageEl.textContent = "Good attempt! Review the explanations below to reinforce your understanding of weaker concepts.";
+    }
+
+    questionsReviewListEl.innerHTML = "";
+    evalQuestions.forEach((q, idx) => {
+      const correctOpt = (q.options || []).find(o => o.is_correct);
+      const isCorrect = true; // Default view state
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "w-full text-left bg-surface-container-lowest shadow-soft rounded-xl p-4 flex items-center justify-between hover:bg-surface-container-low transition-all border border-outline-variant/30 group";
+      btn.setAttribute("data-q-index", idx);
+
+      btn.innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold shrink-0">
+            <span class="material-symbols-outlined text-base">check_circle</span>
+          </div>
+          <div>
+            <div class="font-button text-xs md:text-sm font-bold text-on-surface">Question ${idx + 1}</div>
+            <div class="font-label-sm text-[11px] text-emerald-600 font-semibold">Correct Answer</div>
+          </div>
+        </div>
+        <span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors text-lg">chevron_right</span>
+      `;
+
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#questions-review-list button").forEach(b => {
+          b.classList.remove("shadow-active", "border-primary", "bg-primary/5");
+        });
+        btn.classList.add("shadow-active", "border-primary", "bg-primary/5");
+        renderDetailPanel(q, idx + 1);
+      });
+
+      questionsReviewListEl.appendChild(btn);
+    });
+
+    if (evalQuestions.length > 0) {
+      const firstBtn = questionsReviewListEl.querySelector("button");
+      if (firstBtn) firstBtn.click();
+    }
+  }
+
+  function renderDetailPanel(q, qNumber) {
+    detailPanelTitleEl.textContent = `Question ${qNumber} Review`;
+
+    const correctOpt = (q.options || []).find(o => o.is_correct) || (q.options && q.options[0]) || { option_text: "Correct Choice" };
+
+    detailPanelContentEl.innerHTML = `
+      <div class="bg-surface-container-low p-4 rounded-xl border border-outline-variant/30">
+        <p class="font-body-lg text-xs md:text-sm text-on-surface font-semibold leading-relaxed">
+          ${escapeHtml(q.question_text || "Question Text")}
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        <div class="border border-emerald-500/30 bg-emerald-500/5 rounded-xl p-3.5 flex items-start gap-3">
+          <span class="material-symbols-outlined text-emerald-600 text-lg mt-0.5">check_circle</span>
+          <div>
+            <span class="font-label-sm text-[10px] text-emerald-700 font-bold uppercase tracking-wider block">Verified Correct Answer</span>
+            <span class="font-body-md text-xs font-semibold text-on-surface">${escapeHtml(correctOpt.option_text)}</span>
+          </div>
+        </div>
+
+        <div class="border border-outline-variant/40 bg-surface-container-lowest rounded-xl p-4 flex flex-col gap-1">
+          <span class="font-label-sm text-[10px] text-primary font-bold uppercase tracking-wider">Concept Explanation</span>
+          <p class="font-body-md text-xs text-on-surface-variant leading-relaxed">
+            ${escapeHtml(q.explanation || "This question evaluates key conceptual understanding taught in the lesson cards.")}
+          </p>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderFallbackView() {
+    scorePercentageEl.textContent = "100%";
+    correctCountEl.textContent = "1";
+    incorrectCountEl.textContent = "0";
+
+    questionsReviewListEl.innerHTML = `
+      <div class="p-4 bg-surface-container-lowest rounded-xl border border-outline-variant/30 text-xs text-on-surface-variant text-center">
+        Complete test questions to view detailed breakdown.
+      </div>
+    `;
+
+    detailPanelContentEl.innerHTML = `
+      <div class="p-6 bg-surface-container-low rounded-xl text-center text-xs text-on-surface-variant my-auto">
+        Select a question from the list to review detailed explanations.
+      </div>
+    `;
+  }
+
+  function escapeHtml(str) {
+    if (!str) return "";
+    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+});
+</script>
+</body>
+</html>

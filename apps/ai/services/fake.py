@@ -56,26 +56,65 @@ class FakeLLMService(LLMService):
             is_final_batch=len(concepts) <= batch_size,
         )
 
-    def generate_lesson(self, concept, mastery_context):
+    def generate_lesson(self, concept, mastery_context, goal_context=None, material_context=None):
+        concept_id = concept.id if hasattr(concept, "id") else concept.get("id", "c1")
         return LessonDTO(
-            concept_id=concept.id,
+            concept_id=concept_id,
             explanation="Giải thích mẫu (fake).",
             example="Ví dụ mẫu (fake).",
             key_points=["Điểm chính 1", "Điểm chính 2"],
             flashcards=[FlashcardDTO(front="Câu hỏi?", back="Trả lời")],
             cards=[
-                LessonCardDTO(order_index=0, heading="Phần 1", body="Nội dung thẻ 1"),
-                LessonCardDTO(order_index=1, heading="Phần 2", body="Nội dung thẻ 2"),
+                LessonCardDTO(order_index=1, heading="Phần 1", body="Nội dung thẻ 1"),
+                LessonCardDTO(order_index=2, heading="Phần 2", body="Nội dung thẻ 2"),
+                LessonCardDTO(order_index=3, heading="Phần 3", body="Nội dung thẻ 3"),
             ],
         )
 
     def generate_check_question(
         self, concept, lesson, purpose, previous_misconceptions=None
     ):
-        n_questions = 1 if purpose == QuestionPurpose.CHECKPOINT else 2
-        return CheckQuestionResult(
-            questions=[self._fake_question(purpose) for _ in range(n_questions)]
-        )
+        purpose_val = purpose.value if hasattr(purpose, "value") else str(purpose)
+        if purpose_val == QuestionPurpose.CHECKPOINT.value:
+            return CheckQuestionResult(
+                questions=[
+                    QuestionDTO(
+                        text="Câu hỏi Checkpoint 1?",
+                        options=[
+                            QuestionOptionDTO(text="Đáp án A", is_correct=True),
+                            QuestionOptionDTO(text="Đáp án B", is_correct=False),
+                        ],
+                        explanation="Giải thích checkpoint 1.",
+                        purpose=purpose,
+                        after_card_order=2,
+                    )
+                ]
+            )
+        else:
+            return CheckQuestionResult(
+                questions=[
+                    QuestionDTO(
+                        text="Câu hỏi Final Exam 1?",
+                        options=[
+                            QuestionOptionDTO(text="Đáp án A", is_correct=True),
+                            QuestionOptionDTO(text="Đáp án B", is_correct=False),
+                        ],
+                        explanation="Giải thích final exam 1.",
+                        purpose=purpose,
+                        after_card_order=None,
+                    ),
+                    QuestionDTO(
+                        text="Câu hỏi Final Exam 2?",
+                        options=[
+                            QuestionOptionDTO(text="Đáp án A", is_correct=True),
+                            QuestionOptionDTO(text="Đáp án B", is_correct=False),
+                        ],
+                        explanation="Giải thích final exam 2.",
+                        purpose=purpose,
+                        after_card_order=None,
+                    ),
+                ]
+            )
 
     def evaluate_answer(self, question, selected_option_index):
         is_correct = question.options[selected_option_index].is_correct
@@ -89,22 +128,24 @@ class FakeLLMService(LLMService):
         correct_count = sum(1 for e in evaluation_history if e.is_correct)
         total = len(evaluation_history)
         if total == 0:
-            return NextActionResult(action=NextAction.MOVE_NEXT, concept_id=concept.id)
+            concept_id = concept.id if hasattr(concept, "id") else concept.get("id", "c1")
+            return NextActionResult(action=NextAction.MOVE_NEXT, concept_id=concept_id)
 
         ratio = correct_count / total
+        concept_id = concept.id if hasattr(concept, "id") else concept.get("id", "c1")
         if ratio >= 0.8:
             return NextActionResult(
                 action=NextAction.MOVE_NEXT,
-                concept_id=concept.id,
+                concept_id=concept_id,
                 needs_next_batch=True,
             )
         elif ratio >= 0.5:
             return NextActionResult(
-                action=NextAction.PRACTICE_MORE, concept_id=concept.id
+                action=NextAction.PRACTICE_MORE, concept_id=concept_id
             )
         else:
             return NextActionResult(
-                action=NextAction.EXPLAIN_AGAIN, concept_id=concept.id
+                action=NextAction.EXPLAIN_AGAIN, concept_id=concept_id
             )
 
     def generate_hint(self, question, level, previous_hints):
@@ -125,4 +166,5 @@ class FakeLLMService(LLMService):
             ],
             explanation="Giải thích mẫu.",
             purpose=purpose,
+            after_card_order=1 if purpose == QuestionPurpose.CHECKPOINT else None,
         )

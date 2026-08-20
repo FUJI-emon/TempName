@@ -43,7 +43,13 @@ class LLMService(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def generate_lesson(self, concept: ConceptDTO, mastery_context: dict) -> LessonDTO:
+    def generate_lesson(
+        self,
+        concept: ConceptDTO,
+        mastery_context: dict,
+        goal_context: Optional[dict] = None,
+        material_context: Optional[str] = None,
+    ) -> LessonDTO:
         """
         Nội dung học của 1 concept: explanation, example, key_points,
         flashcards, cards (thẻ next-next). KHÔNG chứa câu hỏi.

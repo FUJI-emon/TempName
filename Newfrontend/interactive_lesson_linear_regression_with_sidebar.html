@@ -1,874 +1,1228 @@
-<!DOCTYPE html><html class="light" lang="en"><head>
-<meta charset="utf-8">
-<meta content="width=device-width, initial-scale=1.0" name="viewport">
-<title>TempName Learning - Linear Regression</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Manrope:wght@400;600&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
-<script id="tailwind-config">
-        tailwind.config = {
-          darkMode: "class",
-          theme: {
-            extend: {
-              "colors": {
-                      "inverse-primary": "#c2c1ff",
-                      "on-secondary-container": "#4a006b",
-                      "tertiary-fixed": "#d6e3ff",
-                      "on-surface-variant": "#464554",
-                      "primary-fixed-dim": "#c2c1ff",
-                      "surface-variant": "#e2e2e7",
-                      "surface-tint": "#4d4ad5",
-                      "error": "#ba1a1a",
-                      "inverse-on-surface": "#f0f0f5",
-                      "background": "#f9f9fe",
-                      "on-tertiary-container": "#f0f3ff",
-                      "surface": "#f9f9fe",
-                      "primary-container": "#5e5ce6",
-                      "tertiary-container": "#006dd6",
-                      "on-error": "#ffffff",
-                      "outline": "#777586",
-                      "on-background": "#1a1c1f",
-                      "on-tertiary-fixed-variant": "#00468d",
-                      "secondary-fixed-dim": "#e9b3ff",
-                      "surface-dim": "#d9dade",
-                      "surface-container-low": "#f3f3f8",
-                      "surface-bright": "#f9f9fe",
-                      "on-primary-fixed": "#0c006b",
-                      "surface-container": "#ededf2",
-                      "primary-fixed": "#e2dfff",
-                      "on-primary-fixed-variant": "#332dbc",
-                      "surface-container-lowest": "#ffffff",
-                      "secondary-fixed": "#f6d9ff",
-                      "tertiary-fixed-dim": "#aac7ff",
-                      "on-secondary-fixed-variant": "#7200a3",
-                      "secondary-container": "#cb66fe",
-                      "on-secondary-fixed": "#310048",
-                      "outline-variant": "#c7c4d7",
-                      "surface-container-highest": "#e2e2e7",
-                      "on-tertiary": "#ffffff",
-                      "on-primary-container": "#f4f1ff",
-                      "tertiary": "#0055a9",
-                      "on-error-container": "#93000a",
-                      "on-secondary": "#ffffff",
-                      "on-surface": "#1a1c1f",
-                      "error-container": "#ffdad6",
-                      "secondary": "#9026c3",
-                      "inverse-surface": "#2e3034",
-                      "surface-container-high": "#e8e8ed",
-                      "on-tertiary-fixed": "#001b3e",
-                      "primary": "#4441cc",
-                      "on-primary": "#ffffff"
-              },
-              "borderRadius": {
-                      "DEFAULT": "0.25rem",
-                      "lg": "0.5rem",
-                      "xl": "0.75rem",
-                      "full": "9999px"
-              },
-              "spacing": {
-                      "section-margin": "48px",
-                      "gutter": "24px",
-                      "container-padding": "32px",
-                      "base": "8px",
-                      "card-gap": "24px"
-              },
-              "fontFamily": {
-                      "headline-md": [
-                              "Hanken Grotesk"
-                      ],
-                      "display-lg": [
-                              "Hanken Grotesk"
-                      ],
-                      "label-sm": [
-                              "JetBrains Mono"
-                      ],
-                      "body-md": [
-                              "Manrope"
-                      ],
-                      "button": [
-                              "Manrope"
-                      ],
-                      "headline-lg": [
-                              "Hanken Grotesk"
-                      ],
-                      "body-lg": [
-                              "Manrope"
-                      ]
-              },
-              "fontSize": {
-                      "headline-md": [
-                              "24px",
-                              {
-                                      "lineHeight": "32px",
-                                      "fontWeight": "600"
-                              }
-                      ],
-                      "display-lg": [
-                              "48px",
-                              {
-                                      "lineHeight": "56px",
-                                      "letterSpacing": "-0.02em",
-                                      "fontWeight": "700"
-                              }
-                      ],
-                      "label-sm": [
-                              "12px",
-                              {
-                                      "lineHeight": "16px",
-                                      "letterSpacing": "0.05em",
-                                      "fontWeight": "500"
-                              }
-                      ],
-                      "body-md": [
-                              "16px",
-                              {
-                                      "lineHeight": "24px",
-                                      "fontWeight": "400"
-                              }
-                      ],
-                      "button": [
-                              "16px",
-                              {
-                                      "lineHeight": "20px",
-                                      "fontWeight": "600"
-                              }
-                      ],
-                      "headline-lg": [
-                              "32px",
-                              {
-                                      "lineHeight": "40px",
-                                      "fontWeight": "600"
-                              }
-                      ],
-                      "body-lg": [
-                              "18px",
-                              {
-                                      "lineHeight": "28px",
-                                      "fontWeight": "400"
-                              }
-                      ]
-              }
-            }
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Lumina Learning - Micro Lesson</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Manrope:wght@400;500;600;700&amp;display=swap"
+    rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+    rel="stylesheet">
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "inverse-primary": "#c2c1ff",
+            "on-secondary-container": "#4a006b",
+            "tertiary-fixed": "#d6e3ff",
+            "on-surface-variant": "#464554",
+            "primary-fixed-dim": "#c2c1ff",
+            "surface-variant": "#e2e2e7",
+            "surface-tint": "#4d4ad5",
+            "error": "#ba1a1a",
+            "inverse-on-surface": "#f0f0f5",
+            "background": "#f9f9fe",
+            "on-tertiary-container": "#f0f3ff",
+            "surface": "#f9f9fe",
+            "primary-container": "#5e5ce6",
+            "tertiary-container": "#006dd6",
+            "on-error": "#ffffff",
+            "outline": "#777586",
+            "on-background": "#1a1c1f",
+            "on-tertiary-fixed-variant": "#00468d",
+            "secondary-fixed-dim": "#e9b3ff",
+            "surface-dim": "#d9dade",
+            "surface-container-low": "#f3f3f8",
+            "surface-bright": "#f9f9fe",
+            "on-primary-fixed": "#0c006b",
+            "surface-container": "#ededf2",
+            "primary-fixed": "#e2dfff",
+            "on-primary-fixed-variant": "#332dbc",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed": "#f6d9ff",
+            "tertiary-fixed-dim": "#aac7ff",
+            "on-secondary-fixed-variant": "#7200a3",
+            "secondary-container": "#cb66fe",
+            "on-secondary-fixed": "#310048",
+            "outline-variant": "#c7c4d7",
+            "surface-container-highest": "#e2e2e7",
+            "on-tertiary": "#ffffff",
+            "on-primary-container": "#f4f1ff",
+            "tertiary": "#0055a9",
+            "on-error-container": "#93000a",
+            "on-secondary": "#ffffff",
+            "on-surface": "#1a1c1f",
+            "error-container": "#ffdad6",
+            "secondary": "#9026c3",
+            "inverse-surface": "#2e3034",
+            "surface-container-high": "#e8e8ed",
+            "on-tertiary-fixed": "#001b3e",
+            "primary": "#4441cc",
+            "on-primary": "#ffffff"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "section-margin": "48px",
+            "gutter": "24px",
+            "container-padding": "32px",
+            "base": "8px",
+            "card-gap": "24px"
+          },
+          "fontFamily": {
+            "headline-md": ["Hanken Grotesk"],
+            "display-lg": ["Hanken Grotesk"],
+            "label-sm": ["JetBrains Mono"],
+            "body-md": ["Manrope"],
+            "button": ["Manrope"],
+            "headline-lg": ["Hanken Grotesk"],
+            "body-lg": ["Manrope"]
           }
         }
-    </script>
-<style>
-        body { background-color: theme('colors.background'); color: theme('colors.on-surface'); }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-        }
-        .soft-shadow {
-            box-shadow: 0px 4px 20px rgba(94, 92, 230, 0.08);
-        }
-        .progress-gradient {
-            background: linear-gradient(90deg, theme('colors.primary'), theme('colors.secondary'));
-        }
-        /* Background blur effect */
-        .bg-blur-overlay {
-            backdrop-filter: blur(8px);
-            background-color: rgba(249, 249, 254, 0.6); /* background color with opacity */
-        }
-    </style>
-</head>
-<body class="min-h-screen relative overflow-hidden font-body-md text-body-md flex antialiased">
-<!-- Side Navigation -->
-<nav class="w-64 flex flex-col justify-between h-screen bg-surface-container-lowest border-r border-outline-variant/30 py-6 px-4 relative z-30 shrink-0 soft-shadow">
-<div class="flex flex-col gap-8">
-<div class="px-4 font-headline-md text-headline-md font-bold text-primary flex items-center gap-2">
-<span class="material-symbols-outlined text-primary text-3xl" data-icon="lightbulb">lightbulb</span>
-            Lumina
-        </div>
-<div class="flex flex-col gap-2">
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
-<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span> Dashboard
-            </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
-<span class="material-symbols-outlined" data-icon="school">school</span> My Courses
-            </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
-<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span> AI Tutor
-            </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
-<span class="material-symbols-outlined" data-icon="settings">settings</span> Settings
-            </a>
-</div>
-</div>
-<div class="flex items-center gap-3 px-4">
-<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold">AL</div>
-<div class="flex flex-col">
-<span class="font-button text-button text-on-surface">Alex Learner</span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Pro Plan</span>
-</div>
-</div>
-</nav>
-<!-- Background Layer: Simulated "Personalized Learning Path" Dashboard (Blurred out) -->
-<div class="absolute inset-0 z-0 opacity-40 pointer-events-none select-none flex flex-col p-container-padding gap-section-margin pl-[calc(16rem+32px)]">
-<header class="flex justify-between items-center h-16 w-full max-w-[1440px] mx-auto">
-<div class="font-headline-md text-headline-md font-bold text-primary">TempName Learning</div>
-</header>
-<div class="flex max-w-[1440px] mx-auto w-full gap-gutter">
-<!-- Simulated Sidebar -->
-<div class="w-[280px] hidden lg:flex flex-col gap-2 p-6 bg-surface-container-lowest rounded-xl soft-shadow">
-<div class="h-10 bg-surface-variant rounded"></div>
-<div class="h-10 bg-surface-variant rounded"></div>
-<div class="h-10 bg-surface-variant rounded"></div>
-</div>
-<!-- Simulated Main Content -->
-<div class="flex-1 flex flex-col gap-card-gap">
-<div class="h-32 bg-surface-container-lowest rounded-xl soft-shadow w-full"></div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-card-gap">
-<div class="h-64 bg-surface-container-lowest rounded-xl soft-shadow"></div>
-<div class="h-64 bg-surface-container-lowest rounded-xl soft-shadow"></div>
-</div>
-</div>
-</div>
-</div>
-<!-- Global Blur Overlay to dim the background -->
-<div class="absolute inset-0 z-10 bg-blur-overlay ml-64"></div>
-<!-- Main Active Canvas (Z-20) -->
-<main class="relative z-20 flex-1 flex flex-col items-center justify-center p-container-padding min-h-screen">
-<!-- Learning Card Container -->
-<div class="w-full max-w-2xl relative">
-<!-- Overall Progress Indicator (Above Card) -->
-<div class="flex items-center justify-between mb-4 px-2">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider" id="module-header-title">Module: Interactive Lesson</span>
-<span class="font-label-sm text-label-sm text-primary font-bold" id="step-progress-percent">In Progress</span>
-</div>
-<!-- The Learning Card -->
-<article class="bg-surface-container-lowest rounded-xl soft-shadow overflow-hidden flex flex-col relative transition-transform duration-300 hover:-translate-y-1 hover:shadow-xl">
-<!-- Linear Progress Bar -->
-<div class="h-1 w-full bg-surface-variant relative">
-<div class="absolute top-0 left-0 h-full w-3/8 progress-gradient rounded-r-full" style="width: 50%;"></div>
-</div>
-<div class="p-8 flex flex-col gap-6">
-<!-- Card Header -->
-<header>
-<h2 class="font-label-sm text-label-sm text-secondary uppercase mb-2" id="lesson-card-index">Lesson Concept</h2>
-<h1 class="font-headline-lg text-headline-lg text-on-surface" id="lesson-card-title">Loading Lesson...</h1>
-</header>
-<!-- Card Body -->
-<div class="flex flex-col gap-4 text-on-surface-variant" id="lesson-card-body">
-<p class="font-body-md text-body-md">
-                            Loading AI Lesson content from backend...
-                        </p>
-</div>
-</div>
-<!-- Card Footer (Navigation) -->
-<footer class="p-6 border-t border-surface-variant flex justify-between items-center bg-surface-bright">
-<button class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-surface-container-low rounded-lg transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300">
-<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
-                        Previous
-                    </button>
-<button class="flex items-center gap-2 px-6 py-2 bg-primary text-on-primary rounded-lg shadow-sm hover:shadow-md transition-shadow font-button text-button hover:-translate-y-1 duration-300">
-                        Next
-  Loading AI Checkpoint question...
-</p>
-</div>
-<!-- Multiple Choice Options -->
-<div class="flex flex-col gap-2" id="quiz-options-container">
-  <div class="p-4 text-center text-xs text-on-surface-variant">Fetching options from backend...</div>
-</div>
-
-<!-- Hint Display Box -->
-<div id="hint-text-box" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200"></div>
-
-<!-- Feedback Display Box -->
-<div id="quiz-feedback-box" class="hidden p-4 rounded-xl text-sm font-medium flex flex-col gap-2"></div>
-
-<!-- Action Footer -->
-<div class="flex flex-col gap-2 pt-2 border-t border-surface-variant/50">
-  <div class="flex justify-between items-center">
-    <button id="hint-btn" type="button" class="font-label-sm text-xs text-secondary hover:underline flex items-center gap-1">
-      <span class="material-symbols-outlined text-sm">lightbulb</span>
-      <span id="hint-btn-text">Get Hint (Level 1)</span>
-    </button>
-    <button id="quiz-submit-btn" type="button" class="px-4 py-2 bg-primary text-on-primary font-button text-xs rounded-lg shadow-sm hover:bg-primary/90 transition-all">
-      Submit Answer
-    </button>
-  </div>
-  <button id="next-action-btn" type="button" class="hidden w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-button text-xs rounded-lg shadow-sm transition-all flex items-center justify-center gap-1 mt-1">
-    <span>Continue Learning Path</span>
-    <span class="material-symbols-outlined text-sm">arrow_forward</span>
-  </button>
-</div>
-</div>
-</main>
-
-<style>
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(10px) scale(0.95); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-}
-                      "button": [
-                              "16px",
-                              {
-                                      "lineHeight": "20px",
-                                      "fontWeight": "600"
-                              }
-                      ],
-                      "headline-lg": [
-                              "32px",
-                              {
-                                      "lineHeight": "40px",
-                                      "fontWeight": "600"
-                              }
-                      ],
-                      "body-lg": [
-                              "18px",
-                              {
-                                      "lineHeight": "28px",
-                                      "fontWeight": "400"
-                              }
-                      ]
-              }
-            }
-          }
-        }
-    </script>
-<style>
-        body { background-color: theme('colors.background'); color: theme('colors.on-surface'); }
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-        }
-        .soft-shadow {
-            box-shadow: 0px 4px 20px rgba(94, 92, 230, 0.08);
-        }
-        .progress-gradient {
-            background: linear-gradient(90deg, theme('colors.primary'), theme('colors.secondary'));
-        }
-        /* Background blur effect */
-        .bg-blur-overlay {
-            backdrop-filter: blur(8px);
-            background-color: rgba(249, 249, 254, 0.6); /* background color with opacity */
-        }
-    </style>
-</head>
-<body class="min-h-screen relative overflow-hidden font-body-md text-body-md flex antialiased">
-<!-- Side Navigation -->
-<nav class="w-64 flex flex-col justify-between h-screen bg-surface-container-lowest border-r border-outline-variant/30 py-6 px-4 relative z-30 shrink-0 soft-shadow">
-<div class="flex flex-col gap-8">
-<div class="px-4 font-headline-md text-headline-md font-bold text-primary flex items-center gap-2">
-<span class="material-symbols-outlined text-primary text-3xl" data-icon="lightbulb">lightbulb</span>
-            Lumina
-        </div>
-<div class="flex flex-col gap-2">
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
-<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span> Dashboard
-            </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
-<span class="material-symbols-outlined" data-icon="school">school</span> My Courses
-            </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
-<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span> AI Tutor
-            </a>
-<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-1 hover:shadow-md duration-300" href="#">
-<span class="material-symbols-outlined" data-icon="settings">settings</span> Settings
-            </a>
-</div>
-</div>
-<div class="flex items-center gap-3 px-4">
-<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold" data-user-initials>AL</div>
-<div class="flex flex-col">
-<span class="font-button text-button text-on-surface" data-user-display-name>Alex Learner</span>
-<span class="font-label-sm text-label-sm text-on-surface-variant">Pro Plan</span>
-</div>
-</div>
-</nav>
-<!-- Background Layer: Simulated "Personalized Learning Path" Dashboard (Blurred out) -->
-<div class="absolute inset-0 z-0 opacity-40 pointer-events-none select-none flex flex-col p-container-padding gap-section-margin pl-[calc(16rem+32px)]">
-<header class="flex justify-between items-center h-16 w-full max-w-[1440px] mx-auto">
-<div class="font-headline-md text-headline-md font-bold text-primary">TempName Learning</div>
-</header>
-<div class="flex max-w-[1440px] mx-auto w-full gap-gutter">
-<!-- Simulated Sidebar -->
-<div class="w-[280px] hidden lg:flex flex-col gap-2 p-6 bg-surface-container-lowest rounded-xl soft-shadow">
-<div class="h-10 bg-surface-variant rounded"></div>
-<div class="h-10 bg-surface-variant rounded"></div>
-<div class="h-10 bg-surface-variant rounded"></div>
-</div>
-<!-- Simulated Main Content -->
-<div class="flex-1 flex flex-col gap-card-gap">
-<div class="h-32 bg-surface-container-lowest rounded-xl soft-shadow w-full"></div>
-<div class="grid grid-cols-1 md:grid-cols-2 gap-card-gap">
-<div class="h-64 bg-surface-container-lowest rounded-xl soft-shadow"></div>
-<div class="h-64 bg-surface-container-lowest rounded-xl soft-shadow"></div>
-</div>
-</div>
-</div>
-</div>
-<!-- Global Blur Overlay to dim the background -->
-<div class="absolute inset-0 z-10 bg-blur-overlay ml-64"></div>
-<!-- Main Active Canvas (Z-20) -->
-<main class="relative z-20 flex-1 flex flex-col items-center justify-center p-4 md:p-container-padding min-h-screen">
-<!-- Learning Card Container (Single Column Viewport) -->
-<div class="w-full max-w-2xl relative my-auto">
-<!-- Overall Progress Indicator (Above Card) -->
-<div class="flex items-center justify-between mb-4 px-2">
-<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider" id="module-header-title">Module: Interactive Lesson</span>
-<span class="font-label-sm text-label-sm text-primary font-bold" id="step-progress-percent">In Progress</span>
-</div>
-
-<!-- The Learning Card Article -->
-<article class="bg-surface-container-lowest rounded-xl soft-shadow overflow-hidden flex flex-col relative transition-all duration-300 border border-outline-variant/30">
-<!-- Linear Progress Bar -->
-<div class="h-1.5 w-full bg-surface-variant relative">
-<div id="lesson-progress-fill" class="absolute top-0 left-0 h-full progress-gradient rounded-r-full transition-all duration-300" style="width: 0%;"></div>
-</div>
-
-<div class="p-6 md:p-8 flex flex-col gap-6">
-<!-- Card Header -->
-<header>
-<h2 class="font-label-sm text-label-sm text-secondary font-bold uppercase tracking-wide mb-1" id="lesson-card-index">Lesson Concept</h2>
-<h1 class="font-headline-lg text-2xl md:text-headline-lg text-on-surface font-bold" id="lesson-card-title">Loading Lesson...</h1>
-</header>
-
-<!-- Card Body (Renders Cards or Inline Checkpoint Question) -->
-<div class="flex flex-col gap-4 text-on-surface-variant" id="lesson-card-body">
-<p class="font-body-md text-body-md">
-                            Loading AI Lesson content from backend...
-                        </p>
-</div>
-</div>
-
-<!-- Card Footer (Navigation) -->
-<footer class="p-6 border-t border-surface-variant flex justify-between items-center bg-surface-bright">
-<button id="prev-card-btn" class="flex items-center gap-2 px-4 py-2 text-primary hover:bg-surface-container-low rounded-lg transition-colors font-button text-button disabled:opacity-40 disabled:cursor-not-allowed">
-<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
-                        Previous
-                    </button>
-<button id="next-card-btn" class="flex items-center gap-2 px-6 py-2 bg-primary text-on-primary rounded-lg shadow-sm hover:shadow-md transition-shadow font-button text-button hover:-translate-y-0.5 duration-300">
-                        <span>Next</span>
-                        <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
-</button>
-</footer>
-</article>
-</div>
-</main>
-
-<style>
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(10px) scale(0.95); }
-    to { opacity: 1; transform: translateY(0) scale(1); }
-}
-.animate-fade-in-up {
-    animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-</style>
-
-<script src="./api.js"></script>
-<script src="./navigation.js?v=10"></script>
-<script>
-document.addEventListener("DOMContentLoaded", async function () {
-  const moduleHeaderTitle = document.getElementById("module-header-title");
-  const lessonCardTitle = document.getElementById("lesson-card-title");
-  const lessonCardIndex = document.getElementById("lesson-card-index");
-  const lessonCardBody = document.getElementById("lesson-card-body");
-  const progressFill = document.getElementById("lesson-progress-fill");
-  const prevCardBtn = document.getElementById("prev-card-btn");
-  const nextCardBtn = document.getElementById("next-card-btn");
-
-  const urlParams = new URLSearchParams(window.location.search);
-  const stepIdFromUrl = urlParams.get("step_id");
-
-  let activeStep = null;
-  let material = null;
-  try {
-    activeStep = JSON.parse(localStorage.getItem("lumina.activeStep"));
-    material = window.API?.storage?.getMaterial();
-  } catch (e) {}
-
-  const currentStepId = stepIdFromUrl || activeStep?.id || 1;
-  let currentQuestion = null;
-  let selectedOptionId = null;
-  let hintsUsed = 0;
-  let isAnswered = false;
-
-  let sequenceItems = [];
-  let currentIndex = 0;
-  let stepData = null;
-
-  if (material && material.title) {
-    moduleHeaderTitle.textContent = `Module: ${material.title}`;
-  }
-
-  // Fetch Step Quiz, Cards, and Questions from Backend
-  try {
-    const res = await window.API.learning.getStepQuiz(currentStepId);
-    if (res.status === "success") {
-      stepData = res;
-      buildSequenceItems(res);
-      if (sequenceItems.length > 0) {
-        renderCurrentItem();
       }
     }
-  } catch (err) {
-    console.error("Failed to load step quiz/lesson", err);
-    lessonCardTitle.textContent = "Lỗi tải bài học";
-    lessonCardBody.innerHTML = `<p class="text-rose-500 text-sm font-bold">Không thể kết nối với backend server. Vui lòng thử lại sau.</p>`;
-  }
+  </script>
+  <style>
+    body {
+      background-color: #f9f9fe;
+      color: #1a1c1f;
+      font-family: 'Manrope', sans-serif;
+    }
 
-  function buildSequenceItems(res) {
-    sequenceItems = [];
-    const cards = (res.lesson && res.lesson.cards) ? res.lesson.cards : [];
-    const questions = res.questions || (res.question ? [res.question] : []);
+    .glass-panel {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(226, 226, 231, 0.6);
+    }
 
-    const checkpointQs = questions.filter(q => q.question_type === "checkpoint" || q.question_type !== "lesson_wrapup");
-    const wrapupQs = questions.filter(q => q.question_type === "lesson_wrapup");
+    .soft-shadow {
+      box-shadow: 0px 4px 24px rgba(68, 65, 204, 0.08);
+    }
 
-    if (cards.length > 0) {
-      cards.forEach((card, idx) => {
-        sequenceItems.push({
-          type: "card",
-          data: card,
-          cardIndex: idx + 1,
-          totalCards: cards.length
-        });
+    .progress-gradient {
+      background: linear-gradient(90deg, #4441cc, #9026c3);
+    }
 
-        // Interleave checkpoint question after specific card
-        const matchingCheckpoints = checkpointQs.filter(q => q.after_card_order === card.order_index || q.after_card_order === idx);
-        matchingCheckpoints.forEach(q => {
-          sequenceItems.push({
-            type: "checkpoint",
-            question: q
+    .bg-blur-overlay {
+      backdrop-filter: blur(8px);
+      background-color: rgba(249, 249, 254, 0.6);
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .animate-fade-in-up {
+      animation: fadeInUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .flip-card {
+      perspective: 1000px;
+    }
+
+    .flip-card-inner {
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+
+    .flip-card.flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flip-card-front,
+    .flip-card-back {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    .flip-card-back {
+      transform: rotateY(180deg);
+    }
+  </style>
+</head>
+
+<body class="min-h-screen relative overflow-x-hidden font-body-md text-body-md flex antialiased">
+  <!-- Side Navigation -->
+  <nav
+    class="w-64 flex flex-col justify-between h-screen bg-surface-container-lowest border-r border-outline-variant/30 py-6 px-4 fixed top-0 left-0 z-30 shrink-0 soft-shadow">
+    <div class="flex flex-col gap-8">
+      <div class="px-4 font-headline-md text-headline-md font-bold text-primary flex items-center gap-2">
+        <span class="material-symbols-outlined text-primary text-3xl" data-icon="lightbulb">lightbulb</span>
+        Lumina
+      </div>
+      <div class="flex flex-col gap-2">
+        <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-0.5 hover:shadow-sm duration-300"
+          href="student_dashboard_overview.html">
+          <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span> Dashboard
+        </a>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-primary/10 text-primary font-button text-button hover:-translate-y-0.5 hover:shadow-sm duration-300"
+          href="course_history_my_learning_journeys_1.html">
+          <span class="material-symbols-outlined" data-icon="school">school</span> My Courses
+        </a>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-0.5 hover:shadow-sm duration-300"
+          href="new_course_ai_topic_discussion.html">
+          <span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span> AI Tutor
+        </a>
+        <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors font-button text-button hover:-translate-y-0.5 hover:shadow-sm duration-300"
+          href="settings_user_account_preferences.html">
+          <span class="material-symbols-outlined" data-icon="settings">settings</span> Settings
+        </a>
+      </div>
+    </div>
+    <div class="flex items-center gap-3 px-4">
+      <div
+        class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold"
+        data-user-initials>AL</div>
+      <div class="flex flex-col">
+        <span class="font-button text-button text-on-surface" data-user-display-name>Alex Learner</span>
+        <span class="font-label-sm text-label-sm text-on-surface-variant">Pro Plan</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Canvas Container -->
+  <main class="flex-1 ml-64 min-h-screen flex flex-col justify-between p-4 md:p-8 relative z-20">
+    <!-- Top Controls Bar -->
+    <div class="w-full max-w-4xl mx-auto flex items-center justify-between gap-4 mb-4">
+      <div class="flex items-center gap-3">
+        <button id="back-to-path-btn"
+          class="flex items-center gap-1.5 px-3 py-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high rounded-xl transition-all font-button text-xs font-semibold">
+          <span class="material-symbols-outlined text-sm">arrow_back</span>
+          <span>Back to Path</span>
+        </button>
+        <div class="h-4 w-px bg-outline-variant/40"></div>
+        <span class="font-label-sm text-xs text-on-surface-variant truncate max-w-xs md:max-w-md"
+          id="module-header-title">Module: AI Micro Learning</span>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <!-- Stopwatch 1: Total Lesson Elapsed Timer -->
+        <div
+          class="flex items-center gap-1.5 bg-primary/10 border border-primary/30 px-3 py-1.5 rounded-full shadow-sm text-xs font-mono font-bold text-primary"
+          title="Tổng thời gian học bài này">
+          <span class="material-symbols-outlined text-sm">schedule</span>
+          <span id="total-lesson-timer">00:00</span>
+        </div>
+
+        <!-- Stopwatch 2: Current Card Timer -->
+        <div
+          class="flex items-center gap-1.5 bg-secondary/10 border border-secondary/30 px-3 py-1.5 rounded-full shadow-sm text-xs font-mono font-bold text-secondary"
+          title="Thời gian trên thẻ hiện tại">
+          <span class="material-symbols-outlined text-sm">timer</span>
+          <span id="current-card-timer">00:00</span>
+        </div>
+
+        <div
+          class="flex items-center gap-2 bg-surface-container-lowest border border-outline-variant/30 px-3 py-1.5 rounded-full shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+          <span class="font-label-sm text-xs text-primary font-bold" id="step-progress-percent">0%</span>
+        </div>
+        <button id="close-lesson-btn"
+          class="flex items-center justify-center w-8 h-8 rounded-full hover:bg-rose-500/10 text-on-surface-variant hover:text-rose-600 transition-colors"
+          title="Close Lesson">
+          <span class="material-symbols-outlined text-lg">close</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Learning Card Area -->
+    <div class="w-full max-w-4xl mx-auto my-auto">
+      <!-- Sequence Navigation Pills (Current / Completed / Remaining) -->
+      <div class="flex items-center justify-between gap-2 mb-3 px-1 overflow-x-auto py-1 select-none"
+        id="sequence-pills-container">
+        <!-- Dynamically populated pills -->
+      </div>
+
+      <!-- Main Article Card -->
+      <article
+        class="bg-surface-container-lowest rounded-2xl soft-shadow overflow-hidden flex flex-col relative transition-all duration-300 border border-outline-variant/30 min-h-[480px]">
+        <!-- Linear Progress Bar -->
+        <div class="h-1.5 w-full bg-surface-variant relative">
+          <div id="lesson-progress-fill"
+            class="absolute top-0 left-0 h-full progress-gradient rounded-r-full transition-all duration-500"
+            style="width: 0%;"></div>
+        </div>
+
+        <!-- Card Body Content -->
+        <div class="p-6 md:p-8 flex flex-col gap-6 flex-1 justify-between" id="main-card-content">
+          <!-- Header -->
+          <header>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <span
+                class="font-label-sm text-xs text-secondary font-bold uppercase tracking-wider px-2.5 py-1 rounded-md bg-secondary/10"
+                id="lesson-card-index">Lesson Card</span>
+              <span class="font-label-sm text-xs text-on-surface-variant" id="lesson-card-type-tag">Concept</span>
+            </div>
+            <h1 class="font-headline-lg text-2xl md:text-headline-lg text-on-surface font-bold leading-tight"
+              id="lesson-card-title"></h1>
+          </header>
+
+          <!-- Content Block -->
+          <div class="flex flex-col gap-5 text-on-surface-variant flex-1" id="lesson-card-body">
+          </div>
+        </div>
+    </div>
+
+    <!-- Card Footer Navigation -->
+    <footer
+      class="p-4 md:p-6 border-t border-surface-variant/60 flex justify-between items-center bg-surface-bright/70 rounded-b-2xl">
+      <button id="prev-card-btn"
+        class="flex items-center gap-2 px-4 py-2.5 text-on-surface-variant hover:text-primary hover:bg-surface-container-low rounded-xl transition-all font-button text-xs font-semibold disabled:opacity-40 disabled:cursor-not-allowed">
+        <span class="material-symbols-outlined text-base">arrow_back</span>
+        <span>Previous</span>
+      </button>
+
+      <div class="flex items-center gap-2" id="card-nav-center-actions">
+        <!-- Optional inline actions -->
+      </div>
+
+      <button id="next-card-btn"
+        class="flex items-center gap-2 px-6 py-2.5 bg-primary text-on-primary rounded-xl shadow-md hover:bg-primary/90 hover:shadow-lg transition-all font-button text-xs font-bold hover:-translate-y-0.5 duration-300">
+        <span>Next</span>
+        <span class="material-symbols-outlined text-base">arrow_forward</span>
+      </button>
+    </footer>
+    </article>
+    </div>
+
+    <!-- Footer branding -->
+    <div class="w-full max-w-4xl mx-auto text-center py-2 text-xs text-on-surface-variant/60 font-label-sm">
+      Lumina Learning Adaptive Engine • Step Quiz &amp; Verification Sequence
+    </div>
+  </main>
+
+  <script src="./api.js"></script>
+  <script src="./navigation.js?v=10"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async function () {
+      const moduleHeaderTitle = document.getElementById("module-header-title");
+      const stepProgressPercent = document.getElementById("step-progress-percent");
+      const lessonCardTitle = document.getElementById("lesson-card-title");
+      const lessonCardIndex = document.getElementById("lesson-card-index");
+      const lessonCardTypeTag = document.getElementById("lesson-card-type-tag");
+      const lessonCardBody = document.getElementById("lesson-card-body");
+      const progressFill = document.getElementById("lesson-progress-fill");
+      const prevCardBtn = document.getElementById("prev-card-btn");
+      const nextCardBtn = document.getElementById("next-card-btn");
+      const sequencePillsContainer = document.getElementById("sequence-pills-container");
+      const backToPathBtn = document.getElementById("back-to-path-btn");
+      const closeLessonBtn = document.getElementById("close-lesson-btn");
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const stepIdFromUrl = urlParams.get("step_id");
+
+      let activeStep = null;
+      let material = null;
+      try {
+        activeStep = JSON.parse(localStorage.getItem("lumina.activeStep"));
+        material = window.API?.storage?.getMaterial();
+      } catch (e) { }
+
+      const currentStepId = stepIdFromUrl || activeStep?.id || 51;
+      let currentQuestion = null;
+      let selectedOptionId = null;
+      let hintsUsed = 0;
+      let isAnswered = false;
+
+      let sequenceItems = [];
+      let currentIndex = 0;
+      let stepData = null;
+
+      // ⏱️ Stopwatches / Timers State
+      let totalSeconds = 0;
+      let cardSeconds = 0;
+      let totalTimerInterval = null;
+      let cardTimerInterval = null;
+
+      // 📊 Attempts & Review Mode State
+      let lessonAttempts = [];
+      let isReviewMode = false;
+
+      function getFormattedTotalTime() {
+        const m = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+        const s = String(totalSeconds % 60).padStart(2, '0');
+        return `${m}:${s}`;
+      }
+
+      if (material && material.title) {
+        moduleHeaderTitle.textContent = `Module: ${material.title}`;
+      } else {
+        moduleHeaderTitle.textContent = `Module: AI Learning Journey`;
+      }
+
+      backToPathBtn.addEventListener("click", () => {
+        window.location.href = "personalized_learning_path.html";
+      });
+
+      closeLessonBtn.addEventListener("click", () => {
+        closeLessonSafely();
+      });
+
+      function closeLessonSafely() {
+        if (confirm("Do you want to exit the current lesson and return to the Learning Path?")) {
+          window.location.href = "personalized_learning_path.html";
+        }
+      }
+
+      // Fetch Step Quiz data from backend API
+      try {
+        const res = await window.API.learning.getStepQuiz(currentStepId);
+        if (res.status === "success") {
+          stepData = res;
+
+          if (res.step_title) {
+            document.title = `Lumina - ${res.step_title}`;
+          }
+
+          if (res.student_status === "locked") {
+            renderLockedLessonState(res);
+            return;
+          }
+
+          buildSequenceItems(res);
+          if (sequenceItems.length > 0) {
+            renderCurrentItem();
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load step quiz/lesson", err);
+        lessonCardTitle.textContent = "Error Loading Lesson";
+        lessonCardBody.innerHTML = `
+      <div class="p-6 bg-rose-500/10 border border-rose-500/30 rounded-2xl text-center flex flex-col items-center gap-3">
+        <span class="material-symbols-outlined text-rose-600 text-4xl">error</span>
+        <p class="text-sm font-bold text-rose-700">Unable to fetch lesson data from server.</p>
+        <p class="text-xs text-on-surface-variant">Please make sure the backend Django server is running and try again.</p>
+      </div>
+    `;
+      }
+
+      function renderLockedLessonState(res) {
+        stepProgressPercent.textContent = "Locked";
+        stepProgressPercent.className = "font-label-sm text-xs text-rose-500 font-bold flex items-center gap-1";
+        stepProgressPercent.innerHTML = `<span class="material-symbols-outlined text-xs">lock</span><span>Locked</span>`;
+
+        lessonCardIndex.textContent = "STEP LOCKED";
+        lessonCardTypeTag.textContent = "Prerequisite Required";
+        lessonCardTitle.textContent = res.step_title || "Step is Locked";
+        lessonCardBody.innerHTML = `
+      <div class="p-8 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-center flex flex-col items-center gap-4 animate-fade-in-up my-auto">
+        <div class="w-16 h-16 rounded-full bg-amber-500/20 text-amber-600 flex items-center justify-center text-3xl">
+          <span class="material-symbols-outlined" style="font-size: 36px;">lock</span>
+        </div>
+        <h3 class="font-bold text-on-surface text-lg">Complete Prerequisite Steps First</h3>
+        <p class="text-xs text-on-surface-variant leading-relaxed max-w-md">
+          This step is currently locked. Complete the preceding steps in your Personalized Learning Path to unlock this lesson.
+        </p>
+        <a href="personalized_learning_path.html" class="mt-2 px-6 py-3 bg-primary text-on-primary font-bold text-xs rounded-xl shadow-md hover:bg-primary/90 transition-all inline-flex items-center gap-2">
+          <span class="material-symbols-outlined text-sm">arrow_back</span>
+          <span>Return to Learning Path</span>
+        </a>
+      </div>
+    `;
+        prevCardBtn.disabled = true;
+        nextCardBtn.disabled = true;
+      }
+
+      function buildSequenceItems(res) {
+        sequenceItems = [];
+
+        const cards = (res.lesson && res.lesson.cards)
+          ? [...res.lesson.cards].sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+          : [];
+
+        const questions = res.questions || [];
+        const checkpointQs = res.checkpoints || questions.filter(q => q.question_type === "checkpoint");
+        const wrapupQs = res.final_exam || questions.filter(q => q.question_type === "lesson_wrapup");
+
+        const placedCheckpointIds = new Set();
+
+        if (cards.length > 0) {
+          cards.forEach((card, idx) => {
+            const cardOrder = card.order_index || (idx + 1);
+            sequenceItems.push({
+              type: "card",
+              data: card,
+              cardIndex: idx + 1,
+              totalCards: cards.length
+            });
+
+            // Interleave checkpoint question(s) matching 1-based after_card_order
+            const matchingCheckpoints = checkpointQs.filter(
+              q => q.after_card_order === cardOrder || q.after_card_order === (idx + 1)
+            );
+            matchingCheckpoints.forEach(q => {
+              if (!placedCheckpointIds.has(q.id)) {
+                placedCheckpointIds.add(q.id);
+                sequenceItems.push({
+                  type: "checkpoint",
+                  question: q,
+                  afterCardOrder: cardOrder
+                });
+              }
+            });
           });
+        }
+
+        // Append unplaced checkpoint questions
+        checkpointQs.forEach(q => {
+          if (!placedCheckpointIds.has(q.id)) {
+            placedCheckpointIds.add(q.id);
+            sequenceItems.push({
+              type: "checkpoint",
+              question: q,
+              afterCardOrder: q.after_card_order || cards.length
+            });
+          }
         });
-      });
-    }
 
-    // Final Test / Wrap-up question(s) at end of lesson
-    if (wrapupQs.length > 0) {
-      wrapupQs.forEach(q => {
-        sequenceItems.push({
-          type: "final_test",
-          question: q
+        // Append Final Exam / Wrap-up questions (after_card_order = null)
+        if (wrapupQs.length > 0) {
+          wrapupQs.forEach((q, idx) => {
+            sequenceItems.push({
+              type: "final_test",
+              question: q,
+              testIndex: idx + 1,
+              totalTests: wrapupQs.length
+            });
+          });
+        }
+
+        // Fallback if res had no cards or questions
+        if (sequenceItems.length === 0) {
+          sequenceItems.push({
+            type: "card",
+            data: {
+              heading: res.step_title || "Lesson Overview",
+              body: (res.lesson && res.lesson.explanation) ? res.lesson.explanation : "Lesson content is currently being prepared."
+            },
+            cardIndex: 1,
+            totalCards: 1
+          });
+        }
+      } function renderSequencePills() {
+        if (!sequencePillsContainer) return;
+        sequencePillsContainer.innerHTML = "";
+
+        sequenceItems.forEach((item, idx) => {
+          const pill = document.createElement("div");
+
+          let label = "";
+          let icon = "";
+          let isCurrent = (idx === currentIndex);
+          let isCompleted = (idx < currentIndex);
+
+          if (item.type === "card") {
+            label = `Card ${item.cardIndex}`;
+            icon = "article";
+          } else if (item.type === "checkpoint") {
+            label = `Checkpoint`;
+            icon = "bolt";
+          } else if (item.type === "final_test") {
+            label = `Exam ${item.testIndex || ""}`;
+            icon = "assignment";
+          }
+
+          let baseClasses = "px-3 py-1.5 rounded-xl font-label-sm text-xs flex items-center gap-1.5 shrink-0 cursor-default select-none border ";
+
+          if (isCurrent) {
+            baseClasses += "bg-primary text-on-primary border-primary font-bold shadow-sm ring-2 ring-primary/20 scale-105";
+          } else if (isCompleted) {
+            baseClasses += "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 font-semibold";
+            icon = "check_circle";
+          } else {
+            baseClasses += "bg-surface-container-low text-on-surface-variant/70 border-outline-variant/30 opacity-60";
+          }
+
+          pill.className = baseClasses;
+          pill.innerHTML = `<span class="material-symbols-outlined text-sm">${icon}</span><span>${label}</span>`;
+          sequencePillsContainer.appendChild(pill);
         });
-      });
-    } else if (checkpointQs.length > 0 && !sequenceItems.some(i => i.type === "checkpoint")) {
-      checkpointQs.forEach(q => {
-        sequenceItems.push({
-          type: "final_test",
-          question: q
-        });
-      });
-    }
-
-    if (sequenceItems.length === 0) {
-      // Fallback card if lesson has no cards yet
-      sequenceItems.push({
-        type: "card",
-        data: {
-          heading: res.step_title || "Tổng quan bài học",
-          body: (res.lesson && res.lesson.explanation) ? res.lesson.explanation : "Bài học đang được biên soạn nội dung."
-        },
-        cardIndex: 1,
-        totalCards: 1
-      });
-    }
-  }
-
-  function renderCurrentItem() {
-    const item = sequenceItems[currentIndex];
-    const total = sequenceItems.length;
-    const progressPct = Math.round(((currentIndex + 1) / total) * 100);
-    if (progressFill) progressFill.style.width = `${progressPct}%`;
-
-    prevCardBtn.disabled = (currentIndex === 0);
-
-    if (item.type === "card") {
-      lessonCardIndex.textContent = `Lesson Card ${item.cardIndex} of ${item.totalCards}`;
-      lessonCardTitle.textContent = item.data.heading || stepData?.step_title || "Lesson Concept";
-
-      lessonCardBody.innerHTML = "";
-      const bodyP = document.createElement("p");
-      bodyP.className = "font-body-md text-body-md text-on-surface-variant leading-relaxed";
-      bodyP.textContent = item.data.body || "";
-      lessonCardBody.appendChild(bodyP);
-
-      if (item.cardIndex === 1 && stepData?.lesson?.example) {
-        const codeBox = document.createElement("div");
-        codeBox.className = "bg-primary/5 p-4 rounded-xl border border-primary/20 text-xs font-mono text-on-surface my-2 space-y-1";
-        codeBox.innerHTML = `<span class="text-primary font-bold block mb-1">💡 Example:</span> ${escapeHtml(stepData.lesson.example)}`;
-        lessonCardBody.appendChild(codeBox);
       }
 
-      nextCardBtn.querySelector("span").textContent = "Next";
-      nextCardBtn.onclick = () => {
-        if (currentIndex < sequenceItems.length - 1) {
-          currentIndex++;
-          renderCurrentItem();
+      // ⏱️ Stopwatches / Timers Logic
+      function initTimers() {
+        if (totalTimerInterval) clearInterval(totalTimerInterval);
+        totalSeconds = 0;
+        totalTimerInterval = setInterval(() => {
+          totalSeconds++;
+          const m = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
+          const s = String(totalSeconds % 60).padStart(2, '0');
+          const el = document.getElementById("total-lesson-timer");
+          if (el) el.textContent = `${m}:${s}`;
+        }, 1000);
+
+        resetCardTimer();
+      }
+
+      function resetCardTimer() {
+        if (cardTimerInterval) clearInterval(cardTimerInterval);
+        cardSeconds = 0;
+        const el = document.getElementById("current-card-timer");
+        if (el) el.textContent = "00:00";
+
+        cardTimerInterval = setInterval(() => {
+          cardSeconds++;
+          const m = String(Math.floor(cardSeconds / 60)).padStart(2, '0');
+          const s = String(cardSeconds % 60).padStart(2, '0');
+          if (el) el.textContent = `${m}:${s}`;
+        }, 1000);
+      }
+
+      function stopTimers() {
+        if (totalTimerInterval) clearInterval(totalTimerInterval);
+        if (cardTimerInterval) clearInterval(cardTimerInterval);
+      }
+
+      function renderCurrentItem() {
+        if (!sequenceItems || sequenceItems.length === 0) return;
+        const item = sequenceItems[currentIndex];
+        if (!item) return;
+        const total = sequenceItems.length;
+        const progressPct = Math.round(((currentIndex + 1) / total) * 100);
+
+        if (progressFill) progressFill.style.width = `${progressPct}%`;
+        if (stepProgressPercent) stepProgressPercent.textContent = `${progressPct}%`;
+
+        renderSequencePills();
+
+        // Disable going back to past cards
+        if (prevCardBtn) {
+          prevCardBtn.disabled = true;
+          prevCardBtn.title = "Không thể quay lại thẻ đã học";
         }
-      };
 
-    } else if (item.type === "checkpoint" || item.type === "final_test") {
-      currentQuestion = item.question;
-      selectedOptionId = null;
-      hintsUsed = 0;
-      isAnswered = false;
-
-      const titleText = item.type === "final_test" ? "Final Test / Knowledge Wrap-up" : "Checkpoint Question";
-      lessonCardIndex.textContent = titleText;
-      lessonCardTitle.textContent = stepData?.step_title || "Kiểm tra kiến thức";
-
-      renderInlineQuizUI(item, titleText);
-
-      nextCardBtn.querySelector("span").textContent = item.type === "final_test" ? "Submit Final Test" : "Submit Answer";
-      nextCardBtn.onclick = () => {
-        const quizSubmitBtn = document.getElementById("quiz-submit-btn");
-        if (!selectedOptionId && !isAnswered) {
-          alert("Vui lòng chọn 1 đáp án và bấm Nộp bài trước khi tiếp tục!");
-          return;
+        // Reset card timer for current card & init total timer on start
+        if (totalSeconds === 0 && !totalTimerInterval) {
+          initTimers();
+        } else {
+          resetCardTimer();
         }
-        if (isAnswered && currentIndex < sequenceItems.length - 1) {
-          currentIndex++;
-          renderCurrentItem();
-        } else if (!isAnswered && quizSubmitBtn) {
-          quizSubmitBtn.click();
-        }
-      };
-    }
-  }
 
-  function renderInlineQuizUI(item, titleText) {
-    const q = item.question;
-    lessonCardBody.innerHTML = `
-      <div class="flex flex-col gap-5">
-        <div class="p-4 bg-primary/5 rounded-xl border border-primary/20 flex items-center gap-3">
-          <div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined">quiz</span>
+        if (item.type === "card") {
+          renderLessonCardView(item, total);
+        } else if (item.type === "checkpoint") {
+          renderCheckpointView(item, total);
+        } else if (item.type === "final_test") {
+          renderFinalTestView(item, total);
+        }
+      }
+
+      function renderLessonCardView(item, total) {
+        if (lessonCardIndex) lessonCardIndex.textContent = `LESSON CARD ${item.cardIndex} OF ${item.totalCards}`;
+        if (lessonCardTypeTag) lessonCardTypeTag.textContent = "Micro Concept";
+        if (lessonCardTitle) lessonCardTitle.textContent = item.data.heading || stepData?.step_title || "Lesson Concept";
+
+        if (!lessonCardBody) return;
+        lessonCardBody.innerHTML = "";
+
+        // Main Body Paragraph
+        const bodyContainer = document.createElement("div");
+        bodyContainer.className = "space-y-4 animate-fade-in-up";
+
+        const bodyP = document.createElement("p");
+        bodyP.className = "font-body-md text-sm md:text-base text-on-surface-variant leading-relaxed whitespace-pre-line";
+        bodyP.textContent = item.data.body || "";
+        bodyContainer.appendChild(bodyP);
+
+        // Practical Example callout box if available
+        if (stepData?.lesson?.example && item.cardIndex === 1) {
+          const exampleBox = document.createElement("div");
+          exampleBox.className = "bg-primary/5 p-4 rounded-xl border border-primary/20 flex flex-col gap-1.5 my-2";
+          exampleBox.innerHTML = `
+        <div class="flex items-center gap-1.5 font-bold text-xs text-primary uppercase tracking-wider">
+          <span class="material-symbols-outlined text-sm">lightbulb</span>
+          <span>Practical Example:</span>
+        </div>
+        <div class="font-mono text-xs text-on-surface leading-relaxed whitespace-pre-line bg-surface-container-lowest/80 p-3 rounded-lg border border-outline-variant/30">
+          ${escapeHtml(stepData.lesson.example)}
+        </div>
+      `;
+          bodyContainer.appendChild(exampleBox);
+        }
+
+        // Key Points pill list if available
+        if (stepData?.lesson?.key_points && stepData.lesson.key_points.length > 0 && item.cardIndex === 2) {
+          const keyPointsBox = document.createElement("div");
+          keyPointsBox.className = "bg-secondary/5 p-4 rounded-xl border border-secondary/20 flex flex-col gap-2 my-2";
+
+          const pointsListHtml = stepData.lesson.key_points.map(pt => `
+        <li class="flex items-start gap-2 text-xs text-on-surface">
+          <span class="material-symbols-outlined text-secondary text-sm shrink-0 mt-0.5">check_circle</span>
+          <span>${escapeHtml(pt)}</span>
+        </li>
+      `).join("");
+
+          keyPointsBox.innerHTML = `
+        <div class="flex items-center gap-1.5 font-bold text-xs text-secondary uppercase tracking-wider">
+          <span class="material-symbols-outlined text-sm">stars</span>
+          <span>Key Points to Remember:</span>
+        </div>
+        <ul class="space-y-1.5 mt-1">${pointsListHtml}</ul>
+      `;
+          bodyContainer.appendChild(keyPointsBox);
+        }
+
+        // Flashcards for active recall if available
+        if (stepData?.lesson?.flashcards && stepData.lesson.flashcards.length > 0 && item.cardIndex === item.totalCards) {
+          const flashcardsContainer = document.createElement("div");
+          flashcardsContainer.className = "flex flex-col gap-3 my-2 pt-2 border-t border-outline-variant/30";
+
+          const fcHeader = document.createElement("div");
+          fcHeader.className = "flex items-center justify-between";
+          fcHeader.innerHTML = `
+        <span class="font-label-sm text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">style</span>
+          <span>Flashcard Review (Click to flip)</span>
+        </span>
+        <span class="text-xs text-on-surface-variant">Active Recall</span>
+      `;
+          flashcardsContainer.appendChild(fcHeader);
+
+          const fcGrid = document.createElement("div");
+          fcGrid.className = "grid grid-cols-1 sm:grid-cols-2 gap-3";
+
+          stepData.lesson.flashcards.forEach((fc, idx) => {
+            const fcCard = document.createElement("div");
+            fcCard.className = "flip-card h-28 cursor-pointer select-none rounded-xl";
+            fcCard.innerHTML = `
+          <div class="flip-card-inner relative w-full h-full rounded-xl shadow-sm transition-all duration-500">
+            <div class="flip-card-front absolute inset-0 bg-surface-container-low border border-primary/20 rounded-xl p-3 flex flex-col justify-between">
+              <span class="font-label-sm text-[10px] text-primary uppercase font-bold">Front #${idx + 1}</span>
+              <p class="text-xs font-semibold text-on-surface text-center my-auto">${escapeHtml(fc.front)}</p>
+              <span class="text-[10px] text-on-surface-variant/70 text-right">Click to flip 🔄</span>
+            </div>
+            <div class="flip-card-back absolute inset-0 bg-primary/10 border border-primary/40 rounded-xl p-3 flex flex-col justify-between">
+              <span class="font-label-sm text-[10px] text-secondary uppercase font-bold">Back</span>
+              <p class="text-xs font-semibold text-primary text-center my-auto">${escapeHtml(fc.back)}</p>
+              <span class="text-[10px] text-secondary/70 text-right">Flipped ↩️</span>
+            </div>
+          </div>
+        `;
+            fcCard.addEventListener("click", () => fcCard.classList.toggle("flipped"));
+            fcGrid.appendChild(fcCard);
+          });
+
+          flashcardsContainer.appendChild(fcGrid);
+          bodyContainer.appendChild(flashcardsContainer);
+        }
+
+        function setNextBtnText(txt) {
+          if (!nextCardBtn) return;
+          const sp = nextCardBtn.querySelector("span:not(.material-symbols-outlined)");
+          if (sp) sp.textContent = txt;
+          else nextCardBtn.textContent = txt;
+        }
+
+        lessonCardBody.appendChild(bodyContainer);
+
+        setNextBtnText((currentIndex === total - 1) ? "Finish Lesson" : "Next Card");
+        nextCardBtn.onclick = () => {
+          if (currentIndex < sequenceItems.length - 1) {
+            currentIndex++;
+            renderCurrentItem();
+          } else {
+            showCompletionSummary();
+          }
+        };
+      }
+
+      function renderCheckpointView(item, total) {
+        currentQuestion = item.question;
+        selectedOptionId = null;
+        hintsUsed = 0;
+        isAnswered = false;
+
+        const checkpointCount = sequenceItems.filter(i => i.type === "checkpoint").length;
+        const checkpointIndex = sequenceItems.slice(0, currentIndex + 1).filter(i => i.type === "checkpoint").length;
+
+        lessonCardIndex.textContent = `CHECKPOINT ${checkpointIndex} OF ${checkpointCount}`;
+        lessonCardTypeTag.textContent = `After Card ${item.afterCardOrder || 1}`;
+        lessonCardTitle.textContent = "Interactive Checkpoint Question";
+
+        lessonCardBody.innerHTML = `
+      <div class="flex flex-col gap-5 animate-fade-in-up">
+        <div class="p-4 bg-primary/5 border border-primary/20 rounded-xl flex items-center gap-3">
+          <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-xl">bolt</span>
           </div>
           <div>
-            <h3 class="font-button text-sm text-on-surface font-bold">${escapeHtml(titleText)}</h3>
-            <p class="text-xs text-on-surface-variant">TempName AI Knowledge Evaluation</p>
+            <h3 class="font-button text-sm text-on-surface font-bold">Knowledge Checkpoint</h3>
+            <p class="text-xs text-on-surface-variant">Check your understanding of the concepts covered so far before continuing.</p>
           </div>
         </div>
 
-        <div class="p-4 bg-surface-container-low rounded-xl border border-surface-variant/50">
-          <p class="font-body-md text-sm text-on-surface font-medium" id="quiz-question-text">${escapeHtml(q.question_text || "Which statement best describes this concept?")}</p>
+        <div class="p-5 bg-surface-container-low rounded-xl border border-outline-variant/40">
+          <p class="font-body-lg text-sm md:text-base text-on-surface font-semibold leading-snug" id="quiz-question-text">
+            ${escapeHtml(currentQuestion.question_text || "Select the best answer:")}
+          </p>
         </div>
 
         <div class="flex flex-col gap-2.5" id="quiz-options-container"></div>
-
-        <div id="hint-text-box" class="hidden p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200"></div>
-        <div id="quiz-feedback-box" class="hidden p-4 rounded-xl text-sm font-medium flex flex-col gap-2"></div>
+        <div id="hint-text-box" class="hidden p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-900 dark:text-amber-200 flex flex-col gap-1"></div>
+        <div id="quiz-feedback-box" class="hidden p-4 rounded-xl text-xs md:text-sm font-medium flex flex-col gap-2"></div>
 
         <div class="flex justify-between items-center pt-2 border-t border-surface-variant/50">
-          <button id="hint-btn" type="button" class="font-label-sm text-xs text-secondary hover:underline flex items-center gap-1">
+          <button id="hint-btn" type="button" class="px-3 py-2 rounded-xl text-xs font-bold text-secondary bg-secondary/10 hover:bg-secondary/20 transition-all flex items-center gap-1.5">
             <span class="material-symbols-outlined text-sm">lightbulb</span>
             <span id="hint-btn-text">Get Hint (Level 1)</span>
           </button>
-          <button id="quiz-submit-btn" type="button" class="px-5 py-2.5 bg-primary text-on-primary font-button text-xs rounded-lg shadow-sm hover:bg-primary/90 transition-all font-bold">
+
+          <button id="quiz-submit-btn" type="button" class="px-6 py-2.5 bg-primary text-on-primary font-button text-xs rounded-xl shadow-md hover:bg-primary/90 transition-all font-bold">
             Submit Answer
           </button>
         </div>
-        <button id="next-action-btn" type="button" class="hidden w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-button text-xs rounded-lg shadow-sm transition-all flex items-center justify-center gap-1">
-          <span>Continue Learning Path</span>
-          <span class="material-symbols-outlined text-sm">arrow_forward</span>
-        </button>
       </div>
     `;
 
-    const optionsContainer = document.getElementById("quiz-options-container");
-    const hintBtn = document.getElementById("hint-btn");
-    const hintBtnText = document.getElementById("hint-btn-text");
-    const hintTextBox = document.getElementById("hint-text-box");
-    const quizSubmitBtn = document.getElementById("quiz-submit-btn");
-    const quizFeedbackBox = document.getElementById("quiz-feedback-box");
-    const nextActionBtn = document.getElementById("next-action-btn");
+        renderOptionsUI(currentQuestion);
+        setupQuizHandlers(item, false);
+      }
 
-    if (!q.options || q.options.length === 0) {
-      optionsContainer.innerHTML = `<div class="p-3 text-xs text-on-surface-variant text-center">No options available.</div>`;
-      return;
-    }
+      function renderFinalTestView(item, total) {
+        currentQuestion = item.question;
+        selectedOptionId = null;
+        hintsUsed = 0;
+        isAnswered = false;
 
-    q.options.forEach((opt) => {
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "quiz-option-btn text-left p-3.5 rounded-xl border border-outline-variant hover:border-primary hover:bg-primary/5 transition-all text-xs text-on-surface flex items-center gap-3";
-      btn.setAttribute("data-option-id", opt.id);
+        lessonCardIndex.textContent = `FINAL EXAM Q${item.testIndex} OF ${item.totalTests}`;
+        lessonCardTypeTag.textContent = "Assessment";
+        lessonCardTitle.textContent = "Final Lesson Exam Question";
 
-      btn.innerHTML = `
-        <div class="opt-indicator w-4 h-4 rounded-full border border-outline flex items-center justify-center shrink-0"></div>
-        <span class="font-body-md text-xs select-none">${escapeHtml(opt.option_text)}</span>
+        lessonCardBody.innerHTML = `
+      <div class="flex flex-col gap-5 animate-fade-in-up">
+        <div class="p-4 bg-secondary/10 border border-secondary/30 rounded-xl flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-xl">assignment</span>
+            </div>
+            <div>
+              <h3 class="font-button text-sm text-on-surface font-bold">Final Exam Assessment</h3>
+              <p class="text-xs text-on-surface-variant">Formal evaluation covering all concepts in this lesson.</p>
+            </div>
+          </div>
+          <span class="px-3 py-1 bg-secondary/20 text-secondary font-label-sm text-xs font-bold rounded-full">
+            Exam Mode
+          </span>
+        </div>
+
+        <div class="p-5 bg-surface-container-low rounded-xl border border-outline-variant/40">
+          <p class="font-body-lg text-sm md:text-base text-on-surface font-semibold leading-snug">
+            ${escapeHtml(currentQuestion.question_text || "Select the best answer:")}
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2.5" id="quiz-options-container"></div>
+        <div id="hint-text-box" class="hidden p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-900 flex flex-col gap-1"></div>
+        <div id="quiz-feedback-box" class="hidden p-4 rounded-xl text-xs md:text-sm font-medium flex flex-col gap-2"></div>
+
+        <div class="flex justify-between items-center pt-2 border-t border-surface-variant/50">
+          <button id="hint-btn" type="button" class="px-3 py-2 rounded-xl text-xs font-bold text-secondary bg-secondary/10 hover:bg-secondary/20 transition-all flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-sm">lightbulb</span>
+            <span id="hint-btn-text">Get Hint (Level 1)</span>
+          </button>
+
+          <button id="quiz-submit-btn" type="button" class="px-6 py-2.5 bg-secondary text-on-secondary font-button text-xs rounded-xl shadow-md hover:opacity-90 transition-all font-bold">
+            Submit Final Answer
+          </button>
+        </div>
+      </div>
+    `;
+
+        renderOptionsUI(currentQuestion);
+        setupQuizHandlers(item, true);
+      }
+
+      function renderOptionsUI(question) {
+        const optionsContainer = document.getElementById("quiz-options-container");
+        if (!optionsContainer) return;
+
+        if (!question.options || question.options.length === 0) {
+          optionsContainer.innerHTML = `<div class="p-4 text-xs text-on-surface-variant text-center">Không có phương án cho câu hỏi này.</div>`;
+          return;
+        }
+
+        const prefixes = ["A", "B", "C", "D"];
+        const existingAttempt = lessonAttempts.find(a => a.question_id === question.id);
+
+        question.options.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "quiz-option-btn text-left p-4 rounded-xl border border-outline-variant/60 hover:border-primary hover:bg-primary/5 transition-all text-xs md:text-sm text-on-surface flex items-center gap-3 bg-surface-container-lowest";
+          btn.setAttribute("data-option-id", opt.id);
+
+          if (isReviewMode && existingAttempt) {
+            btn.disabled = true;
+            if (opt.is_correct) {
+              btn.className = "quiz-option-btn text-left p-4 rounded-xl border border-emerald-500 bg-emerald-500/10 text-emerald-900 font-bold text-xs md:text-sm flex items-center gap-3";
+            } else if (opt.id === existingAttempt.selected_option_id && !opt.is_correct) {
+              btn.className = "quiz-option-btn text-left p-4 rounded-xl border border-rose-500 bg-rose-500/10 text-rose-900 font-bold text-xs md:text-sm flex items-center gap-3";
+            }
+          }
+
+          btn.innerHTML = `
+        <div class="opt-indicator w-6 h-6 rounded-full border border-outline flex items-center justify-center shrink-0 font-label-sm text-xs font-bold text-on-surface-variant">
+          ${prefixes[idx] || (idx + 1)}
+        </div>
+        <span class="font-body-md text-xs md:text-sm font-medium select-none flex-1">${escapeHtml(opt.option_text)}</span>
       `;
 
-      btn.addEventListener("click", () => {
-        if (isAnswered) return;
-        document.querySelectorAll(".quiz-option-btn").forEach(b => {
-          b.classList.remove("border-primary", "bg-primary/10", "ring-2", "ring-primary/30");
-          const ind = b.querySelector(".opt-indicator");
-          if (ind) ind.classList.remove("bg-primary", "border-primary");
+          btn.addEventListener("click", () => {
+            if (isAnswered || isReviewMode) return;
+            document.querySelectorAll(".quiz-option-btn").forEach(b => {
+              b.classList.remove("border-primary", "bg-primary/10", "ring-2", "ring-primary/30");
+              const ind = b.querySelector(".opt-indicator");
+              if (ind) {
+                ind.classList.remove("bg-primary", "text-white", "border-primary");
+                ind.classList.add("border-outline", "text-on-surface-variant");
+              }
+            });
+            btn.classList.add("border-primary", "bg-primary/10", "ring-2", "ring-primary/30");
+            const indicator = btn.querySelector(".opt-indicator");
+            if (indicator) {
+              indicator.classList.remove("border-outline", "text-on-surface-variant");
+              indicator.classList.add("bg-primary", "text-white", "border-primary");
+            }
+            selectedOptionId = opt.id;
+          });
+
+          optionsContainer.appendChild(btn);
         });
-        btn.classList.add("border-primary", "bg-primary/10", "ring-2", "ring-primary/30");
-        const indicator = btn.querySelector(".opt-indicator");
-        if (indicator) indicator.classList.add("bg-primary", "border-primary");
-        selectedOptionId = opt.id;
-      });
 
-      optionsContainer.appendChild(btn);
-    });
-
-    hintBtn.addEventListener("click", async () => {
-      if (!currentQuestion) return;
-      hintsUsed = Math.min(hintsUsed + 1, 3);
-      hintBtnText.textContent = `Get Hint (Level ${Math.min(hintsUsed + 1, 3)})`;
-
-      try {
-        const res = await window.API.learning.getHint(currentQuestion.id, hintsUsed);
-        if (res.status === "success" && res.hint) {
-          hintTextBox.classList.remove("hidden");
-          hintTextBox.innerHTML = `<strong>💡 Hint ${hintsUsed}:</strong> ${escapeHtml(res.hint)}`;
-        } else {
-          hintTextBox.classList.remove("hidden");
-          hintTextBox.innerHTML = `<strong>💡 Hint ${hintsUsed}:</strong> Pay attention to the core concepts in this lesson.`;
-        }
-      } catch {
-        hintTextBox.classList.remove("hidden");
-        hintTextBox.innerHTML = `<strong>💡 Hint ${hintsUsed}:</strong> Pay attention to the core concepts in this lesson.`;
-      }
-    });
-
-    quizSubmitBtn.addEventListener("click", async () => {
-      if (!selectedOptionId) {
-        alert("Vui lòng chọn 1 đáp án trước khi nộp bài!");
-        return;
-      }
-
-      quizSubmitBtn.disabled = true;
-      quizSubmitBtn.textContent = "Checking...";
-
-      try {
-        const payload = {
-          question_id: currentQuestion.id,
-          selected_option_id: selectedOptionId,
-          hints_used: hintsUsed
-        };
-
-        const res = await window.API.learning.submitCheckpoint(payload);
-        isAnswered = true;
-
-        quizFeedbackBox.classList.remove("hidden", "bg-emerald-500/10", "border-emerald-500/30", "text-emerald-900", "bg-rose-500/10", "border-rose-500/30", "text-rose-900");
-
-        if (res.is_correct) {
-          quizFeedbackBox.classList.add("bg-emerald-500/10", "border", "border-emerald-500/30", "text-emerald-900");
-          quizFeedbackBox.innerHTML = `
-            <div class="flex items-center gap-2 font-bold text-emerald-700">
-              <span class="material-symbols-outlined text-lg">check_circle</span>
-              <span>Chính xác! Đã vượt qua checkpoint.</span>
-            </div>
-            <p class="text-xs text-emerald-800/90">${escapeHtml(res.explanation || "Tuyệt vời, bạn đã nắm vững khái niệm này!")}</p>
-          `;
-        } else {
-          quizFeedbackBox.classList.add("bg-rose-500/10", "border", "border-rose-500/30", "text-rose-900");
-          quizFeedbackBox.innerHTML = `
-            <div class="flex items-center gap-2 font-bold text-rose-700">
-              <span class="material-symbols-outlined text-lg">cancel</span>
-              <span>Chưa chính xác.</span>
-            </div>
-            <p class="text-xs text-rose-800/90">${escapeHtml(res.explanation || "Hãy xem lại khái niệm và thử lại nhé!")}</p>
-          `;
-        }
-
-        nextActionBtn.classList.remove("hidden");
-
-        if (res.next_action === "complete" || res.is_final_batch) {
-          nextActionBtn.querySelector("span").textContent = "Complete Learning Journey";
-          nextActionBtn.onclick = () => showTargetAchievedModal();
-        } else if (res.needs_next_batch) {
-          nextActionBtn.querySelector("span").textContent = "Generating Next Batch...";
-          const mat = window.API?.storage?.getMaterial();
-          const selectedConcepts = window.API?.storage?.getSelectedConcepts();
-          if (mat && selectedConcepts) {
-            await window.API.learning.generatePath({
-              material_id: mat.id || mat.material_id,
-              concepts: selectedConcepts
-            }).catch(() => {});
+        if (isReviewMode && existingAttempt) {
+          const quizFeedbackBox = document.getElementById("quiz-feedback-box");
+          if (quizFeedbackBox) {
+            quizFeedbackBox.classList.remove("hidden");
+            if (existingAttempt.is_correct) {
+              quizFeedbackBox.className = "p-4 rounded-xl text-xs md:text-sm font-medium flex flex-col gap-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-900";
+              quizFeedbackBox.innerHTML = `
+                <div class="flex items-center gap-2 font-bold text-emerald-700">
+                  <span class="material-symbols-outlined text-lg">check_circle</span>
+                  <span>Bạn đã chọn chính xác!</span>
+                </div>
+                <p class="text-xs text-emerald-800/90 leading-relaxed">${escapeHtml(existingAttempt.explanation || "Chính xác! Bạn đã nắm vững khái niệm này.")}</p>
+              `;
+            } else {
+              quizFeedbackBox.className = "p-4 rounded-xl text-xs md:text-sm font-medium flex flex-col gap-2 bg-rose-500/10 border border-rose-500/30 text-rose-900";
+              quizFeedbackBox.innerHTML = `
+                <div class="flex items-center gap-2 font-bold text-rose-700">
+                  <span class="material-symbols-outlined text-lg">cancel</span>
+                  <span>Lựa chọn chưa chính xác</span>
+                </div>
+                <p class="text-xs text-rose-800/90 leading-relaxed">${escapeHtml(existingAttempt.explanation || "Xem lại lời giải chi tiết bên trên.")}</p>
+              `;
+            }
           }
-          nextActionBtn.querySelector("span").textContent = "Continue to Next Batch";
-          nextActionBtn.onclick = () => {
-            window.location.href = "personalized_learning_path.html";
-          };
-        } else {
-          nextActionBtn.querySelector("span").textContent = "Continue Learning Path";
-          nextActionBtn.onclick = () => {
+        }
+      }
+
+      function setupQuizHandlers(item, isFinal) {
+        const hintBtn = document.getElementById("hint-btn");
+        const hintBtnText = document.getElementById("hint-btn-text");
+        const hintTextBox = document.getElementById("hint-text-box");
+        const quizSubmitBtn = document.getElementById("quiz-submit-btn");
+        const quizFeedbackBox = document.getElementById("quiz-feedback-box");
+
+        function setNextBtnText(txt) {
+          if (!nextCardBtn) return;
+          const sp = nextCardBtn.querySelector("span:not(.material-symbols-outlined)");
+          if (sp) sp.textContent = txt;
+          else nextCardBtn.textContent = txt;
+        }
+
+        if (isReviewMode) {
+          if (hintBtn) hintBtn.classList.add("hidden");
+          if (quizSubmitBtn) quizSubmitBtn.classList.add("hidden");
+          setNextBtnText(currentIndex === sequenceItems.length - 1 ? "Xem kết quả bài học" : "Thẻ tiếp theo");
+          nextCardBtn.onclick = () => {
             if (currentIndex < sequenceItems.length - 1) {
               currentIndex++;
               renderCurrentItem();
             } else {
-              window.location.href = "personalized_learning_path.html";
+              showCompletionSummary();
             }
           };
+          return;
         }
 
-      } catch (err) {
-        alert(err.message || "Không thể nộp bài checkpoint. Vui lòng thử lại.");
-      } finally {
-        quizSubmitBtn.disabled = false;
-        quizSubmitBtn.textContent = "Submitted";
+        if (hintBtn) {
+          hintBtn.addEventListener("click", async () => {
+            if (!currentQuestion) return;
+            hintsUsed = Math.min(hintsUsed + 1, 3);
+            hintBtnText.textContent = `Get Hint (Level ${Math.min(hintsUsed + 1, 3)})`;
+
+            hintBtn.disabled = true;
+            try {
+              const res = await window.API.learning.getHint(currentQuestion.id, hintsUsed);
+              if (res.status === "success" && res.hint) {
+                hintTextBox.classList.remove("hidden");
+                hintTextBox.innerHTML = `<strong>💡 Level ${hintsUsed} Hint:</strong> ${escapeHtml(res.hint)}`;
+              } else {
+                hintTextBox.classList.remove("hidden");
+                hintTextBox.innerHTML = `<strong>💡 Level ${hintsUsed} Hint:</strong> Focus on the key concepts presented in the lesson cards.`;
+              }
+            } catch {
+              hintTextBox.classList.remove("hidden");
+              hintTextBox.innerHTML = `<strong>💡 Level ${hintsUsed} Hint:</strong> Focus on the key concepts presented in the lesson cards.`;
+            } finally {
+              hintBtn.disabled = false;
+            }
+          });
+        }
+
+        if (quizSubmitBtn) {
+          quizSubmitBtn.addEventListener("click", async () => {
+            if (!selectedOptionId) {
+              alert("Vui lòng chọn một phương án trước khi nộp câu trả lời!");
+              return;
+            }
+
+            quizSubmitBtn.disabled = true;
+            quizSubmitBtn.textContent = "Đang đối chiếu Database...";
+
+            try {
+              const isFinalQuestion = (currentIndex === sequenceItems.length - 1);
+              let scorePercent = null;
+
+              const payload = {
+                question_id: currentQuestion.id,
+                selected_option_id: selectedOptionId,
+                hints_used: hintsUsed,
+                score_percent: scorePercent
+              };
+
+              const res = await window.API.learning.submitCheckpoint(payload);
+              isAnswered = true;
+
+              const existingIdx = lessonAttempts.findIndex(a => a.question_id === currentQuestion.id);
+              const attemptObj = {
+                question_id: currentQuestion.id,
+                selected_option_id: selectedOptionId,
+                is_correct: res.is_correct,
+                explanation: res.explanation,
+                question: currentQuestion
+              };
+              if (existingIdx >= 0) {
+                lessonAttempts[existingIdx] = attemptObj;
+              } else {
+                lessonAttempts.push(attemptObj);
+              }
+
+              if (isFinalQuestion) {
+                const totalQs = lessonAttempts.length;
+                const correctCount = lessonAttempts.filter(a => a.is_correct).length;
+                const finalAccuracy = totalQs > 0 ? Math.round((correctCount / totalQs) * 100) : 100;
+                payload.score_percent = finalAccuracy;
+                const finalRes = await window.API.learning.submitCheckpoint(payload);
+                if (finalRes) {
+                  res.passed_threshold = finalRes.passed_threshold;
+                  res.next_step_unlocked = finalRes.next_step_unlocked;
+                }
+              }
+
+              quizFeedbackBox.classList.remove("hidden", "bg-emerald-500/10", "border-emerald-500/30", "text-emerald-900", "bg-rose-500/10", "border-rose-500/30", "text-rose-900");
+
+              if (res.is_correct) {
+                quizFeedbackBox.classList.add("bg-emerald-500/10", "border", "border-emerald-500/30", "text-emerald-900");
+                quizFeedbackBox.innerHTML = `
+              <div class="flex items-center gap-2 font-bold text-emerald-700">
+                <span class="material-symbols-outlined text-lg">check_circle</span>
+                <span>Đáp án chính xác!</span>
+              </div>
+              <p class="text-xs text-emerald-800/90 leading-relaxed">${escapeHtml(res.explanation || "Xuất sắc! Bạn đã làm chủ khái niệm này.")}</p>
+            `;
+              } else {
+                quizFeedbackBox.classList.add("bg-rose-500/10", "border", "border-rose-500/30", "text-rose-900");
+                quizFeedbackBox.innerHTML = `
+              <div class="flex items-center gap-2 font-bold text-rose-700">
+                <span class="material-symbols-outlined text-lg">cancel</span>
+                <span>Đáp án chưa chính xác</span>
+              </div>
+              <p class="text-xs text-rose-800/90 leading-relaxed">${escapeHtml(res.explanation || "Xem lại bài học và thử lại.")}</p>
+            `;
+              }
+
+              setNextBtnText((currentIndex === sequenceItems.length - 1) ? "Xem kết quả bài học" : "Bài tiếp theo");
+              nextCardBtn.onclick = () => {
+                if (currentIndex < sequenceItems.length - 1) {
+                  currentIndex++;
+                  renderCurrentItem();
+                } else {
+                  showCompletionSummary();
+                }
+              };
+
+            } catch (err) {
+              alert(err.message || "Không thể nộp câu trả lời. Vui lòng thử lại.");
+              quizSubmitBtn.disabled = false;
+              quizSubmitBtn.textContent = isFinal ? "Submit Final Answer" : "Submit Answer";
+            }
+          });
+        }
       }
-    });
-  }
 
-  prevCardBtn.addEventListener("click", () => {
-    if (currentIndex > 0) {
-      currentIndex--;
-      renderCurrentItem();
-    }
-  });
+      prevCardBtn.addEventListener("click", () => {
+        if (isReviewMode && currentIndex > 0) {
+          currentIndex--;
+          renderCurrentItem();
+        }
+      });
 
-  function showTargetAchievedModal() {
-    const modalHtml = `
-      <div id="target-achieved-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-surface-container-lowest p-6 rounded-2xl max-w-md w-full shadow-2xl border border-primary/20 space-y-4 text-center animate-fade-in-up">
-          <div class="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-600 flex items-center justify-center mx-auto text-3xl">
-            <span class="material-symbols-outlined" style="font-size: 36px;">workspace_premium</span>
-          </div>
-          <h2 class="font-headline-md text-xl font-bold text-on-surface">Mục tiêu học tập đã hoàn thành!</h2>
-          <p class="text-xs text-on-surface-variant leading-relaxed">
-            Chúc mừng bạn đã chinh phục toàn bộ các khái niệm trong mục tiêu này. Bạn có muốn kết thúc lộ trình hay tiếp tục học bài tập bổ sung?
+      function showCompletionSummary() {
+        stopTimers();
+        const stepNum = stepData?.order_index || 1;
+        const stepTitle = stepData?.step_title || "Bài học";
+        const formattedTime = getFormattedTotalTime();
+
+        const totalQuestions = lessonAttempts.length;
+        const correctCount = lessonAttempts.filter(a => a.is_correct).length;
+        const incorrectCount = totalQuestions - correctCount;
+        const accuracyPercent = totalQuestions > 0 ? Math.round((correctCount / totalQuestions) * 100) : 100;
+        const passedThreshold = (accuracyPercent >= 80);
+
+        lessonCardIndex.textContent = "KẾT QUẢ BÀI HỌC";
+        lessonCardTypeTag.textContent = passedThreshold ? "Đạt điều kiện mở khóa" : "Cần hoàn thiện thêm";
+        lessonCardTitle.textContent = passedThreshold
+          ? `🎉 Chúc mừng! Bạn đã hoàn thành Bài ${stepNum}`
+          : `⚠️ Bạn đạt ${accuracyPercent}% - Cần làm lại bài học`;
+
+        const headerBg = passedThreshold ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-600" : "bg-amber-500/10 border-amber-500/30 text-amber-600";
+        const headerIcon = passedThreshold ? "celebration" : "assignment_late";
+        const statusBadge = passedThreshold
+          ? `<span class="px-3 py-1 bg-emerald-500/20 text-emerald-700 font-bold text-xs rounded-full border border-emerald-500/30">ĐẠT (≥ 80%) - Đã mở khóa bài tiếp theo</span>`
+          : `<span class="px-3 py-1 bg-amber-500/20 text-amber-700 font-bold text-xs rounded-full border border-amber-500/30">CHƯA ĐẠT - Cần ít nhất 80% để mở khóa</span>`;
+
+        lessonCardBody.innerHTML = `
+      <div class="flex flex-col items-center justify-center p-4 text-center gap-4 animate-fade-in-up my-auto">
+        <div class="w-16 h-16 rounded-full ${headerBg} flex items-center justify-center shadow-lg border">
+          <span class="material-symbols-outlined" style="font-size: 36px;">${headerIcon}</span>
+        </div>
+
+        <div class="space-y-1 max-w-lg">
+          <h2 class="font-headline-lg text-xl font-bold text-on-surface">
+            ${passedThreshold ? `🎉 Xuất sắc! Bạn đã vượt qua Bài ${stepNum}!` : `⚠️ Cần đạt ít nhất 80% để mở khóa bài tiếp theo`}
+          </h2>
+          <p class="font-body-md text-xs text-on-surface-variant leading-relaxed">
+            ${passedThreshold
+              ? `Bạn đã hoàn thành bài <strong>${escapeHtml(stepTitle)}</strong> với điểm số ${accuracyPercent}%.`
+              : `Bạn vừa hoàn thành bài <strong>${escapeHtml(stepTitle)}</strong> với điểm số ${accuracyPercent}%. Hãy bấm <strong>Làm lại bài học</strong> để thi lại và mở khóa bài tiếp theo.`}
           </p>
-          <div class="flex flex-col gap-2 pt-2">
-            <button id="modal-finish-btn" class="w-full py-3 bg-primary text-on-primary rounded-xl font-button font-bold text-xs shadow-md hover:bg-primary/90 transition-all flex items-center justify-center gap-1">
-              <span>Hoàn thành lộ trình học</span>
-              <span class="material-symbols-outlined text-base">emoji_events</span>
-            </button>
-            <button id="modal-bonus-btn" class="w-full py-3 bg-surface-container-high text-primary rounded-xl font-button font-bold text-xs hover:bg-surface-variant transition-all border border-primary/20 flex items-center justify-center gap-1">
-              <span>Tiếp tục học bổ sung (Bonus Practice)</span>
-              <span class="material-symbols-outlined text-base">add_circle</span>
-            </button>
+          <div class="pt-1">${statusBadge}</div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full max-w-xl py-2">
+          <div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/40 text-center space-y-1">
+            <span class="material-symbols-outlined text-primary text-xl">timer</span>
+            <span class="font-label-sm text-[11px] text-on-surface-variant block font-bold">Tổng thời gian</span>
+            <span class="font-bold text-base text-primary">${formattedTime}</span>
           </div>
+          <div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/40 text-center space-y-1">
+            <span class="material-symbols-outlined text-emerald-600 text-xl">insights</span>
+            <span class="font-label-sm text-[11px] text-on-surface-variant block font-bold">Độ chính xác</span>
+            <span class="font-bold text-base ${passedThreshold ? 'text-emerald-600' : 'text-amber-600'}">${accuracyPercent}%</span>
+          </div>
+          <div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/40 text-center space-y-1">
+            <span class="material-symbols-outlined text-emerald-500 text-xl">check_circle</span>
+            <span class="font-label-sm text-[11px] text-on-surface-variant block font-bold">Số câu đúng</span>
+            <span class="font-bold text-base text-emerald-600">${correctCount} / ${totalQuestions}</span>
+          </div>
+          <div class="p-3 bg-surface-container-low rounded-xl border border-outline-variant/40 text-center space-y-1">
+            <span class="material-symbols-outlined text-rose-500 text-xl">cancel</span>
+            <span class="font-label-sm text-[11px] text-on-surface-variant block font-bold">Số câu sai</span>
+            <span class="font-bold text-base text-rose-500">${incorrectCount}</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-2.5 w-full max-w-lg pt-1">
+          ${passedThreshold ? `
+            <button id="continue-next-lesson-btn" class="w-full sm:w-auto px-5 py-3 bg-primary text-on-primary rounded-xl font-button font-bold text-xs shadow-md hover:bg-primary/90 transition-all flex items-center justify-center gap-1.5 flex-1">
+              <span>Tiếp tục học bài mới</span>
+              <span class="material-symbols-outlined text-sm">arrow_forward</span>
+            </button>
+          ` : `
+            <button id="retake-lesson-btn" class="w-full sm:w-auto px-5 py-3 bg-amber-600 text-white rounded-xl font-button font-bold text-xs shadow-md hover:bg-amber-700 transition-all flex items-center justify-center gap-1.5 flex-1">
+              <span class="material-symbols-outlined text-sm">refresh</span>
+              <span>Làm lại bài học</span>
+            </button>
+          `}
+          <button id="review-lesson-btn" class="w-full sm:w-auto px-4 py-3 bg-surface-container-high text-on-surface rounded-xl font-button font-bold text-xs hover:bg-surface-variant transition-all border border-outline-variant/40 flex items-center justify-center gap-1.5 flex-1">
+            <span class="material-symbols-outlined text-sm">visibility</span>
+            <span>Xem lại đáp án</span>
+          </button>
+          <button id="close-lesson-modal-btn" class="w-full sm:w-auto px-4 py-3 bg-surface-container-high text-on-surface rounded-xl font-button font-bold text-xs hover:bg-surface-variant transition-all border border-outline-variant/40 flex items-center justify-center gap-1.5">
+            <span>Đóng</span>
+          </button>
         </div>
       </div>
     `;
-    document.body.insertAdjacentHTML("beforeend", modalHtml);
 
-    document.getElementById("modal-finish-btn").addEventListener("click", () => {
-      window.location.href = "final_test_result_summary_review.html";
-    });
+        document.getElementById("continue-next-lesson-btn")?.addEventListener("click", () => {
+          window.location.href = "personalized_learning_path.html";
+        });
 
-    document.getElementById("modal-bonus-btn").addEventListener("click", async () => {
-      const mat = window.API?.storage?.getMaterial();
-      const selectedConcepts = window.API?.storage?.getSelectedConcepts();
-      if (mat && selectedConcepts) {
-        await window.API.learning.generatePath({
-          material_id: mat.id || mat.material_id,
-          concepts: selectedConcepts
-        }).catch(() => {});
+        document.getElementById("retake-lesson-btn")?.addEventListener("click", () => {
+          lessonAttempts = [];
+          isReviewMode = false;
+          currentIndex = 0;
+          totalSeconds = 0;
+          cardSeconds = 0;
+          initTimers();
+          renderCurrentItem();
+        });
+
+        document.getElementById("review-lesson-btn")?.addEventListener("click", () => {
+          isReviewMode = true;
+          currentIndex = 0;
+          renderCurrentItem();
+        });
+
+        document.getElementById("close-lesson-modal-btn")?.addEventListener("click", () => {
+          window.location.href = "personalized_learning_path.html";
+        });
+
+        if (passedThreshold) {
+          nextCardBtn.querySelector("span").textContent = "Về Lộ trình học";
+          nextCardBtn.onclick = () => {
+            window.location.href = "personalized_learning_path.html";
+          };
+        } else {
+          nextCardBtn.querySelector("span").textContent = "Làm lại bài học";
+          nextCardBtn.onclick = () => {
+            lessonAttempts = [];
+            isReviewMode = false;
+            currentIndex = 0;
+            totalSeconds = 0;
+            cardSeconds = 0;
+            initTimers();
+            renderCurrentItem();
+          };
+        }
       }
-      window.location.href = "personalized_learning_path.html";
-    });
-  }
 
-  function escapeHtml(str) {
-    if (!str) return "";
-    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  }
-});
-</script>
-</body></html>
+      function escapeHtml(str) {
+        if (!str) return "";
+        return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+      }
+    });
+  </script>
+</body>
+
+</html>
