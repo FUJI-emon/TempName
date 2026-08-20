@@ -25,7 +25,7 @@ SECRET_KEY = os.getenv(
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [
-    host.strip() for host in os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost').split(',') if host.strip()
+    host.strip() for host in os.getenv('ALLOWED_HOSTS', 'https://sixteen-exert-unsheathe.ngrok-free.dev').split(',') if host.strip()
 ]
 
 # Application definition
